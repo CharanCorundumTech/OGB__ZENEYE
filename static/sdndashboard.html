@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   
+    <script>
+      // Check if a success message is provided and display it as a popup
+      var successMessage = "{{ success_message }}";
+      if (successMessage && successMessage !== "None") {
+        alert(successMessage); // You can use a more sophisticated popup library here if needed
+      }
+    </script>
+
+    {% include 'metaData.html' %}
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+      /* date picker start */
+
+      /* Style the input box */
+      
+
+      tr:not(:first-child):hover {
+        transform: none !important;
+      }
+
+      .input-group-text {
+        padding: 0px 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      /* Style the placeholder text */
+      ::placeholder {
+        color: #999;
+        /* Customize the placeholder color */
+      }
+
+      /* date picker ends*/
+      .bg-primary {
+    background-color: #00579c !important;
+    border-color: #00579c;
+    color: #fff;
+}
+      .text-primary {
+        color: #00579c !important;
+      }
+
+      .form-control-sm:hover {
+        border: 1px solid #ced4da !important;
+      }
+
+      .btn-primary {
+        background-color: #00579c !important;
+        border-color: #00579c !important;
+      }
+
+      .btn-danger {
+        background-color: #df2233 !important;
+      }
+
+      .page-item.active .page-link {
+        background-color: #00579c !important;
+      }
+
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+       .accordion-toggle {
+        cursor: pointer;
+    }
+    .up-in-toggle {
+        input {
+            height: 1px;
+            width: 1px;
+            border: 0;
+            overflow: hidden;
+
+            &:checked+label {
+                background: rgb(244, 245, 245);
+                background: linear-gradient(white);
+                color: rgba(94, 90, 219, 255);
+                font-weight: 500;
+                box-shadow: 0 7px 20px rgba(0, 0, 0, 0.09), 0 6px 6px rgba(0, 0, 0, 0.13);
+            }
+        }
+
+    }
+
+      .paths:hover {
+        text-decoration: underline;
+      }
+
+      #select-all {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #8080805b;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox:checked {
+        border: 2px solid rgb(0, 119, 255);
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      .checkbox:active {
+        border: 2px solid rgb(0, 119, 255);
+
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        /* Set the background image when the checkbox is clicked */
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      tr {
+        transition: all 0.1s ease-in-out;
+      }
+
+      tr:not(:first-child):hover {
+        transform: scale(1.01);
+      }
+
+      th:first-child::after {
+        content: "" !important;
+      }
+
+      th:first-child::before {
+        content: "" !important;
+      }
+
+      td,
+      th {
+        padding: 8px 15px !important;
+        border: none !important;
+        border-bottom: 2px solid #00000033 !important;
+        text-align: left !important;
+      }
+      .dropdown-menu {
+        margin-left: 351px;
+        margin-top: -36px;
+        --bs-dropdown-min-width: 12rem;
+    }
+
+    #sanctions-dropdown {
+        margin-left: 172px;
+        padding: 10px;
+        margin-top: -134px;
+        height: 140px;
+        width: 200px;
+        overflow-y: auto;
+        --bs-dropdown-min-width: 10rem;
+    }
+
+    #watchlist-dropdown {
+        margin-left: 170px;
+        padding: 10px;
+        margin-top: -20px;
+        height: 140px;
+        width: 200px;
+        overflow-y: auto;
+        --bs-dropdown-min-width: 10rem;
+    }
+
+    .search-btn {
+        padding: 13px 20px;
+        background-color: rgba(94, 90, 219, 255);
+        border-radius: 10px;
+        border: none;
+        color: white;
+    }
+
+    .search-btn:hover {
+        padding: 13px 20px;
+        background-color: rgba(94, 90, 219, 255);
+        border-radius: 10px;
+        border: none;
+        color: white;
+    }
+     input[type=range] {
+        width: 100%;
+        height: 15px;
+        background: #d3d3d3;
+        /* Grey background */
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        border-radius: 10px;
+    }
+   .form-control {
+    border: 1px solid #bfc9d4 !important;
+    
+    
+    }
+    .form-control:hover {
+    border: 1px solid #bfc9d4 !important;
+    
+   
+    }
+    .search-input{
+    border: 1px solid #bfc9d4 !important;
+    padding: 28px 40px !important;
+    border-radius: 0px !important;
+    }
+
+    .form-label {
+        font-size: 15px;
+        margin-bottom: 0;
+        font-weight: 500;
+        color: rgb(128, 127, 127)
+    }
+
+
+      /* .modal-content {} */
+    </style>
+    {% if msg %}
+<script>
+    alert('{{msg}}')
+</script>
+{% endif %}
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row" style="gap: 10px">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+                <nav class="breadcrumb-one" aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a
+                        href="{{ url_for('MLROdashboard') }}"
+                        class="text-blue font-weight-bold"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-home"
+                        >
+                          <path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                          ></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                      </a>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="text-primary"
+              >/ <span class="paths">SDN</span></a
+            >
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN CONTENT PART  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'sidebar.html' %}
+
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+
+      <!--  BEGIN CONTENT AREA  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div
+            class="alert alert-success position-relative"
+            role="alert"
+            style="right: 0; top: 1%; display: none"
+            id="sucessAlert"
+          >
+            Successfully Submited...
+          </div>
+          <div class="layout-top-spacing">
+            <!-- <div id="content" class="main-content">
+                                          <div class="layout-px-spacing"> -->
+              {% if data %}
+            <div class="row layout-top-spacing layout-spacing">
+              <div class="col-lg-12">
+                <div class="statbox widget box box-shadow">
+                  <div class="border rounded mb-1 shadow-sm">
+                    <div class="row m-4 justify-content-center">
+                       
+            
+            <div class="col-lg-12 mt-2">
+                <form id="searchForm" action="{{url_for('sdn')}}" method="POST">
+                    <div class="d-flex justify-content-center query">
+                        <button type="button" class="btn bg-primary mt-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class='bx bxs-filter-alt' style="color:black; font-size: 15px;"></i>
+                            QUERY
+                            <i class="fa-solid fa-angle-down"></i>
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel1"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content" style="width:90% ;left:-450px;top:0px;">
+                                    <div class="text-end p-2">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" style="padding: 0px 15px;">
+                                        <div class="sidebar-item">
+                                            <label class="form-label">ID Type</label>
+                                            <select id="idType" class="form-select" aria-label="Default select example"
+                                                onchange="toggleIdNumberInput()" name="id_type">
+                                                <option selected disabled>Select Type</option>
+                                                <option value="PASSPORT">Passport</option>
+                                                <option value="Pan">PAN</option>
+                                                <option value="DIN">DIN</option>
+                                                <option value="CIN">CIN</option>
+                                            </select>
+                                        </div>
+                                        <div class="sidebar-item" id="idNumberInput" style="display: none;">
+                                            <label for="idNumber" class="form-label">ID Number</label>
+                                            <input type="text" id="idNumber" class="form-control"
+                                                placeholder="Enter ID Number" name="id_number">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="" class="form-label">Entity</label>
+                                            <select class="form-select" aria-label="Default select example"
+                                                id="entitySelectIndex" name="entitySelect">
+                                                <option selected disabled>Choose Entity</option>
+                                                {% for entity in unique_entities %}
+                                                <option value="{{entity}}">{{entity}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label for="exampleFormControlInput1" class="form-label">Date Of
+                                                Birth</label>
+                                            <input type="date" class="form-control" id="dateOfBirthIndex" name="dob"
+                                                placeholder="Enter ID">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="exampleFormControlInput1" class="form-label">Place Of
+                                                Birth</label>
+                                            <input type="text" class="form-control" id="placeOfBirthIndex" name="pob"
+                                                placeholder="Enter Place">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="exampleFormControlInput1" class="form-label">Category</label>
+                                            <div class="dropdown mt-1">
+                                                <button class="btn btn-default rounded form-control" type="button"
+                                                    data-toggle="dropdown" style="width:100%">
+                                                    <span class="text-icon-container">
+                                                        Select_Category
+                                                        <span class="icon-container" style="margin-left: 167px ;">
+                                                            <i class='bx bxs-chevron-up'></i>
+                                                            <i class='bx bxs-chevron-down'></i>
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li class="dropdown-item"><input type="checkbox"
+                                                            value="Adverse_Media" name="category">&nbsp;ADVERSE MEDIA
+                                                    </li>
+                                                    <li class="dropdown-submenu ps-3">
+                                                        <input type="checkbox" class="test" id="sanctionlist-checkbox"
+                                                            value="Sanction List" name="category">&nbsp;SANCTIONS LIST
+                                                        <ul id="sanctions-dropdown" class="dropdown-menu"
+                                                            style="display: none;">
+                                                            {% for category, sub_categories in sub_cats.items() %}
+                                                            {% if category == 'Sanction List' %}
+                                                                {% for val in sub_categories %}
+                                                                    <li><input type="checkbox" name="category" value="{{ val }}">&nbsp;{{ val }}</li>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                    <li class="dropdown-submenu ps-3 mt-1">
+                                                        <input id="watchlist-checkbox" class="test" type="checkbox"
+                                                            name="category" value="Watch List">&nbsp;WATCHLIST
+                                                        <ul id="watchlist-dropdown" class="dropdown-menu"
+                                                            style="display: none;">
+                                                            {% for category, sub_categories in sub_cats.items() %}
+                                                            {% if category == 'Watch List' %}
+                                                                {% for val in sub_categories %}
+                                                                    <li><input type="checkbox" name="category" value="{{ val }}">&nbsp;{{ val }}</li>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </li>
+                                                    <li class="dropdown-item"><input type="checkbox" name="category"
+                                                            value="PEP">&nbsp;PEP</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label for="customRange3" class="form-label">Fuzzy Logic</label>
+                                            <div class="row">
+                                                <div class="col-lg-8">
+                                                    <input type="range" class="slider bg-primary" min="0" max="100"
+                                                        value="80" id="rangeInputIndex" name="rangeInputIndex">
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <span id="rangeValueIndex">80%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn rounded"
+                                            onclick="resetFieldsIndex()">Reset</button>
+                                        <button type="button" class="btn btn-primary rounded"
+                                            style=" background-color: rgba(94,90,219,255);"
+                                            data-bs-dismiss="modal">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box d-flex align-items-center mt-1">
+                            <i class='bx bx-search'></i>
+                            <input type="text" class="search-input form-control" placeholder="Search" name="name" id="searchInput" />
+                            <i class="fa-regular fa-circle-xmark clear-icon"></i>
+                        </div>
+                        <div class="d-flex align-items-start mt-2">
+                            <button class="btn btn-success search-btn  rounded ms-3"
+                                style="background-color: rgba(94, 90, 219, 255);">
+                                Search
+                            </button>
+                </form>
+
+            </div>
+            <p class="ms-3 mt-3">Or</p>
+            <div class="d-flex align-items-start mt-2">
+                <button type="button" class="btn btn-success ms-3 rounded" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal1">
+                    <i class="fa-solid fa-circle-arrow-up"></i>&nbsp;Bulk Search Upload
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="width:90%">
+                            <div class="modal-header" style="border-bottom: none;padding-bottom:0;">
+                                <h4 class="modal-title" id="exampleModalLabel">Upload a File</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <p class="ps-3 fs-6">File upload Description</p>
+                            <div class="modal-body">
+                                <form class="form-container" enctype='multipart/form-data'
+                                    action="{{url_for('upload')}}" method="post">
+                                    <div class="upload-files-container">
+                                        <div class="drag-file-area" id="dragFileArea">
+                                            <span class="material-icons-outlined upload-icon"><i
+                                                    class="fa-solid fa-circle-plus mt-5"></i></span>
+                                            <h4 class="dynamic-message">Drop your files here </h4>
+                                            <label class="label">
+                                                <span class="browse-files">
+                                                    <input id="file-upload" type="file" name="file_upload"
+                                                        class="default-file-input" style="display: none;"
+                                                        accept=".csv" />
+                                                    <span class="browse-files-text">Browse file</span>
+                                                    <span></span>from your computer</span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <br>
+                                        <p class="text-danger mt-3"><b style="font-size: 17px;">Note: </b>
+                                            <small style="font-size: 17px;"><a id="downloadSampleLink"
+                                                    class="text-primary"
+                                                    style="cursor: pointer;font-weight: bolder;">Download</a>
+                                                sample file format and update </small>
+                                        </p>
+                                        <div class="row file-block rounded border border-secondary-subtle p-2 m-1"
+                                            id="file-block">
+                                            <div class="col-lg-1 file-info d-flex">
+                                                <span class="material-icons-outlined file-icon"><i
+                                                        class="fa-regular fa-file fa-xl"></i></span>
+                                            </div>
+                                            <div class="col-lg-11">
+                                                <span class="file-name"> </span>
+                                                <br>
+                                                <p class="file-size"> |</p>
+                                            </div>
+                                            <div class="d-flex justify-content-start">
+                                                <div class="progress-bars mb-3"></div>
+                                                <div>
+                                                    <span id="progressPercentage"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="modal-footer" style="justify-content: space-between;">
+                                <input type="reset" class="btn rounded"
+                                    style=" width:47% ;border:1px solid gray;display:none;" id="resetButton"
+                                    value="Reset" />
+                                <input type="submit" class="btn btn-primary rounded"
+                                    style=" width:47%;background-color:#4054fc;display: none;" id="uploadButton"
+                                    value="Upload" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+                     
+                    </div>
+                  
+                  </div>
+                  <div class="row mt-3 mb-4">
+                    <div class="col-12">
+                     
+                       
+                           <div class="sidebar card shadow px-5 py-3" id="sidebar">
+        <!-- <div class="text-end" style="font-size: 12px;">
+            <button type="button" class="btn-close" aria-label="Close" onclick="toggleSidebar()"></button>
+        </div> -->
+       
+        <h4 class="text-center font-weight-bold text-blue pt-3">Advanced Filters</h4>
+        <div class="sidebar-item mb-2 mt-2">
+            <label class="form-label font-weight-bold">Place of Birth</label>
+            <input id="placeOfBirthFilter" class="form-control" type="text" placeholder="Enter Place of Birth">
+        </div>
+
+
+        <div class="sidebar-item mb-2 mt-2">
+            <label class="form-label font-weight-bold">Category</label>
+            <select id="categorySelect" class="form-select" aria-label="Default select example">
+                <option selected disabled>Select Category</option>
+                <option value="Adverse Media">ADVERSE MEDIA</option>
+                <option value="Sanction List">SANCTIONS LIST</option>
+                <option value="Watch List">WATCHLIST</option>
+                <option value="PEP">PEP</option>
+            </select>
+        </div>
+        <div class="sidebar-item mb-2 mt-2" id="subCategoryDiv" style="display: none;">
+            <label class="form-label font-weight-bold">Sub Category</label>
+            <select id="subCategorySelect" class="form-select" aria-label="Default select example">
+
+                <option selected>Select Sub Category</option>
+            </select>
+        </div>
+        <div class="mb-2 mt-2">
+            <label for="customRange3" class="form-label font-weight-bold">Fuzzy Logic</label>
+            <div class="row">
+                <div class="col-lg-8">
+                    <input type="range" class="slider bg-primary" min="0" max="100" value="80" id="rangeInput"
+                        name="rangeInput">
+                </div>
+                <div class="col-lg-4">
+                    <span id="rangeValue">80%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 mb-3 d-flex justify-content-between">
+            <button id="resetFiltersBtnsidebar" class="btn btn-primary rounded">Reset</button>
+            <button id="applyFiltersBtn" class="btn btn-primary rounded">Apply Filters</button>
+        </div>
+    </div>
+                       
+                    
+                    
+                    </div>
+                  </div>
+
+                  <!-- <table>
+    <tr>
+        <th>Code</th>
+        <th>Ticket ID</th>
+    </tr>
+
+</table> -->
+
+                  <!-- <div class="d-flex widget-content widget-content-area justify-content-center pb-0 pt-0">
+                  <div class="d-flex flex-column align-items-center p-4 col-lg-5" style="gap: 20px;border: 1px solid #8080803a;border-radius: 10px;">
+                    <div class="d-flex justify-content-evenly" style="width: -webkit-fill-available;">
+                      <div class="d-flex" style="gap: 10px;">
+                      <input type="checkbox" name="STR" value="STR" class="checkbox" id="STR">STR</input>
+                    </div>
+                    <div class="d-flex" style="gap: 10px;">
+                      <input type="checkbox" name="STR" value="NON-STR" class="checkbox" id="NONSTR">NON-STR
+                      (10%)</input>
+                    </div>
+                    </div>
+
+                    
+                    <div>
+                      <button id="submit-button" class="btn btn-primary" disabled>Submit</button>
+                    </div>
+
+                  </div>
+
+                </div> -->
+                  <!-- <div class="form-group mb-0 widget-content widget-content-area pb-0 "
+                  style="display: flex;justify-content: end;align-items: center;gap: 10px;">
+                  <label style="font-size:20px;font-weight:500;color: #8e949d;text-wrap: nowrap;" class="mt-2">Date : </label>
+                  <input id="rangeCalendarFlatpickr" class="form-control flatpickr flatpickr-input active" type="text" style="background-color: transparent !important;"
+                    placeholder="Select Date Range.." />
+                </div> -->
+
+                  <div
+                    class="d-flex flex-column align-items-center widget-content widget-content-area justify-content-center pb-0 pt-0"
+                    data-backdrop="false"
+                    style="position: relative; z-index: 852px; top: 0"
+                  >
+                    <!-- <div class="d-flex flex-column align-items-center p-4 col-lg-12"
+                  style="gap: 20px;border: 1px solid #8080803a;"">
+                  <div class="d-flex justify-content-between flex-wrap col-lg-11" >
+                    
+                    <div class="col-4 d-flex flex-column gap-4">
+                      <div class="btn-group submitter-group ">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">Customer Number</div>
+                        </div>
+                        <input type="text" class="filter-checkbox form-control" id="custId" placeholder="Enter Customer Number..."/> 
+                       
+                      </div>
+                      <div class="btn-group submitter-group ">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">Violated Amount</div>
+                        </div>
+                        <input type="text" class="filter-checkbox form-control" id="ViolatedAmount" placeholder="Enter Violated Amount..."/>
+                       
+                      </div>
+                      <div class="btn-group submitter-group ">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">ACCTNO</div>
+                        </div>
+                        <input type="text" class="filter-checkbox form-control" id="AccountNumber" placeholder="Enter ACCTNO..."/>
+                       
+                      </div>
+                    </div>
+                    <div class="col-4 d-flex flex-column gap-4">
+                      <div class="btn-group ">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">Branch</div>
+                        </div>
+                        <select class="form-control" id="Branch">
+                          <option value="">All</option>
+                          <option value="Panjaguta">Panjaguta</option>
+                          <option value="Kukatpali">Kukatpali</option>
+                          <option value="KPHB">KPHB</option>
+                        </select>
+                      </div>
+                      <div class="btn-group submitter-group ">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">Date</div>
+                        </div>
+                        <input id="rangeCalendarFlatpickr" class="form-control flatpickr flatpickr-input active" type="text" style="background-color: transparent !important;"
+                  placeholder="Select Date Range.." />
+                      </div>
+                      <div class="btn-group submitter-group ">
+                        <div class="input-group-prepend">
+                          <div class="input-group-text">Account Type</div>
+                        </div>
+                        <select class="form-control status-dropdown" id="AccType">
+                          <option value="">All</option>
+                          <option value="Current Account">Current Account</option>
+                          <option value="Savings Account">Savings Account</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    
+                    
+
+                  </div>
+                  <button id="filter-button" class="btn btn-blue mt-3">Submit</button>
+                  </div> -->
+                  </div>
+
+                  <div class="widget-content widget-content-area">
+                    <div class="table-responsive mb-1">
+                      <section>
+                        <table
+                          id="example"
+                          class="display nowrap"
+                          style="width: 100%"
+                        >
+                          <thead>
+                            <tr>
+                              <th></th>
+                    <th class="d-none"></th>
+                    <th>#</th>
+                     <th>view</th>
+                    <th>Download</th>
+                    <th>NAME</th>
+                    <th>ID NUMBER</th>
+                    <th>CATEGORY</th>
+                    <th>SUB CATEGORY</th>
+                    <th>Fuzzy</th>
+
+                    <th>DATEOFBIRTH</th>
+                    <th>PLACEOFBIRTH</th>
+                   
+                            </tr>
+                          </thead>
+                          <tbody id="tableBody">
+                            {% for doc in data %}
+                <tr>
+                    <td class=""><input type="checkbox" class="select-checkbox"></td>
+                    <td class="accordion-toggle d-none"><i class="fa fa-plus-circle"></i></td>
+                     <td><a href="{{url_for('view',table_name=doc['table_name'],unique_id=doc['_id'],value=loop.index)}}" target="_blank">
+                            <button class="btn btn-primary rounded">
+                                <svg viewBox="0 0 576 512" width="43" height="30" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <g fill="#ffffff">
+                    <path d="m 5 12 v 1 h 0.007812 c -0.003906 0.265625 0.101563 0.519531 0.285157 0.707031 l 2 2 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 l 2 -2 c 0.183594 -0.1875 0.289063 -0.441406 0.289063 -0.707031 h 0.003906 v -1 z m 0 0"></path>
+                    <path d="m 8 -0.0078125 l -5 3.1406245 v 4.714844 l 5 3.144532 l 5 -3.144532 v -4.714844 z m 0 6.0000005 l -3.644531 -2.175782 l 3.644531 -2.292968 l 3.644531 2.292968 z m 0 0"></path>
+                    
+                    <path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/>
+                </g>
+            </g>
+        </svg></button></a></td>
+                    <td>
+                        <button id="downloadBtn" class="btn btn-primary rounded download-btn" data-csv="{{doc}}">
+                            <a href="#">
+                             <svg
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          fill="#ffff"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M12.5535 16.5061C12.4114 16.6615 12.2106 16.75 12 16.75C11.7894 16.75 11.5886 16.6615 11.4465 16.5061L7.44648 12.1311C7.16698 11.8254 7.18822 11.351 7.49392 11.0715C7.79963 10.792 8.27402 10.8132 8.55352 11.1189L11.25 14.0682V3C11.25 2.58579 11.5858 2.25 12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V14.0682L15.4465 11.1189C15.726 10.8132 16.2004 10.792 16.5061 11.0715C16.8118 11.351 16.833 11.8254 16.5535 12.1311L12.5535 16.5061Z"
+                              fill="#ffff"
+                            ></path>
+                            <path
+                              d="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"
+                              fill="#ffff"
+                            ></path>
+                          </g>
+                        </svg>
+                            </a>
+                        </button>
+                    </td>
+                    <td>{{loop.index}}</td>
+                    {% if ',' in doc['name'] %}
+                    {% set combined_list = [] %}
+                    {% for part in doc['name'].split(',') %}
+                    {% if doc['key_name'].lower() in part.lower() %}
+                    {% set _ = combined_list.append(part) %}
+                    {% endif %}
+                    {% endfor %}
+                    {% set combined_string = combined_list | join(',') %}
+                    <td>{{ combined_string }}</td>
+                    {% else %}
+                    <td>{{doc['name']}}</td>
+                    {% endif %}
+                    <td>{{doc['id_num']}}</td>
+                    <td>{{doc['category']}}</td>
+                    <td>{{doc['sub_category']}}</td>
+                    <td>{{ doc['fuzzy_value'] | int }}</td>
+                    <td>{{doc['dob']}}</td>
+                    <td>{{doc['pob']}}</td>
+                   
+                    {% endfor %}
+
+                            <!-- Add more rows with your own data as needed -->
+                          </tbody>
+                        </table>
+                      </section>
+
+                      <!-- modal  -->
+
+                      <!-- Button trigger modal -->
+
+                      <!--  END CONTENT AREA  -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% else %}
+             <div class="row layout-top-spacing layout-spacing">
+              <div class="col-lg-12">
+                <div class="statbox widget box box-shadow">
+                  <div class="border rounded mb-1 shadow-sm">
+                    <div class="row m-4 justify-content-center">
+                       <div class="row">
+                        <form id="searchForm" action="{{url_for('sdn')}}" method="post">
+            <div class="d-flex justify-content-center mt-3 ms-5">
+                <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal"
+                    style="border-radius: 4px 0px 0px 4px;">
+                    <i class='bx bxs-filter-alt' style="color:black; font-size: 15px;"></i>
+                    QUERY
+                    <i class="fa-solid fa-angle-down"></i>
+                </button>
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel1"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="width:75% ;left:-450px;top:0px;">
+                            <div class="text-end p-2">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="padding: 0px 15px;">
+                                <div class="sidebar-item">
+                                    <label class="form-label">ID Type</label>
+                                    <select id="idType" class="form-select" aria-label="Default select example"
+                                        onchange="toggleIdNumberInput()" name="id_type">
+                                        <option selected disabled>Select Type</option>
+                                        <option value="PASSPORT">Passport</option>
+                                        <option value="Pan">PAN</option>
+                                        <option value="DIN">DIN</option>
+                                        <option value="CIN">CIN</option>
+                                    </select>
+                                </div>
+                                <div class="sidebar-item" id="idNumberInput" style="display: none;">
+                                    <label for="idNumber" class="form-label">ID Number</label>
+                                    <input type="text" id="idNumber" class="form-control" placeholder="Enter ID Number"
+                                        name="id_number">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="" class="form-label">Entity</label>
+                                    <select class="form-select" aria-label="Default select example"
+                                        id="entitySelectIndex" name="entitySelect">
+                                        <option selected disabled>Choose Entity</option>
+                                        {% for entity in unique_entities %}
+                                        <option value="{{entity}}">{{entity}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="exampleFormControlInput1" class="form-label">Date Of Birth</label>
+                                    <input type="date" class="form-control" id="dateOfBirthIndex" name="dob"
+                                        placeholder="Enter ID">
+                                </div>
+                                <div class="mb-2">
+                                    <label for="exampleFormControlInput1" class="form-label">Place Of Birth</label>
+                                    <input type="text" class="form-control" id="placeOfBirthIndex" name="pob"
+                                        placeholder="Enter Place">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exampleFormControlInput1" class="form-label">Category</label>
+                                    <div class="dropdown mt-1">
+                                        <button class="btn btn-default rounded form-control" type="button"
+                                            data-toggle="dropdown" style="width:100%">
+                                            <span class="text-icon-container">
+                                                Select_Category
+                                                <span class="icon-container" style="margin-left: 167px ;">
+                                                    <i class='bx bxs-chevron-up'></i>
+                                                    <i class='bx bxs-chevron-down'></i>
+                                                </span>
+                                            </span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-item"><input type="checkbox" value="Adverse_Media"
+                                                    name="category">&nbsp;ADVERSE MEDIA
+                                            </li>
+                                            <li class="dropdown-submenu ps-3">
+                                                <input type="checkbox" class="test" id="sanctionlist-checkbox"
+                                                    value="Sanction List" name="category">&nbsp;SANCTIONS LIST
+                                                <ul id="sanctions-dropdown" class="dropdown-menu"
+                                                    style="display: none;">
+                                                            {% for category, sub_categories in sub_cats.items() %}
+                                                            {% if category == 'Sanction List' %}
+                                                                {% for val in sub_categories %}
+                                                                    <li><input type="checkbox" name="category" value="{{ val }}">&nbsp;{{ val }}</li>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                    <!-- {% for val in sub_cats['Sanction List'] %}
+                                                            <li><input type="checkbox" name="category"
+                                                                    value="{{val}}">&nbsp;{{val}}</li>
+                                                    {% endfor %} -->
+                                              
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu ps-3 mt-1">
+                                                <input id="watchlist-checkbox" class="test" type="checkbox"
+                                                    name="category" value="Watch List">&nbsp;WATCHLIST
+                                                <ul id="watchlist-dropdown" class="dropdown-menu"
+                                                    style="display: none;">
+                                                            {% for category, sub_categories in sub_cats.items() %}
+                                                            {% if category == 'Watch List' %}
+                                                                {% for val in sub_categories %}
+                                                                    <li><input type="checkbox" name="category" value="{{ val }}">&nbsp;{{ val }}</li>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                    <!-- {% for val in sub_cats['Watch List'] %}
+                                                    <li><input type="checkbox" name="category"
+                                                            value="{{val}}">&nbsp;{{val}}</li>
+                                                    {% endfor %} -->
+
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-item"><input type="checkbox" name="category"
+                                                    value="PEP">&nbsp;PEP</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label for="customRange3" class="form-label">Fuzzy Logic</label>
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <input type="range" class="slider bg-primary" min="0" max="100" value="80"
+                                                id="rangeInputIndex" name="rangeInputIndex">
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <span id="rangeValueIndex">80%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn rounded" onclick="resetFieldsIndex()">Reset</button>
+                                <button type="button" class="btn btn-primary rounded"
+                                    style=" background-color: rgba(94,90,219,255);"
+                                    data-bs-dismiss="modal">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box d-flex align-items-center" style="border-radius: 0px 4px 4px 0px; height: 56px;">
+                    <i class='bx bx-search'></i>
+                    <input type="text" class="search-input form-control " id="searchInput" name="name" placeholder="Search with name or keyword..." />
+                    <i class="fa-regular fa-circle-xmark clear-icon"></i>
+
+                </div>
+                <button class="btn btn-success  search-btn rounded ms-3"
+                                style="background-color: rgba(94, 90, 219, 255);">
+                                Search
+                            </button>
+        </form>
+        <p class="ms-3 mt-3">Or</p>
+        <div class="d-flex align-items-start mt-2">
+            <button type="button" class="btn btn-success ms-3 rounded" data-bs-toggle="modal"
+                data-bs-target="#exampleModal1">
+                <i class="fa-solid fa-circle-arrow-up"></i>&nbsp;Bulk Search Upload
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="width:90%">
+                        <form id="upload-form" enctype='multipart/form-data' action="{{url_for('upload')}}"
+                            method="post">
+
+                            <div class="modal-header" style="border-bottom: none;padding-bottom:0;">
+
+                                <h4 class="modal-title" id="exampleModalLabel">Upload a File</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <p class="ps-3 fs-6">File upload Description</p>
+                            <div class="modal-body">
+                                <div class="upload-files-container">
+                                    <div class="drag-file-area" id="dragFileArea">
+                                        <span class="material-icons-outlined upload-icon"><i
+                                                class="fa-solid fa-circle-plus mt-5"></i></span>
+                                        <h4 class="dynamic-message">Drop your files here </h4>
+                                        <label class="label">
+                                            <span class="browse-files">
+                                                <!-- <input id="file-upload" type="file" class="default-file-input"
+                                                    style="display: none;" name="file_upload" accept=".csv" /> -->
+                                                    <input id="file-upload" type="file" name="file_upload" class="default-file-input" style="display: none;" accept=".csv,.xls,.xlsx,.txt" />
+
+                                                <span class="browse-files-text">Browse file</span>
+                                                <span></span>from your computer</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <br>
+                                    <p class="text-danger mt-3"><small style="font-size: 17px;"><a
+                                                id="downloadSampleLink" class="text-primary"
+                                                style="cursor: pointer;font-weight: bolder;">Download</a>
+                                            sample file format and update </small></p>
+                                    <div class="row  border border-secondary-subtle p-2 m-1 file-block" id="file-block">
+                                        <div class="col-lg-1 file-info d-flex">
+                                            <span class="material-icons-outlined file-icon"><i
+                                                    class="fa-regular fa-file fa-xl"></i></span>
+                                        </div>
+                                        <div class="col-lg-11">
+                                            <span class="file-name"> </span>
+                                            <br>
+                                            <p class="file-size"> |</p>
+                                        </div>
+                                        <div class="d-flex justify-content-start">
+                                            <div class="progress-bars mb-3"></div>
+                                            <div>
+                                                <span id="progressPercentage"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="justify-content: space-between;">
+                                <input type="reset" class="btn rounded"
+                                    style=" width:47% ;border:1px solid gray;display: none;" id="resetButton"
+                                    value="Reset" />
+                                <input type="submit" class="btn btn-primary rounded"
+                                    style=" width:47%;background-color:#4054fc;display: none;" id="uploadButton"
+                                    value="Upload" />
+                            </div>
+
+                    </div>
+                </div>
+
+            </div>
+            </form>
+
+        </div>
+
+                        </div>
+                    </div>
+                  </div>
+                </div>
+             </div>
+            </div>         
+          </div>
+        </div>
+        {% endif %}
+        {% include 'footer.html' %}
+      </div>
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+
+    <!-- viwe JS start -->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- viwe JS ends -->
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/assets/js/custom.js"></script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+    <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+    <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+    <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"
+    ></script>
+
+    <script>
+      // date picker Starts
+      document.addEventListener("DOMContentLoaded", function () {
+        var flatpickrInstance; // Define flatpickrInstance variable in the outer scope
+        flatpickrInstance = flatpickr("#rangeCalendarFlatpickr", {
+          mode: "range",
+          dateFormat: "Y-m-d H:i:S",
+        });
+        var dataTable;
+        // Initialize DataTable
+        $(document).ready(function () {
+          dataTable = $("#example").DataTable({
+            rowReorder: {
+              selector: "td:nth-child(2)",
+            },
+            responsive: true,
+            paging: true, // Disable initial pagination
+            scrollY: "300px", // Set the height of the scrollable area
+            scrollCollapse: true, // Enable the scrollbar to collapse
+            scrollInfinite: true, // Enable infinite scrolling
+            info: true,
+          });
+          // Bind applyFilters function to button click
+          $("#filter-button").on("click", function () {
+            applyFilters();
+            var minViolatedAmount =
+              document.getElementById("minViolatedAmount").value;
+            var maxViolatedAmount =
+              document.getElementById("maxViolatedAmount").value;
+            var selectedDates = flatpickrInstance.selectedDates;
+            if (selectedDates.length === 2) {
+              var startDate = selectedDates[0];
+              var endDate = selectedDates[1];
+              // var dece = filterTableByDateRange(startDate, endDate);
+              if (
+                minViolatedAmount.length != 0 &&
+                maxViolatedAmount.length != 0
+              ) {
+                filterTableByViolationAmounts(
+                  minViolatedAmount,
+                  maxViolatedAmount
+                );
+              }
+            } else if (
+              minViolatedAmount.length != 0 &&
+              maxViolatedAmount.length != 0
+            ) {
+              filterTableByViolationAmounts(
+                minViolatedAmount,
+                maxViolatedAmount
+              );
+            } else {
+              // Handle the case where the date range is not selected
+              console.log("Please select a date range");
+              var table = document.getElementById("tableBody");
+              var rows = table.getElementsByTagName("tr");
+              // Show all rows when the date range is empty
+              for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = "";
+              }
+              return; // Exit the function when the date range is empty
+            }
+          });
+        });
+
+        function applyFilters() {
+          var custId = $("#custId").val();
+          var accountNumber = $("#AccountNumber").val();
+          var branch = $("#BranchCode").val();
+          var accounttype = $("#AccType").val();
+          var dateRangeInput = $("#rangeCalendarFlatpickr").val();
+          var formattedStartDate = "";
+          var formattedEndDate = "";
+          if (dateRangeInput) {
+            var dates = dateRangeInput.split(" to ");
+            formattedStartDate = formatDate(dates[0]);
+            formattedEndDate = formatDate(dates[1]);
+          }
+          // Clear existing search
+          dataTable.columns().search("");
+          // Apply filters
+          dataTable
+            .columns(1)
+            .search(accountNumber)
+            .columns(2)
+            .search(custId)
+            .columns(3)
+            .search(branch)
+            .column(5)
+            .search(accounttype);
+          // Filter by Allocated Date range
+          dataTable
+            .column(4)
+            .data()
+            .each(function (value, index) {
+              var allocatedDate = value.trim(); // Assuming Allocated Date is stored as text
+              if (
+                allocatedDate >= formattedStartDate &&
+                allocatedDate <= formattedEndDate
+              ) {
+                dataTable.row(index).nodes().to$().show();
+              } else {
+                dataTable.row(index).nodes().to$().hide();
+              }
+            });
+          // Redraw the table
+          dataTable.draw(false);
+          // Recalculate pagination
+          var info = dataTable.page.info();
+          console.log(info);
+          var visibleRowCount = dataTable
+            .rows({ search: "applied", page: "current" })
+            .nodes().length;
+          console.log(visibleRowCount);
+          var paginationInfo =
+            "Showing 1 to " +
+            visibleRowCount +
+            " of " +
+            info.recordsDisplay +
+            " entries";
+          console.log(paginationInfo);
+          $("#example_info").text(paginationInfo);
+        }
+        function formatDate(date) {
+          if (date) {
+            // Check if date is not empty
+            // Split the date string into parts
+            var parts = date.split(" ");
+            // Ensure that we have both date and time parts
+            if (parts.length === 2) {
+              var datePart = parts[0];
+              // Ensure that the date part is in the format 'YYYY-MM-DD'
+              if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+                return datePart + " 00:00:00";
+              } else {
+                console.error("Invalid date format:", datePart);
+                return ""; // Return empty string if date format is invalid
+              }
+            } else {
+              console.error("Invalid date format:", date);
+              return ""; // Return empty string if date format is invalid
+            }
+          } else {
+            return ""; // Return empty string if date is empty
+          }
+        }
+      });
+      function filterTableByViolationAmounts(
+        minViolatedAmount,
+        maxViolatedAmount
+      ) {
+        var table = document.getElementById("tableBody");
+        var rows = table.getElementsByTagName("tr");
+        for (var i = 0; i < rows.length; i++) {
+          var row = rows[i];
+          console.log("this is amount range : ", row);
+          var dateCell_undef = row.getElementsByTagName("td")[8]; // Assuming the date is in the 5th index
+          var amountCell = dateCell_undef.textContent;
+          console.log(amountCell);
+          amountCell = Number(amountCell);
+          console.log("Parsed amountCell:", amountCell);
+          console.log("minViolatedAmount:", minViolatedAmount);
+          console.log("maxViolatedAmount:", maxViolatedAmount);
+          if (
+            !isNaN(amountCell) &&
+            amountCell >= minViolatedAmount &&
+            amountCell <= maxViolatedAmount
+          ) {
+            row.style.display = "";
+            console.log(" IN RANGE DATES");
+          } else {
+            row.style.display = "none";
+            console.log("NOT IN RANGE DATES");
+          }
+        }
+      }
+      function submitForm() {
+        // Find the parent form and submit it
+        var form = event.target.closest("form");
+        form.submit();
+      }
+    </script>
+
+    
+
+
+
+<!-- Kamal Script======================= -->
+<script>
+
+
+
+        //loader
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchForm = document.getElementById('searchForm');
+
+            searchForm.addEventListener('submit', function () {
+                document.getElementById('loader').style.display = 'flex';
+            });
+        });
+        //upload loader
+        
+        $(document).ready(function () {
+        // Handle click event on upload button
+        $("#uploadButton").click(function () {
+            // Show loader
+            $("#loader").show();
+        });
+    });
+
+
+
+
+
+
+
+
+
+        function toggleIdNumberInput() {
+            var idTypeSelect = document.getElementById("idType");
+            var idNumberInput = document.getElementById("idNumberInput");
+            var selectedIdType = idTypeSelect.value;
+            if (selectedIdType && selectedIdType !== "Select Type") {
+                idNumberInput.style.display = "block";
+            } else {
+                idNumberInput.style.display = "none";
+            }
+        }
+
+        //dropdown
+        //dropdown
+        document.addEventListener("DOMContentLoaded", function () {
+            var dropdownButtons = document.querySelectorAll('.dropdown button');
+            var dropdownMenus = document.querySelectorAll('.dropdown-menu');
+            var watchlistCheckbox = document.getElementById("watchlist-checkbox");
+            var sanctionlistCheckbox = document.getElementById("sanctionlist-checkbox");
+            var watchlistDropdown = document.getElementById("watchlist-dropdown");
+            var sanctionlistDropdown = document.getElementById("sanctions-dropdown");
+            function handleCheckboxChange(checkbox, dropdown) {
+                var isChecked = checkbox.checked;
+                dropdown.style.display = isChecked ? "block" : "none";
+                if (!isChecked) {
+                    var submenuCheckboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+                    submenuCheckboxes.forEach(function (checkbox) {
+                        checkbox.checked = false;
+                    });
+                }
+            }
+            watchlistCheckbox.addEventListener("change", function () {
+                handleCheckboxChange(watchlistCheckbox, watchlistDropdown);
+            });
+            sanctionlistCheckbox.addEventListener("change", function () {
+                handleCheckboxChange(sanctionlistCheckbox, sanctionlistDropdown);
+            });
+            var dropdownSubmenuCheckboxes = document.querySelectorAll('.dropdown-submenu input[type="checkbox"]');
+            dropdownSubmenuCheckboxes.forEach(function (checkbox) {
+                checkbox.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                });
+                checkbox.addEventListener("change", function () {
+                    var submenu = checkbox.closest('.dropdown-submenu').querySelector('.dropdown-menu');
+                    if (checkbox.checked) {
+                        submenu.style.display = "block";
+                    } else {
+                        submenu.style.display = "none";
+                    }
+                });
+            });
+            var dropdownSubmenuLinks = document.querySelectorAll('.dropdown-submenu a.test');
+            dropdownSubmenuLinks.forEach(function (link) {
+                link.addEventListener("click", function (e) {
+                    var nextUl = link.nextElementSibling;
+                    if (nextUl.style.display === "none" || nextUl.style.display === "") {
+                        nextUl.style.display = "block";
+                    } else {
+                        nextUl.style.display = "none";
+                    }
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            });
+            dropdownButtons.forEach(function (button) {
+                button.addEventListener("click", function () {
+                    var dropdownMenu = this.nextElementSibling;
+                    if (dropdownMenu.style.display === "none" || !dropdownMenu.style.display) {
+                        dropdownMenu.style.display = "block";
+                    } else {
+                        dropdownMenu.style.display = "none";
+                    }
+                });
+            });
+        });
+                // reset serch  in dashboard
+                document.addEventListener("DOMContentLoaded", function () {
+            const clearIcon = document.querySelector('.clear-icon');
+            const searchInput = document.getElementById('searchInput');
+            console.log(searchInput)
+            clearIcon.addEventListener('click', function () {
+                searchInput.value = ''; // Clear the input field
+            });
+
+        });
+
+
+        // <!-- upload -->
+        document.addEventListener("DOMContentLoaded", function () {
+            let fileInput = document.querySelector(".default-file-input");
+            let fileName = document.querySelector(".file-name");
+            let fileSize = document.querySelector(".file-size");
+            let progressBar = document.querySelector(".progress-bars");
+            let fileBlock = document.getElementById("file-block");
+            let resetButton = document.getElementById('resetButton');
+            let uploadButton = document.getElementById('uploadButton');
+            // Initially hide the file-block element
+            fileBlock.style.display = "none";
+            document.getElementById("dragFileArea").addEventListener("dragover", function (event) {
+                event.preventDefault();
+                document.getElementById("dragFileArea").classList.add("drag-over");
+            });
+            document.getElementById("dragFileArea").addEventListener("dragleave", function (event) {
+                event.preventDefault();
+                document.getElementById("dragFileArea").classList.remove("drag-over");
+            });
+            document.getElementById("dragFileArea").addEventListener("drop", function (event) {
+                event.preventDefault();
+                document.getElementById("dragFileArea").classList.remove("drag-over");
+                let file = event.dataTransfer.files[0];
+                handleFileUpload(file);
+            });
+            fileInput.addEventListener("change", function (event) {
+                let file = event.target.files[0];
+                handleFileUpload(file);
+            });
+            resetButton.addEventListener("click", function () {
+                fileInput.value = "";
+                fileName.textContent = "";
+                fileSize.textContent = "";
+                progressBar.style.width = "0";
+                document.getElementById("progressPercentage").textContent = "";
+                fileBlock.style.display = "none";
+                resetButton.style.display = "none";
+                uploadButton.style.display = "none";
+            });
+            function handleFileUpload(file) {
+                if (file) {
+                    fileBlock.style.display = "block";
+                    fileName.textContent = file.name;
+                    fileSize.textContent = (file.size / 1024).toFixed(1) + " KB";
+                    let width = 0;
+                    let id = setInterval(function () {
+                        if (width >= 310) {
+                            clearInterval(id);
+                            progressBar.style.width = "100%";
+                            document.getElementById("progressPercentage").textContent = "100%";
+                            resetButton.style.display = "block";
+                            uploadButton.style.display = "block";
+                        } else {
+                            width += 5;
+                            progressBar.style.width = width + "px";
+                            let percentage = (width / 310) * 100;
+                            document.getElementById("progressPercentage").textContent = percentage.toFixed(0) + "%";
+                        }
+                    }, 50);
+                }
+            }
+        });
+        function downloadSampleCSV() {
+            var CSVLink = "/static/sample_format.csv";
+            window.location.href = CSVLink;
+            $('#exampleModal1').modal('show');
+        }
+        document.getElementById('downloadSampleLink').addEventListener('click', downloadSampleCSV);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //index range
+        document.addEventListener("DOMContentLoaded", function () {
+            const rangeInput = document.getElementById('rangeInputIndex');
+            const rangeValueSpan = document.getElementById('rangeValueIndex');
+
+            if (rangeInput && rangeValueSpan) {
+
+                rangeValueSpan.textContent = rangeInput.value + "%";
+
+                rangeInput.addEventListener('input', function () {
+                    const newValue = rangeInput.value;
+                    rangeValueSpan.textContent = newValue + "%";
+                    rangeInput.setAttribute('value', newValue);
+                });
+            } else {
+                console.error("Range input element or value span not found.");
+            }
+        });
+
+
+
+
+
+
+
+        //range percentage
+        function setupRangeInput(inputId, valueId) {
+            var rangeInput = document.getElementById(inputId);
+            var rangeValue = document.getElementById(valueId);
+
+            function updateRangeValue() {
+                var value = rangeInput.value;
+                rangeValue.innerText = value + "%";
+                rangeInput.setAttribute('value', value);
+            }
+
+            updateRangeValue();
+            rangeInput.addEventListener("input", updateRangeValue);
+        }
+
+        setupRangeInput("rangeInput", "rangeValue");
+
+
+        // /reset  of query popup in index page and dashboard
+        function resetFieldsIndex() {
+            document.getElementById("idNumber").value = "";
+            document.getElementById("dateOfBirthIndex").value = "";
+            document.getElementById("placeOfBirthIndex").value = "";
+            document.getElementById("idType").selectedIndex = 0;
+            document.getElementById("entitySelectIndex").selectedIndex = 0;
+            // document.getElementById("countrySelectIndex").selectedIndex = 0;
+            document.getElementById('idNumberInput').style.display = 'none';
+            var checkboxes = document.querySelectorAll("input[type='checkbox']");
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = false;
+            });
+            document.getElementById('sanctions-dropdown').style.display = 'none';
+            document.getElementById('watchlist-dropdown').style.display = 'none';
+            var dropdownMenu = document.querySelector(".dropdown-menu");
+            dropdownMenu.style.display = 'none';
+            document.getElementById("rangeInputIndex").value = 80;
+            var rangeInput = document.getElementById("rangeInputIndex");
+            var newValue = 80; // Change this value as needed
+            rangeInput.setAttribute('value', newValue);
+            document.getElementById("rangeValueIndex").innerText = newValue + "%";
+        }
+        //reset button in filters
+        function resetFilters() {
+            var table = $('#example').DataTable();
+            table.search('').columns().search('').draw();
+            $.fn.dataTable.ext.search = [];
+            table.draw();
+
+
+            // document.getElementById('dobFilter').value = '';
+            document.getElementById('placeOfBirthFilter').value = '';
+            // document.getElementById('entity').selectedIndex = 0;
+            // document.getElementById('country').selectedIndex = 0;
+            // document.getElementById('idTypesidebar').selectedIndex = 0;
+            // document.getElementById('idNumber').value = '';
+            document.getElementById('categorySelect').selectedIndex = 0;
+            document.getElementById('subCategorySelect').innerHTML = '<option selected>Select Sub Category</option>';
+            document.getElementById('rangeInput').value = 80;
+            var rangeInput = document.getElementById("rangeInput");
+            var newValue = 80; // Change this value as needed
+            rangeInput.setAttribute('value', newValue);
+            document.getElementById("rangeValue").innerText = newValue + "%";
+            // document.getElementById('idNumberInputsidebar').style.display = 'none';
+            document.getElementById('subCategoryDiv').style.display = 'none';
+
+
+
+        }
+        document.getElementById('resetFiltersBtnsidebar').addEventListener('click', resetFilters);
+
+
+        //filters
+        function applyFilters() {
+            var table = $('#example').DataTable();
+            // const dobFilter = convertToISOFormat(document.getElementById('dobFilter').value);
+            let placeOfBirth = document.getElementById('placeOfBirthFilter').value.trim();
+            let categorySelect = document.getElementById('categorySelect').value;
+            let subcategorySelect = document.getElementById('subCategorySelect').value;
+            let rangeInput = Number(document.getElementById('rangeInput').value);
+            const regex = '\\b' + placeOfBirth.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '\\b';
+            if (subcategorySelect === "Select Sub Category") {
+                subcategorySelect = ""
+            }
+            if (categorySelect === "Select Category") {
+                categorySelect = ""
+            }
+            const rows = document.querySelectorAll('#example tbody tr');
+            if (placeOfBirth.length != 0 && placeOfBirth != null) {
+                if (categorySelect.length != 0 && categorySelect !== null) {
+                    if (subcategorySelect.length != 0 && subcategorySelect !== null) {
+                        if (rangeInput.length != 0 && rangeInput !== null && rangeInput != 80) {
+                            table.column(5).search(categorySelect).draw();
+                            table.column(6).search(subcategorySelect).draw();
+                            $.fn.dataTable.ext.search.push(
+                                function (settings, data, dataIndex) {
+                                    var value = parseFloat(data[7]) || 0;
+                                    return value >= rangeInput;
+                                }
+                            );
+
+                            table.draw();
+                            // table.column(7).search(">=" + rangeInput).draw(); // Filter values greater than or equal to rangeInput
+                            table.column(9).search(regex, true, false).draw();
+                        }
+                        else {
+                            table.column(5).search(categorySelect).draw();
+                            table.column(6).search(subcategorySelect).draw();
+                            table.column(9).search(regex, true, false).draw();
+                        }
+                    }
+                    else {
+                        if (rangeInput.length != 0 && rangeInput !== null && rangeInput != 80) {
+                            $.fn.dataTable.ext.search.push(
+                            function (settings, data, dataIndex) {
+                                var value = parseFloat(data[7]) || 0;
+                                return value >= rangeInput;
+                            }
+                        );
+
+                        table.draw();
+                            // table.column(7).search(">=" + rangeInput).draw(); // Filter values greater than or equal to rangeInput // Filter values greater than or equal to rangeInput
+                            table.column(5).search(categorySelect).draw();
+                            table.column(9).search(regex, true, false).draw();
+                        }
+                        else {
+                            table.column(5).search(categorySelect).draw();
+                            table.column(9).search(regex, true, false).draw();
+                        }
+                    }
+                }
+                else {
+                    if (rangeInput.length != 0 && rangeInput !== null && rangeInput != 80) {
+                        $.fn.dataTable.ext.search.push(
+                            function (settings, data, dataIndex) {
+                                var value = parseFloat(data[7]) || 0;
+                                return value >= rangeInput;
+                            }
+                        );
+
+                        table.draw();
+                        // table.column(7).search(">=" + rangeInput).draw(); // Filter values greater than or equal to rangeInput
+                        table.column(9).search(regex, true, false).draw();
+                    }
+                    else {
+                        table.column(9).search(regex, true, false).draw();
+                    }
+                }
+            }
+            else if (placeOfBirth.length == 0 || placeOfBirth == null) {
+                if (categorySelect.length != 0 && categorySelect !== null) {
+                    if (subcategorySelect.length != 0 && subcategorySelect !== null) {
+                        if (rangeInput.length != 0 && rangeInput !== null && rangeInput != 80) {
+                            table.column(5).search(categorySelect).draw();
+                            table.column(6).search(subcategorySelect).draw();
+                            $.fn.dataTable.ext.search.push(
+                            function (settings, data, dataIndex) {
+                                var value = parseFloat(data[7]) || 0;
+                                return value >= rangeInput;
+                            }
+                        );
+
+                        table.draw();
+                            // table.column(7).search(">=" + rangeInput).draw(); // Filter values greater than or equal to rangeInput
+                        }
+                        else {
+                            table.column(5).search(categorySelect).draw();
+                            table.column(6).search(subcategorySelect).draw();
+                        }
+                    }
+                    else {
+                        if (rangeInput.length != 0 && rangeInput !== null && rangeInput != 80) {
+                            console.log("---------")
+                            console.log(rangeInput)
+                            $.fn.dataTable.ext.search.push(
+                            function (settings, data, dataIndex) {
+                                var value = parseFloat(data[7]) || 0;
+                                return value >= rangeInput;
+                            }
+                        );
+
+                        table.draw();
+                            // table.column(7).search(">=" + rangeInput).draw(); // Filter values greater than or equal to rangeInput
+                            table.column(5).search(categorySelect).draw();
+                        }
+                        else {
+                            table.column(5).search(categorySelect).draw();
+                        }
+                    }
+                }
+                else {
+                    if (rangeInput.length != 0 && rangeInput !== null && rangeInput != 80) {
+                        console.log("---------")
+                        console.log(typeof rangeInput)
+                        $.fn.dataTable.ext.search.push(
+                            function (settings, data, dataIndex) {
+                                var value = parseFloat(data[7]) || 0;
+                                return value >= rangeInput;
+                            }
+                        );
+
+                        table.draw();
+
+                        // table.column(7).search(">=" + rangeInput).draw(); // Filter values greater than or equal to rangeInput
+                    }
+                }
+            }
+        }
+
+
+
+        // function isDobMatching(rowDob, dobFilter) {
+        //     if (!dobFilter) return true;
+        //     const rowDate = new Date(rowDob);
+        //     const filterDate = new Date(dobFilter);
+        //     return rowDate.getTime() === filterDate.getTime();
+        // }
+
+        // function convertToISOFormat(dateString) {
+        //     if (!dateString) return '';
+        //     const [day, month, year] = dateString.split('/');
+        //     return `${year}-${month}-${day}`;
+        // }
+
+        document.getElementById('applyFiltersBtn').addEventListener('click', applyFilters);
+
+
+
+
+
+
+
+
+
+        
+
+
+    </script>
+
+    <!-- <script>
+
+        $(document).ready(function () {
+            // Show loading spinner
+            $('#loading-spinner').show();
+            $('#loading-text').show();
+
+            var table = $('#example').DataTable({
+                scrollY: '390px',
+                columnDefs: [{
+                    orderable: false,
+                    className: 'details-control',
+                    targets: [0, 1]
+                }],
+                select: {
+                    style: 'os',
+                    selector: '.select-checkbox'
+                },
+                order: [[2, 'asc']],
+                initComplete: function () {
+                    // Hide loading spinner when DataTable is fully loaded
+                    $('#loading-spinner').hide();
+                    $('#loading-text').hide();
+                    $('.load-table').hide();
+
+
+                }
+            });
+
+            // Add event listener for opening and closing details
+            $('#example tbody').on('click', '.accordion-toggle', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                    $(this).html('<i class="fa fa-plus-circle"></i>'); // Change the arrow to point right
+                } else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                    $(this).html('<i class="fa fa-minus-circle"></i>'); // Change the arrow to point down
+                }
+            });
+
+            //accordion
+            function format(data) {
+                return '<div class="accordion">' +
+                    '<div class="vertical-line"></div>' +
+                    '<div class="content">' +
+                    '<p><span class="icon-circle"><i class="fa-solid fa-pen icon"></i></span> <strong>Name:</strong> ' + data[3] + '</p>' +
+                    '<p><span class="icon-circle"><i class="fa-solid fa-chart-simple icon"></i></i></span> <strong>Category:</strong> ' + data[5] + '</p>' +
+                    '<p><span class="icon-circle"><i class="fa-solid fa-list icon"></i></span><strong>Fuzzy:</strong> ' + data[7] + '</p>' +
+                    '</div>' +
+                    '</div>';
+            }
+        });
+
+    </script> -->
+
+
+
+    <script>
+        $(document).on('click', '.download-btn', function () {
+            var csvData = $(this).data('csv');
+            console.log(csvData);
+            downloadCSV('data.csv', csvData);
+
+        });
+
+        function downloadCSV(fileName, data) {
+            var csv = '';
+
+            var keyValuePairs = data.split(', ');
+
+            var allKeys = [];
+            var allValues = [];
+
+            for (var i = 0; i < keyValuePairs.length; i++) {
+                var pair = keyValuePairs[i].split(':');
+
+                if (pair.length === 2) {
+                    var key = pair[0].trim().replace(/[{}']/g, '');
+                    var value = pair[1].trim().replace(/[{}']/g, '');
+                    if (key === '_id' || key === 'table_name') {
+                        continue;
+                    }
+
+                    if (!allKeys.includes(key)) {
+                        allKeys.push(key);
+                    }
+
+                    allValues[allKeys.indexOf(key)] = value;
+                }
+            }
+
+            csv += allKeys.join(',') + '\n';
+
+            csv += allValues.join(',') + '\n';
+
+            var blob = new Blob([csv], { type: 'text/csv' });
+
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+        }
+
+        // Download CSV function
+        // $(document).on('click', '.download-btn', function () {
+        //     var csvData = $(this).data('csv');
+        //     console.log(csvData)
+        //     var fileName = 'data_' + new Date().getTime() + '.csv';
+        //     downloadCSV(fileName, csvData);
+        // });
+
+        // function downloadCSV(fileName, data) {
+        //     var blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+        //     if (navigator.msSaveBlob) { // IE 10+
+        //         navigator.msSaveBlob(blob, fileName);
+        //     } else {
+        //         var link = document.createElement("a");
+        //         if (link.download !== undefined) {
+        //             var url = URL.createObjectURL(blob);
+        //             link.setAttribute("href", url);
+        //             link.setAttribute("download", fileName);
+        //             link.style.visibility = 'hidden';
+        //             document.body.appendChild(link);
+        //             link.click();
+        //             document.body.removeChild(link);
+        //         }
+        //     }
+        // } 
+
+
+
+
+    </script>
+    <script>
+        //toggle button
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            const menu = document.querySelector('.sidebar-toggle');
+            if (sidebar.style.width === '250px') {
+                sidebar.style.width = '0';
+                content.style.marginLeft = '0';
+                menu.style.display = 'block';
+            } else {
+                sidebar.style.width = '250px';
+                content.style.marginLeft = '250px';
+                menu.style.display = 'none';
+            }
+        }
+    </script>
+
+    <!-- upload -->
+    <script>
+        // <!-- upload -->
+        document.addEventListener("DOMContentLoaded", function () {
+            let fileInput = document.querySelector(".default-file-input");
+            let fileName = document.querySelector(".file-name");
+            let fileSize = document.querySelector(".file-size");
+            let progressBar = document.querySelector(".progress-bars");
+            let fileBlock = document.getElementById("file-block");
+            let resetButton = document.getElementById('resetButton');
+            let uploadButton = document.getElementById('uploadButton');
+            // Initially hide the file-block element
+            fileBlock.style.display = "none";
+            document.getElementById("dragFileArea").addEventListener("dragover", function (event) {
+                event.preventDefault();
+                document.getElementById("dragFileArea").classList.add("drag-over");
+            });
+            document.getElementById("dragFileArea").addEventListener("dragleave", function (event) {
+                event.preventDefault();
+                document.getElementById("dragFileArea").classList.remove("drag-over");
+            });
+            document.getElementById("dragFileArea").addEventListener("drop", function (event) {
+                event.preventDefault();
+                document.getElementById("dragFileArea").classList.remove("drag-over");
+                let file = event.dataTransfer.files[0];
+                handleFileUpload(file);
+            });
+            fileInput.addEventListener("change", function (event) {
+                let file = event.target.files[0];
+                handleFileUpload(file);
+            });
+            resetButton.addEventListener("click", function () {
+                fileInput.value = "";
+                fileName.textContent = "";
+                fileSize.textContent = "";
+                progressBar.style.width = "0";
+                document.getElementById("progressPercentage").textContent = "";
+                fileBlock.style.display = "none";
+                resetButton.style.display = "none";
+                uploadButton.style.display = "none";
+            });
+            function handleFileUpload(file) {
+                if (file) {
+                    fileBlock.style.display = "block";
+                    fileName.textContent = file.name;
+                    fileSize.textContent = (file.size / 1024).toFixed(1) + " KB";
+                    let width = 0;
+                    let id = setInterval(function () {
+                        if (width >= 310) {
+                            clearInterval(id);
+                            progressBar.style.width = "100%";
+                            document.getElementById("progressPercentage").textContent = "100%";
+                            resetButton.style.display = "block";
+                            uploadButton.style.display = "block";
+                        } else {
+                            width += 5;
+                            progressBar.style.width = width + "px";
+                            let percentage = (width / 310) * 100;
+                            document.getElementById("progressPercentage").textContent = percentage.toFixed(0) + "%";
+                        }
+                    }, 50);
+                }
+            }
+        });
+    </script>
+  </body>
+</html>

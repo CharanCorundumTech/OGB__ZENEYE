@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   
+    {% include 'metaData.html' %}
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+      /* date picker start */
+
+      /* Style the input box */
+      .form-control-sm {
+        width: 200px;
+        /* Set your desired width */
+
+        font-size: 14px;
+        border: 1px solid #ccc !important;
+        border-radius: 4px;
+        background-color: rgb(251, 255, 254);
+      }
+
+      .form-control {
+        border: 1px solid #ccc !important;
+      }
+
+      .form-control:hover {
+        border: 1px solid #ccc !important;
+      }
+
+      tr:not(:first-child):hover {
+        transform: none !important;
+      }
+
+      .input-group-text {
+        padding: 0px 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      /* Style the placeholder text */
+      ::placeholder {
+        color: #999;
+        /* Customize the placeholder color */
+      }
+
+      /* date picker ends*/
+
+      .text-primary {
+        color: #00579c !important;
+      }
+
+      .form-control-sm:hover {
+        border: 1px solid #ced4da !important;
+      }
+
+      .btn-primary {
+        background-color: #00579c !important;
+        border-color: #00579c !important;
+      }
+
+      .btn-danger {
+        background-color: #df2233 !important;
+      }
+
+      .page-item.active .page-link {
+        background-color: #00579c !important;
+      }
+
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+
+      .paths:hover {
+        text-decoration: underline;
+      }
+
+      #select-all {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #8080805b;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox:checked {
+        border: 2px solid rgb(0, 119, 255);
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      .checkbox:active {
+        border: 2px solid rgb(0, 119, 255);
+
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        /* Set the background image when the checkbox is clicked */
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      tr {
+        transition: all 0.1s ease-in-out;
+      }
+
+      tr:not(:first-child):hover {
+        transform: scale(1.01);
+      }
+
+      th:first-child::after {
+        content: "" !important;
+      }
+
+      th:first-child::before {
+        content: "" !important;
+      }
+
+      td,
+      th {
+        padding: 8px 15px !important;
+        border: none !important;
+        border-bottom: 2px solid #00000033 !important;
+        text-align: left !important;
+      }
+
+      /* .modal-content {} */
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row" style="gap: 10px">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+                <nav class="breadcrumb-one" aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a
+                        href="{{ url_for('dashbord') }}"
+                        class="text-blue font-weight-bold"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-home"
+                        >
+                          <path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                          ></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                      </a>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a class="text-primary"
+              >/
+              <a href="{{ url_for('all_casecreated_alerts') }}"
+                ><span class="paths text-primary">Submited Cases</span></a
+              >
+            </a>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN CONTENT PART  -->
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'alldashboardSidebar.html' %}
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT AREA  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div
+            class="alert alert-success position-relative"
+            role="alert"
+            style="right: 0; top: 1%; display: none"
+            id="sucessAlert"
+          >
+            Successfully Submited...
+          </div>
+          <div class="layout-top-spacing">
+            <!-- <div id="content" class="main-content">
+                                            <div class="layout-px-spacing"> -->
+
+            <div class="row layout-top-spacing layout-spacing">
+              <div class="col-lg-12">
+                <div class="statbox widget box box-shadow">
+                  <div class="border rounded mb-1 shadow-sm">
+                    <div class="row m-4 justify-content-center">
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Customer Id</div>
+                          </div>
+                          <input
+                            type="text"
+                            class="filter-checkbox form-control-sm"
+                            id="custId"
+                            placeholder="Enter Customer Id..."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                              MIN Violated Amount
+                            </div>
+                          </div>
+                          <input
+                            type="number"
+                            class="filter-checkbox form-control-sm"
+                            id="minViolatedAmount"
+                            placeholder="Enter min Violated Amount..."
+                          />
+                        </div>
+                        <h5 class="text-center m-3">To</h5>
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                              MAX Violated Amount
+                            </div>
+                          </div>
+                          <input
+                            type="number"
+                            class="filter-checkbox form-control-sm"
+                            id="maxViolatedAmount"
+                            placeholder="Enter max Violated Amount..."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Account Number</div>
+                          </div>
+                          <input
+                            type="text"
+                            class="filter-checkbox form-control-sm"
+                            id="AccountNumber"
+                            placeholder="Enter Account Number..."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Branch</div>
+                          </div>
+                          <select class="form-control-sm" id="Branch">
+                            <option value="">All</option>
+                            <option value="Panjaguta">Panjaguta</option>
+                            <option value="Kukatpali">Kukatpali</option>
+                            <option value="KPHB">KPHB</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Date</div>
+                          </div>
+                          <input
+                            id="rangeCalendarFlatpickr"
+                            class="form-control-sm flatpickr flatpickr-input active"
+                            type="text"
+                            style="background-color: transparent !important"
+                            placeholder="Select Date Range.."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Account Type</div>
+                          </div>
+                          <select
+                            class="form-control-sm status-dropdown"
+                            id="AccType"
+                          >
+                            <option value="">All</option>
+                            <option value="Current Account">
+                              Current Account
+                            </option>
+                            <option value="Savings Account">
+                              Savings Account
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 text-center mt-1 mb-2">
+                      <button
+                        id="filter-button"
+                        class="btn btn-sm btn-blue mt-3"
+                      >
+                        Apply Filters
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- <table>
+      <tr>
+          <th>Code</th>
+          <th>Ticket ID</th>
+      </tr>
+      {% for code, matched_objects in data.items() %}
+                  {% for obj in matched_objects %}
+                      <tr>
+                          <td>{{ obj.account_number }}</td>
+                          <td>{{ obj.ticket_id }}</td>
+                      </tr>
+                  {% endfor %}
+              {% endfor %}
+  
+  </table> -->
+
+                  <!-- <div class="d-flex widget-content widget-content-area justify-content-center pb-0 pt-0">
+                    <div class="d-flex flex-column align-items-center p-4 col-lg-5" style="gap: 20px;border: 1px solid #8080803a;border-radius: 10px;">
+                      <div class="d-flex justify-content-evenly" style="width: -webkit-fill-available;">
+                        <div class="d-flex" style="gap: 10px;">
+                        <input type="checkbox" name="STR" value="STR" class="checkbox" id="STR">STR</input>
+                      </div>
+                      <div class="d-flex" style="gap: 10px;">
+                        <input type="checkbox" name="STR" value="NON-STR" class="checkbox" id="NONSTR">NON-STR
+                        (10%)</input>
+                      </div>
+                      </div>
+  
+                      
+                      <div>
+                        <button id="submit-button" class="btn btn-primary" disabled>Submit</button>
+                      </div>
+  
+                    </div>
+  
+                  </div> -->
+                  <!-- <div class="form-group mb-0 widget-content widget-content-area pb-0 "
+                    style="display: flex;justify-content: end;align-items: center;gap: 10px;">
+                    <label style="font-size:20px;font-weight:500;color: #8e949d;text-wrap: nowrap;" class="mt-2">Date : </label>
+                    <input id="rangeCalendarFlatpickr" class="form-control flatpickr flatpickr-input active" type="text" style="background-color: transparent !important;"
+                      placeholder="Select Date Range.." />
+                  </div> -->
+
+                  <div
+                    class="d-flex flex-column align-items-center widget-content widget-content-area justify-content-center pb-0 pt-0"
+                    data-backdrop="false"
+                    style="position: relative; z-index: 852px; top: 0"
+                  >
+                    <!-- <div class="d-flex flex-column align-items-center p-4 col-lg-12"
+                    style="gap: 20px;border: 1px solid #8080803a;"">
+                    <div class="d-flex justify-content-between flex-wrap col-lg-11" >
+                      
+                      <div class="col-4 d-flex flex-column gap-4">
+                        <div class="btn-group submitter-group ">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Customer Id</div>
+                          </div>
+                          <input type="text" class="filter-checkbox form-control" id="custId" placeholder="Enter Customer Id..."/> 
+                         
+                        </div>
+                        <div class="btn-group submitter-group ">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Violated Amount</div>
+                          </div>
+                          <input type="text" class="filter-checkbox form-control" id="ViolatedAmount" placeholder="Enter Violated Amount..."/>
+                         
+                        </div>
+                        <div class="btn-group submitter-group ">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Account Number</div>
+                          </div>
+                          <input type="text" class="filter-checkbox form-control" id="AccountNumber" placeholder="Enter Account Number..."/>
+                         
+                        </div>
+                      </div>
+                      <div class="col-4 d-flex flex-column gap-4">
+                        <div class="btn-group ">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Branch</div>
+                          </div>
+                          <select class="form-control" id="Branch">
+                            <option value="">All</option>
+                            <option value="Panjaguta">Panjaguta</option>
+                            <option value="Kukatpali">Kukatpali</option>
+                            <option value="KPHB">KPHB</option>
+                          </select>
+                        </div>
+                        <div class="btn-group submitter-group ">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Date</div>
+                          </div>
+                          <input id="rangeCalendarFlatpickr" class="form-control flatpickr flatpickr-input active" type="text" style="background-color: transparent !important;"
+                    placeholder="Select Date Range.." />
+                        </div>
+                        <div class="btn-group submitter-group ">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Account Type</div>
+                          </div>
+                          <select class="form-control status-dropdown" id="AccType">
+                            <option value="">All</option>
+                            <option value="Current Account">Current Account</option>
+                            <option value="Savings Account">Savings Account</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      
+                      
+  
+                    </div>
+                    <button id="filter-button" class="btn btn-blue mt-3">Submit</button>
+                    </div> -->
+                  </div>
+
+                  <div class="widget-content widget-content-area">
+                    <div class="table-responsive mb-1">
+                      <section>
+                        <table
+                          id="example"
+                          class="display nowrap"
+                          style="width: 100%"
+                        >
+                          <thead>
+                            <tr>
+                              <th>
+                                <input
+                                  type="checkbox"
+                                  disabled
+                                  id="select-all"
+                                  class="checkbox"
+                                />
+                              </th>
+                              <th>Account<br />Number</th>
+                              <th class="">Customer No</th>
+                              <th class="d-none">Branch</th>
+                              <th class="d-none">Allocated Date</th>
+                              <th class="d-none">Account Type</th>
+                              <th class="d-none">Overall Risk Rating</th>
+                              <th class="d-none">Scenarios violated</th>
+                              <th class="d-none">No.of Transactions</th>
+                              <th>Violation Amount</th>
+                              <th class="d-none">Ticket ID</th>
+                              <th class="">Code</th>
+                              <th class="">CM/SM Status</th>
+                              <th class="">AGM Status</th>
+                              <th class="">DGM Status</th>
+                              <th class="">View Acc</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tableBody">
+                            {% for code,values in data.items() %} {% for value
+                            in values %}
+                            <tr>
+                              <th>
+                                <input type="checkbox" class="checkbox" />
+                              </th>
+                              {% if 'Account Number' in value.keys() %} {% if
+                              '-' in value['Account Number']|string %} {% set
+                              val=value['Account Number']|string %}
+                              <td>
+                                {{value['Account Number'][0:val.index('-')]}}
+                              </td>
+                              {% else %}
+                              <td>{{value['Account Number']}}</td>
+                              {% endif %} {% else %}
+                              <td>-</td>
+                              {% endif %} {% if 'Customer ID' in value.keys() %}
+
+                              <td class="">
+                                {{value['Customer ID']}}
+
+                              </td>
+                              {% else %}
+
+                              <td>
+                               -
+                              </td>
+
+                              {% endif %} {% if 'Branch' in value.keys() %}
+                              <td class="d-none">{{value['Branch']}}</td>
+                              {% else %}
+                              <td class="d-none">Kukatpali</td>
+                              {% endif %} {% if 'alert_allocated_on' in
+                              value.keys() %}
+                              <td class="d-none">
+                                {{value['alert_allocated_on']}}
+                              </td>
+                              {% endif %} {% if 'Type of account' in
+                              value.keys() %}
+                              <td class="d-none">
+                                {{value['Type of account']}}
+                              </td>
+                              {% else %}
+                              <td class="d-none">----</td>
+                              {% endif %} {% if 'Risk Rating' in value.keys() %}
+                              <td class="d-none">{{value['Risk Rating']}}</td>
+                              {% else %}
+                              <td class="d-none">Medium</td>
+                              {% endif %} {% if 'Scenarios Violated' in
+                              value.keys() %}
+                              <td class="d-none">
+                                {{value['Scenarios Violated']}}
+                              </td>
+                              {% else %}
+                              <td class="d-none">1</td>
+                              {% endif %} {% if 'Transactions Number' in
+                              value.keys() %}
+                              <td class="d-none">
+                                {{value['Transactions Number']}}
+                              </td>
+                              {% else %}
+                              <td class="d-none">1</td>
+                              {% endif %} {% if 'Transaction Amount' in
+                              value.keys() %}
+                              <td>{{value['Transaction Amount']}}</td>
+                              {% else %}
+                              <td>-</td>
+                              {% endif %} {% if 'ticket_id' in value.keys() %}
+                              <td class="d-none ticket">{{value['ticket_id']}}</td>
+                              {% endif %}
+
+                              <td>{{code}}</td>
+
+                              {% if value['status']['cm_officer'] is none %}
+                              <td class="">---</td>
+                              <td class="">--</td>
+                              <td class="">--</td>
+                              {% else %} {% if value['status']['cm_officer'] is
+                              not none and value['status']['agm_officer'] is
+                              none %}
+                              <td class="">Pending</td>
+                              <td class="">--</td>
+                              <td class="">--</td>
+                              {% else %} {% if value['status']['agm_officer'] is
+                              not none and value['status']['dgm_officer'] is
+                              none %}
+                              <td class="">Done</td>
+                              <td class="">Pending</td>
+                              <td class="">--</td>
+                              {% else %} {% if value['status']['cm_officer'] is
+                              not none and value['status']['agm_officer'] is not
+                              none and  'finalReport' not in value  %}
+                              <td class="">Done</td>
+                              <td class="">Done</td>
+                              <td class="">Pending</td>
+                              {% else %} {% if 'finalReport' in value %}
+                              <td class="">Done</td>
+                              <td class="">Done</td>
+                              <td class="">Done</td>
+                              {% endif %} {% endif %} {% endif %} {% endif %} {%
+                              endif %}
+                              <td>
+                                <button
+                                  id="view"
+                                  type="button"
+                                  data-bs-toggle="modal"
+                                  data-bs-target="#exampleModal"
+                                  class="btn btn-info"
+                                  style="width: 30px; height: 30px; padding: 0"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="70%"
+                                    height="70%"
+                                    fill="currentColor"
+                                    class="bi bi-eye-fill"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path
+                                      d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"
+                                    />
+                                    <path
+                                      d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"
+                                    />
+                                  </svg>
+                                </button>
+                              </td>
+
+                              <!-- Modal  view-->
+                              <div
+                                class="modal fade"
+                                id="exampleModal"
+                                tabindex="-1"
+                                aria-labelledby="exampleModalLabel"
+                                aria-hidden="true"
+                              >
+                                <div
+                                  class="modal-dialog align-items-center d-flex"
+                                >
+                                  <div
+                                    class="modal-content"
+                                    style="width: 100vw !important"
+                                  >
+                                    <div class="modal-header">
+                                      <h5
+                                        class="modal-title"
+                                        id="exampleModalLabel"
+                                      >
+                                        Account Details
+                                      </h5>
+                                      <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close"
+                                      ></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <div id="modalContent">
+                                        <!-- Data from the selected row will be displayed here -->
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        data-bs-dismiss="modal"
+                                      >
+                                        Close
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- END Model -->
+
+                              {% endfor %} {% endfor %}
+
+                              <!-- Add more rows with your own data as needed -->
+                            </tr>
+                          </tbody>
+                        </table>
+                      </section>
+
+                      <!-- modal  -->
+
+                      <!-- Button trigger modal -->
+
+                      <!--  END CONTENT AREA  -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'footer.html' %}
+
+      </div>
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+
+    <!-- viwe JS start -->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- viwe JS ends -->
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+        $("#usersTab").click(function () {
+          $("#VerifyUserTab").toggle();
+        });
+      });
+    </script>
+    <script src="../static/assets/js/custom.js"></script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+    <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+    <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+    <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"
+    ></script>
+
+    <!-- <script>
+      // Add an event listener for the "View" button click
+      $(document).ready(function () {
+          $('#tableBody').on('click', '#view', function () {
+              // Get the data associated with the clicked row
+              var ticketData = $(this).closest('tr').find('.ticket-data').text();
+  
+              // Display the data in the modal
+              $('#modalContent').text(ticketData);
+  
+              // Show the modal
+              var modalId = $(this).data('bs-target');
+              $(modalId).modal('show');
+          });
+      });
+  </script> -->
+
+    <script>
+          $(document).ready(function () {
+            // let table = $("#example").DataTable({
+            //   rowReorder: {
+            //     selector: "td:nth-child(2)",
+            //   },
+            //   responsive: true,
+            //    paging: true,         // Enable pagination
+            //    pageLength: 20,
+            // });
+            // table.destroy();
+
+            $(document).ready(function () {
+              $("#STR, #NONSTR").on("change", function () {
+                let STRCheck = $("#STR").is(":checked");
+                let NONSTRCheck = $("#NONSTR").is(":checked");
+
+                if (STRCheck && NONSTRCheck) {
+                  $("#submit-button").prop("disabled", false);
+                } else {
+                  $("#submit-button").prop("disabled", true);
+                }
+              });
+            });
+
+            $("#STR").on("change", () => {
+              let STRcheck = document.getElementById("STR").checked;
+              if (STRcheck) {
+                let selectedData = [];
+                table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                  let row = this.node();
+                  let data = this.data();
+                  let statusElement = $("td:eq(2) span", row);
+                  let statusText = statusElement.text().trim();
+                  if (statusText === "Accept as STR") {
+                    let checkbox = $("td:eq(1) input[type='checkbox']", row);
+                    checkbox.prop("checked", true);
+                  }
+                });
+              } else {
+                table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                  let row = this.node();
+
+                  let checkbox = $("td:eq(1) input[type='checkbox']", row);
+                  let statusElement = $("td:eq(2) span", row);
+                  let statusText = statusElement.text().trim();
+                  if (statusText === "Accept as STR") {
+                    checkbox.prop("checked", false);
+                  }
+                });
+              }
+            });
+
+            $("#NONSTR").on("change", () => {
+              let approvedRows = [];
+
+              let NONSTRcheck = document.getElementById("NONSTR").checked;
+              if (NONSTRcheck) {
+                // Collect all the "Approved" rows
+                table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                  let row = this.node();
+                  let statusElement = $("td:eq(2) span", row);
+                  let statusText = statusElement.text().trim();
+                  if (statusText === "Close as NON-STR") {
+                    approvedRows.push(row);
+                  }
+                });
+
+                // Calculate the number of rows to select (10% of the "Approved" rows)
+                let selectedCount = Math.ceil(approvedRows.length * 0.4);
+
+                // Randomly select 10% of "Approved" rows
+                for (let i = 0; i < selectedCount; i++) {
+                  let randomIndex = Math.floor(Math.random() * approvedRows.length);
+                  let selectedRow = approvedRows.splice(randomIndex, 1)[0];
+                  let checkbox = $("td:eq(1) input[type='checkbox']", selectedRow);
+                  checkbox.prop("checked", true);
+                }
+              } else {
+                // Reset all checkboxes
+                table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                  let row = this.node();
+
+                  let checkbox = $("td:eq(1) input[type='checkbox']", row);
+                  let statusElement = $("td:eq(2) span", row);
+                  let statusText = statusElement.text().trim();
+                  if (statusText === "Close as NON-STR") {
+                    checkbox.prop("checked", false);
+                  }
+                });
+              }
+            });
+
+            // Add a click event to the "Select All" checkbox
+            $("#select-all").on("click", function () {
+              let rows = table.rows({ page: "all" }).nodes();
+              let allChecked = this.checked;
+              $(".checkbox", rows).prop("checked", allChecked);
+              table.rows({ page: "all" }).select();
+            });
+
+            // Add a click event to the submit button
+            $("#select-all").on("click", function () {
+              let allChecked = this.checked;
+              // Check or uncheck individual checkboxes based on the "Select All" checkbox
+              $(".checkbox").prop("checked", allChecked);
+            });
+
+            // Add a click event to the submit button
+            $("#submit-button").on("click", function () {
+              let selectedData = [];
+              let notselectedData = [];
+
+              table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                let row = this.node();
+                if ($("input.checkbox", row).prop("checked")) {
+                  let data = this.data();
+                  let statusElement = $("td:eq(2) span", row);
+                  let tokenElement = $("td:eq(4)", row);
+                  let tokenText = tokenElement.text();
+                  let statusText = statusElement.text().trim();
+                  selectedData.push({
+                    ticket_id: tokenText,
+                    status: statusText,
+                  });
+                } else {
+                  let data = this.data();
+                  let statusElement = $("td:eq(2) span", row);
+                  let tokenElement = $("td:eq(4)", row);
+                  let tokenText = tokenElement.text();
+                  let statusText = statusElement.text().trim();
+                  if (statusText != "None")
+                    notselectedData.push({
+                      ticket_id: tokenText,
+                      status: statusText,
+                    });
+                }
+              });
+              console.log("selectedData", selectedData);
+              console.log("notselectedData", notselectedData);
+              document.getElementById("tableBody").style.display = "none";
+              document.getElementById("sucessAlert").style.display = "flex";
+              fetch('{{ url_for("mlro_submit") }}', {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify([selectedData, notselectedData]),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("Success:", data);
+                  // Handle success response from the server
+                  location.reload();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle error
+                });
+              // window.location.href = url
+              setTimeout(() => {
+                document.getElementById("sucessAlert").style.display = "none";
+              }, 2000);
+            });
+          });
+
+          // date picker Starts
+
+          document.addEventListener("DOMContentLoaded", function () {
+            var isDateFiltering = false;
+            var dataTable;
+            var dateArr = [];
+
+            // Initialize DataTable
+            $(document).ready(function () {
+              dataTable = $("#example").DataTable({
+                rowReorder: {
+                  selector: "td:nth-child(2)",
+                },
+                responsive: true,
+                 // Disable initial pagination
+                scrollY: "300px", // Set the height of the scrollable area
+                scrollCollapse: true, // Enable the scrollbar to collapse
+                scrollInfinite: true, // Enable infinite scrolling
+                info: true,
+
+                // "columnDefs": [
+
+                //   {
+                //     "targets": [8],
+                //     "visible": false
+                //   }
+                // ]
+              });
+
+              function datePicker() {
+                // Get a reference to the input element
+                var dateRangeInput = document.getElementById(
+                  "rangeCalendarFlatpickr"
+                );
+                // Initialize flatpickr with date range configuration and the onChange event
+                return flatpickr(dateRangeInput, {
+                  mode: "range", // This enables date range selection
+                });
+              }
+              function filterTableByDateRange(startDate, endDate) {
+                var table = document.getElementById("tableBody");
+                var rows = table.getElementsByTagName("tr");
+                // Show all rows when the date range is empty
+                if (!startDate || !endDate) {
+                  for (var i = 0; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                  }
+                  return; // Exit the function when the date range is empty
+                }
+                for (var i = 0; i < rows.length; i++) {
+                  var amou = false;
+                  var row = rows[i];
+                  var dateCell_undef = row.getElementsByTagName("td")[3]; // Assuming the date is in the 5th index
+                  var dateCell = dateCell_undef.textContent;
+                  if (dateCell) {
+                    var dateTimeParts = dateCell.split(" ");
+                    var dateParts = dateTimeParts[0].split("-");
+                    var timeParts = dateTimeParts[1].split(":");
+                    var day = parseInt(dateParts[2], 10);
+                    var month = parseInt(dateParts[1], 10) - 1; // Months are zero-based
+                    var year = parseInt(dateParts[0], 10);
+                    var hours = parseInt(timeParts[0], 10);
+                    var minutes = parseInt(timeParts[1], 10);
+                    var seconds = parseInt(timeParts[2], 10);
+                    var rowDate = new Date(
+                      year,
+                      month,
+                      day,
+                      hours,
+                      minutes,
+                      seconds
+                    );
+                    if (rowDate >= startDate && rowDate <= endDate) {
+                      row.style.display = "";
+                      amou = true;
+                      console.log(" IN RANGE DATES");
+                    } else {
+                      row.style.display = "none";
+                      amou = false;
+                      console.log("NOT IN RANGE DATES");
+                    }
+                  }
+                }
+                return amou;
+              }
+              // Example usage:
+              var flatpickrInstance = datePicker();
+              // Bind applyFilters function to button click
+              $("#filter-button").on("click", function () {
+                applyFilters();
+
+                var minViolatedAmount =
+                  document.getElementById("minViolatedAmount").value;
+                var maxViolatedAmount =
+                  document.getElementById("maxViolatedAmount").value;
+
+                // Get the selected dates from the flatpickr instance
+                var selectedDates = flatpickrInstance.selectedDates;
+                // If a date range is selected, filter the table
+                if (selectedDates.length === 2) {
+                  var startDate = selectedDates[0];
+                  var endDate = selectedDates[1];
+                  var dece = filterTableByDateRange(startDate, endDate);
+
+                  if (
+                    dece &&
+                    minViolatedAmount.length != 0 &&
+                    maxViolatedAmount.length != 0
+                  ) {
+                    filterTableByViolationAmounts(
+                      minViolatedAmount,
+                      maxViolatedAmount
+                    );
+                  }
+                } else if (
+                  minViolatedAmount.length != 0 &&
+                  maxViolatedAmount.length != 0
+                ) {
+                  filterTableByViolationAmounts(
+                    minViolatedAmount,
+                    maxViolatedAmount
+                  );
+                } else {
+                  // Handle the case where the date range is not selected
+
+                  console.log("Please select a date range");
+                  var table = document.getElementById("tableBody");
+                  var rows = table.getElementsByTagName("tr");
+                  // Show all rows when the date range is empty
+                  for (var i = 0; i < rows.length; i++) {
+                    rows[i].style.display = "";
+                  }
+                  return; // Exit the function when the date range is empty
+                }
+              });
+            });
+
+            // Apply filters function
+            function applyFilters() {
+              console.log(dateArr);
+
+              var custId = $("#custId").val();
+              // var violatedAmount = $('#ViolatedAmount').val();
+              var accountNumber = $("#AccountNumber").val();
+              var branch = $("#Branch").val();
+              var accounttype = $("#AccType").val();
+
+              // Clear existing search
+              dataTable.columns().search("");
+
+              // Apply filters
+              dataTable
+                .columns(1)
+                .search(accountNumber)
+                .columns(2)
+                .search(custId)
+                .columns(3)
+                .search(branch)
+                .column(5)
+                .search(accounttype);
+
+              // Filter based on dateArr
+              dataTable.column(4).search("").draw();
+
+              dateArr.forEach(function (date) {
+                dataTable.column(4).search(date).draw();
+              });
+            }
+          });
+
+          function filterTableByViolationAmounts(
+            minViolatedAmount,
+            maxViolatedAmount
+          ) {
+            var table = document.getElementById("tableBody");
+            var rows = table.getElementsByTagName("tr");
+
+            for (var i = 0; i < rows.length; i++) {
+              var row = rows[i];
+              console.log("this is amount range : ", row);
+              var dateCell_undef = row.getElementsByTagName("td")[8]; // Assuming the date is in the 5th index
+              var amountCell = dateCell_undef.textContent;
+              console.log(amountCell);
+              amountCell = Number(amountCell);
+
+              console.log("Parsed amountCell:", amountCell);
+              console.log("minViolatedAmount:", minViolatedAmount);
+              console.log("maxViolatedAmount:", maxViolatedAmount);
+
+              if (
+                !isNaN(amountCell) &&
+                amountCell >= minViolatedAmount &&
+                amountCell <= maxViolatedAmount
+              ) {
+                row.style.display = "";
+                console.log(" IN RANGE DATES");
+              } else {
+                row.style.display = "none";
+                console.log("NOT IN RANGE DATES");
+              }
+            }
+          }
+
+        // modal view js
+      let viewButton = document.querySelectorAll("#view");
+
+      for (let i = 0; i < viewButton.length; i++) {
+        viewButton[i].addEventListener("click", () => {
+          let modalContent = document.getElementById("modalContent");
+          let rowData = document.querySelectorAll(".ticket");
+
+          //  // Find the index of the clicked button
+          //  let index = Array.from(viewButtons).indexOf(event.currentTarget);
+
+      // Use the index to get the corresponding token
+          let token = rowData[i].innerText;
+
+          var data = {{ data | tojson | safe }};
+
+          // Iterate over the array and access properties of each object
+          for (var code in data) {
+            if (data.hasOwnProperty(code)) {
+              var values = data[code];
+
+              // Iterate over the values array
+              for (var j = 0; j < values.length; j++) {
+                var value = values[j];
+                if (value['ticket_id'] == token) {
+                  modalContent.innerHTML = '';
+                  // Create a table for each value
+                  var tableHtml = '<table>';
+
+                  // Recursive function to handle nested objects
+                  function buildTable(obj, prefix = '') {
+                    for (var key in obj) {
+                      if (obj.hasOwnProperty(key)) {
+                        var dt = obj[key];
+                        if (typeof dt === 'object' && dt !== null) {
+                          // If the property is an object, recursively build the table
+                          buildTable(dt);
+                        } else {
+                          // If the property is not an object, display it in the table
+                          tableHtml += `
+                            <tr>
+                              <th>${prefix + key}</th>
+                              <th>:</th>
+                              <td>${dt}</td>
+                            </tr>
+                          `;
+                        }
+                      }
+                    }
+                  }
+
+                  // Call the recursive function to build the table
+                  buildTable(value);
+
+                  tableHtml += '</table>';
+                  // Assuming you have a container with the id 'modalContent'
+                  document.getElementById('modalContent').innerHTML += tableHtml;
+                }
+              }
+            }
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

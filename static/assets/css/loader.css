@@ -1,0 +1,52 @@
+/*
+	===============================
+			@Import	Function
+	===============================
+*/
+/*
+	===============================
+			@Import	Mixins
+	===============================
+*/
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before{
+  background-color: #304aca !important;
+}
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before{
+  background-color: #d9251c !important;
+}
+#example_info{
+  color: #00579c !important;
+}
+.text-danger{
+  font-size: 14px !important;
+}
+@media (min-width:320px) and (max-width:370px) {
+  .form-group{
+    padding: 0 !important;
+  }
+  .widget-content-area{
+    padding: 0 !important;
+  }
+}
+
+
+div#load_screen {
+  background: #ecefff;
+  opacity: 1;
+  position: fixed;
+  z-index: 999999;
+  top: 0px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%; }
+  div#load_screen .loader {
+    display: flex;
+    justify-content: center;
+    height: 100vh; }
+  div#load_screen .loader-content {
+    right: 0;
+    align-self: center; }
+
+.spinner-grow {
+  color: #304aca; }

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+{% include 'metaData.html' %}
+    
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+        .text-primary {
+            color: #00579c !important;
+        }
+
+        #tb_1 {
+            cursor: default;
+            background-color: #00579c !important;
+            border-color: #00579c !important;
+        }
+
+
+        .layout-px-spacing {
+            min-height: calc(100vh - 166px) !important;
+        }
+
+        #profileMLRO {
+            justify-content: center !important;
+            gap: 30px;
+            cursor: pointer;
+            transition: all 0.5s ease-in-out;
+            border-bottom: 1.5px solid rgba(128, 128, 128, 0.114);
+            padding-bottom: 10px;
+        }
+
+        #profileMLRO:hover {
+            background-color: #b0b0b024;
+            border-radius: 5px;
+        }
+
+        .paths:hover {
+            text-decoration: underline;
+        }
+
+        .profileName {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: #00579c !important;
+        }
+
+        .mb-3 {
+            font-size: 15px !important;
+            font-weight: normal !important;
+            color: #80808088 !important;
+        }
+        .toggle-password {
+        position: absolute;
+        right: 25px;
+        top: 25%;
+        cursor: pointer;
+        font-size: 1.5rem; /* Increase the icon size */
+      }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+
+    {% if msg %}
+    <script>
+        alert('{{ msg }}')
+    </script>
+    {% endif %}
+
+
+</head>
+<div class="success-message">
+    {{ success_message }}
+</div>
+
+
+<body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+        <div class="loader">
+            <div class="loader-content">
+                <div class="spinner-grow align-self-center"></div>
+            </div>
+        </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+        <header class="header navbar navbar-expand-sm">
+            <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-menu">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </a>
+
+            <ul class="navbar-nav flex-row" style="gap: 10px;">
+                <li>
+                    <div class="page-header">
+                        <div class="page-title">
+                            <nav class="breadcrumb-one" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ url_for('ITdashboard') }}"
+                                            class="text-blue font-weight-bold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-home">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                            </svg>
+                                        </a></li>
+                                    <!-- <li class="breadcrumb-item"><a href="javascript:void(0);">Components</a></li> -->
+                                    <!-- <li class="breadcrumb-item active" aria-current="page">Transaction Monitoring</li> -->
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{url_for('AddUser')}}" class="text-primary">/ <span class="paths ">Add User</span></a>
+
+                </li>
+            </ul>
+        </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+        <!--  BEGIN MAIN CONTAINER  -->
+        <div class="main-container" id="container">
+
+            <div class="overlay"></div>
+            <div class="search-overlay"></div>
+
+            <!--  BEGIN SIDEBAR  -->
+            {% include 'sidebar.html' %}
+
+            <!--  END SIDEBAR  -->
+
+            <!--  BEGIN CONTENT AREA  -->
+            <div id="content" class="main-content">
+                <div class="layout-px-spacing">
+
+                    <div class="row layout-top-spacing">
+
+                        <div class="col-12">
+                            <div class="card ">
+                                <p class="bg-blue p-3 text-white">ADD User</p>
+                                <form action="/submit-form" method="post" id="myForm">
+
+                                    <div class="row p-3">
+                                        <div class="col-6 mb-4">
+                                            <label for="name" class="form-label text-black font-weight-bold">Username</label>
+
+                                            <input type="text" class="form-control" name="name" placeholder="Username"
+                                                aria-label="Username" onkeyup="getUserInfo('name')" id="userName" required>
+                                        </div>
+                                        <div class="col-6 mb-4">
+                                                <label for="empid" class="form-label text-black font-weight-bold">EMP Id</label>
+                                                <input type="text" class="form-control" name="empid"
+                                                    placeholder="EMP Id" aria-label="empid"
+                                                    onkeyup="getUserInfo('empid')" id="empid" required>
+                                            </div>
+                                        <div class="col-6 mb-4">
+                                            <label for="emailid" class="form-label text-black font-weight-bold">Email</label>
+                                            <input type="text" class="form-control" name="emailid" placeholder="Email"
+                                                aria-label="Email" onkeyup="getUserInfo('emailid')" id="emailId" required>
+                                        </div>
+
+                                        <div class="col-6 mb-4">
+                                            <label for="role" class="form-label text-black font-weight-bold">Designation</label>
+
+                                            <select id="inputState" name="role" class="form-control text-black" required>
+
+                                                <option disabled selected>Designation</option>
+                                                <!-- <option value="IT Officer">IT Officer</option> -->
+                                                <option value="MLRO">MLRO</option>
+                                                <option value="CM/SM">CM/SM</option>
+                                                <option value="AGM">AGM</option>
+                                                <option value="BranchMakers">BranchMakers</option>
+                                                <option value="ROS">ROS</option>
+                                                <option value="SDN/USER">SDN</option>
+
+                                            </select>
+                                        </div>
+                                        <div class="col-6 mb-4">
+                                            <label for="mobileno" class="form-label text-black font-weight-bold">Mobile No</label>
+                                            <input type="text" class="form-control" name="mobileno"
+                                                placeholder="Mobile No" aria-label="Mobile No"
+                                                onkeyup="getUserInfo('mobileno')" id="mobileNo" oninput="formatMobileNumber(this)" required>
+                                                <p id="mobilenomsgError" style="color: red;"></p>
+                                        </div>
+                                        <div class="col-6 mb-4">
+                                            <label for="address" class="form-label text-black font-weight-bold">Address</label>
+                                                <textarea required name="address" id="address" cols="4" rows="1" class="form-control" placeholder="Address..." aria-label="Password"></textarea>
+                                        </div>
+                                       
+                                        <div class="col-6 mb-4">
+                                            <label for="password" class="form-label text-black font-weight-bold">Password</label>
+                                            <div style="position: relative;">
+                                                <input type="password" class="form-control password" name="password" id="password" placeholder="Password" aria-label="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,16}" minlength="8" maxlength="16" required>
+                                                <i class="bi bi-eye-slash toggle-password" id="togglePassword" onclick="togglePasswordVisibility()" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%);"></i>
+                                            </div>
+                                            <p id="passwordmsgError" style="color: red; margin-top: 5px;"></p>
+                                        </div>
+                                        
+                                        <div class="col-6 mb-4">
+                                            <label for="Re-Enter Password" class="form-label text-black font-weight-bold">Re-Enter Password</label>
+                                            <input required type="password" class="form-control" name="Re-Enter Password"
+                                                placeholder="Re-Enter Password" aria-label="Re-Enter Password">
+                                        </div>
+                                    
+
+
+                                    </div>
+                                    <div class="d-flex justify-content-center mb-4">
+                                        <button type="submit" class="btn btn-blue" onclick="validatePassword()">Submit</button>
+                                    </div>
+
+
+                                </form>
+                            </div>
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% include 'footer.html' %}
+
+
+            <!-- END MAIN CONTAINER -->
+
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+            <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+            <script src="../static/bootstrap/js/popper.min.js"></script>
+            <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+            <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+            <script src="../static/assets/js/app.js"></script>
+            <script>
+                $(document).ready(function () {
+                    App.init();
+                });
+            </script>
+            <script src="../static/assets/js/custom.js"></script>
+            <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+            <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+            <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+            <script>
+                $(document).ready(function () {
+                    $('#usersTab').click(function () {
+                        $('#addUserTab, #allUsersTab').toggle();
+                    });
+                });
+
+
+                let timeoutId;
+
+                function getUserInfo(field) {
+                    let userName = document.getElementById("userName");
+                    let emailId = document.getElementById("emailId");
+                    let mobileNo = document.getElementById("mobileNo");
+                    let empid = document.getElementById("empid");
+                    let inputState = document.getElementById("inputState");
+                    let address = document.getElementById("address");
+
+                    let fieldValue;
+                    let fieldName;
+
+                    switch (field) {
+                        case 'name':
+                            fieldValue = userName.value;
+                            fieldName = 'user';
+                            break;
+                        case 'emailid':
+                            fieldValue = emailId.value;
+                            fieldName = 'user';
+                            break;
+                        case 'mobileno':
+                            fieldValue = mobileNo.value;
+                            fieldName = 'user';
+                            break;
+                        case 'empid':
+                            fieldValue = empid.value;
+                            fieldName = 'user';
+                            break;
+                        default:
+                            return;
+                    }
+
+                    if (fieldValue.length === 0) {
+                        return;
+                    }
+
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+
+                    timeoutId = setTimeout(() => {
+                        let finalField = { [fieldName]: fieldValue, "field": field };
+
+                        fetch('{{url_for("searchUser")}}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(finalField)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data["none"] === "no data") {
+                                    userName.value = "";
+                                    emailId.value = "";
+                                    mobileNo.value = "";
+                                    inputState.value = "";
+                                    address.value = "";
+                                    empid.value = "";
+                                }
+                                else if(data["none"] === "exists"){
+                                    alert("User Password is allready Created...")
+                                }
+                                 else {
+                                    userName.value = data["name"];
+                                    emailId.value = data["emailid"];
+                                    mobileNo.value = data["mobileno"];
+                                    inputState.value = data["role"];
+                                    address.value = data["address"];
+                                    empid.value = data["empid"];
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    }, 4000); 
+                }
+
+            </script>
+
+<script>
+    function formatMobileNumber(input) {
+        if (input.value.trim() !== '') {
+            let sanitizedValue = input.value.replace(/[^+0-9]/g, '');
+            
+            // Prevent input of more than 10 digits
+            if (sanitizedValue.length > 10) {
+                sanitizedValue = sanitizedValue.slice(0, 10);
+                document.getElementById('mobilenomsgError').innerText = 'Mobile number must be only 10 digits long';
+            } else if (sanitizedValue.length < 10) {
+                document.getElementById('mobilenomsgError').innerText = 'Mobile number must be only 10 digits long';
+            } else {
+                document.getElementById('mobilenomsgError').innerText = '';
+            }
+
+            if (sanitizedValue.startsWith('+')) {
+                sanitizedValue = '+' + sanitizedValue.slice(1).replace(/\+/g, '');
+                
+                if (sanitizedValue.length > 3) {
+                    sanitizedValue = sanitizedValue.slice(0, 3) + ' ' + sanitizedValue.slice(3);
+                }
+            } else {
+                sanitizedValue = sanitizedValue.replace(/\D/g, '');
+            }
+            
+            input.value = sanitizedValue;
+        }
+    }
+
+    // Add form submission validation
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+        const inputValue = document.getElementById("mobileno").value;
+        const sanitizedValue = inputValue.replace(/[^0-9]/g, "");
+
+        if (sanitizedValue.length < 10 || sanitizedValue.length > 10) {
+            document.getElementById("mobilenomsgError").textContent = 'Mobile number must be only 10 digits long.';
+            document.getElementById("mobileno").classList.add('error-input');
+            event.preventDefault(); // Prevent form submission
+        } else {
+            document.getElementById("mobilenomsgError").textContent = '';
+            document.getElementById("mobileno").classList.remove('error-input');
+        }
+    });
+</script>
+
+
+<script>
+    var passwordInput = document.getElementById("password");
+    var toggleIcon = document.getElementById("togglePassword");
+    var errorMsg = document.getElementById('passwordmsgError');
+    var form = document.getElementById("myForm");
+
+    function validatePassword() {
+        if (passwordInput.validity.patternMismatch) {
+            errorMsg.textContent = 'The password must be between 8 to 16 characters in length and must include at least one number, one uppercase letter, one lowercase letter, and one special character.';
+            return false; // Return false if password is invalid
+        }else if (passwordInput.value.trim() === '') {
+            errorMsg.textContent = 'Password cannot be blank.';
+            return false; // Return false if password is empty
+        } 
+        else {
+            errorMsg.textContent = '';
+            return true; // Return true if password is valid
+        }
+    }
+
+    function togglePasswordVisibility() {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleIcon.classList.remove("bi-eye-slash");
+            toggleIcon.classList.add("bi-eye");
+        } else {
+            passwordInput.type = "password";
+            toggleIcon.classList.remove("bi-eye");
+            toggleIcon.classList.add("bi-eye-slash");
+        }
+    }
+
+    passwordInput.addEventListener('blur', function() {
+        closePasswordVisibility();
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('#password') && !event.target.closest('.toggle-password')) {
+            closePasswordVisibility();
+        }
+    });
+
+    function closePasswordVisibility() {
+        passwordInput.type = "password";
+        toggleIcon.classList.remove("bi-eye");
+        toggleIcon.classList.add("bi-eye-slash");
+    }
+
+    form.addEventListener('submit', function(event) {
+        // Validate password upon form submission
+        if (!validatePassword()) {
+            event.preventDefault(); // Prevent form submission if password is invalid
+        }
+    });
+</script>
+
+
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+</body>
+
+</html>

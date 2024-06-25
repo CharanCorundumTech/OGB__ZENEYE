@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // Check if a success message is provided and display it as a popup
+        var successMessage = "{{ success_message }}";
+        if (successMessage && successMessage !== 'None') {
+            alert(successMessage);  // You can use a more sophisticated popup library here if needed
+        }
+    </script>
+  
+  {% include 'metaData.html' %}
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  <style>
+    /* date picker start */
+
+    /* Style the input box */
+    .form-control-sm {
+      width: 200px;
+      /* Set your desired width */
+     
+      font-size: 14px;
+      border: 1px solid #ccc!important;
+      border-radius: 4px;
+      background-color: rgb(251, 255, 254);
+    }
+    .form-control {
+      border: 1px solid #ccc!important;
+    }
+    .form-control:hover {
+      border: 1px solid #ccc!important;
+    }
+    tr:not(:first-child):hover {
+    transform: none!important;
+  }
+    .input-group-text {
+    
+    padding: 0px 0.75rem;
+    font-size: 0.9rem;
+}
+    /* Style the placeholder text */
+    ::placeholder {
+      color: #999;
+      /* Customize the placeholder color */
+    }
+    
+    /* date picker ends*/
+
+    .text-primary {
+      color: #00579c !important;
+    }
+  .form-control-sm:hover {
+    border: 1px solid #ced4da !important;
+}
+
+    .btn-primary {
+      background-color: #00579c !important;
+      border-color: #00579c !important;
+    }
+
+    .btn-danger {
+      background-color: #df2233 !important;
+    }
+
+    .page-item.active .page-link {
+      background-color: #00579c !important;
+    }
+
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+    .paths:hover {
+      text-decoration: underline;
+    }
+
+    #select-all {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .checkbox {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #8080805b;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .checkbox:checked {
+      border: 2px solid rgb(0, 119, 255);
+      background: url('../static/assets/img/tick-svgrepo-com.png');
+      background-size: 100% 100%;
+      /* Make sure the image covers the entire checkbox */
+    }
+
+    .checkbox:active {
+      border: 2px solid rgb(0, 119, 255);
+
+      background: url('../static/assets/img/tick-svgrepo-com.png');
+      /* Set the background image when the checkbox is clicked */
+      background-size: 100% 100%;
+      /* Make sure the image covers the entire checkbox */
+    }
+
+    tr {
+      transition: all 0.1s ease-in-out;
+    }
+
+    tr:not(:first-child):hover {
+      transform: scale(1.01);
+    }
+
+    th:first-child::after {
+      content: "" !important;
+    }
+
+    th:first-child::before {
+      content: "" !important;
+    }
+
+    td,
+    th {
+      padding: 8px 15px !important;
+      border: none !important;
+      border-bottom: 2px solid #00000033 !important;
+      text-align: left !important;
+    }
+
+    /* .modal-content {} */
+  </style>
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="header-container fixed-top">
+    <header class="header navbar navbar-expand-sm">
+      <ul class="navbar-item theme-brand flex-row text-center">
+
+
+        <li class="nav-item theme-text">
+          <a href="{{ url_for('DGMdashboard') }}" class="nav-link">
+            AMLCFT
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-item flex-row ml-md-auto">
+        <li class="nav-item dropdown notification-dropdown">
+          <a href="javascript:void(0);" class="nav-link dropdown-toggle" id="notificationDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-bell">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg><span class="badge badge-success"></span>
+          </a>
+          <div class="dropdown-menu position-absolute" aria-labelledby="notificationDropdown">
+            <div class="notification-scroll">
+
+              <div class="dropdown-item">
+                <div class="media">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-heart">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                    </path>
+                  </svg>
+                  <div class="media-body">
+                    <div class="notification-para"><span class="user-name">Shaun Park</span> likes your photo.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-item">
+                <div class="media">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-share-2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                  <div class="media-body">
+                    <div class="notification-para"><span class="user-name">Kelly Young</span> shared your post</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-item">
+                <div class="media">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-tag">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7" y2="7"></line>
+                  </svg>
+                  <div class="media-body">
+                    <div class="notification-para"><span class="user-name">Kelly Young</span> mentioned you in comment.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item dropdown user-profile-dropdown">
+          <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <img src="../static/assets/img/avatar.jpg" alt="avatar" />
+          </a>
+          <div class="dropdown-menu position-absolute" aria-labelledby="userProfileDropdown">
+            <div class="">
+              <div class="dropdown-item">
+                <a class="" href="{{ url_for('profileDGM') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" class="feather feather-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  My Profile</a>
+              </div>
+
+            </div>
+            <div class="dropdown-item">
+              <a class="" href="{{ url_for('logout') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="feather feather-log-out">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sign Out</a>
+            </div>
+          </div>
+  </div>
+  </li>
+  </ul>
+  </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-menu">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+              <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{ url_for('DGMNextLevel') }}"
+                      class="text-blue font-weight-bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>
+                    </a></li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="{{url_for('DGMNextLevel')}}" class="text-primary">/ <span class="paths ">Alerts</span></a>
+
+        </li>
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+
+
+  <!--  BEGIN CONTENT PART  -->
+  <!--  BEGIN MAIN CONTAINER  -->
+  <div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+    <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing">
+
+        <div class="alert alert-success position-relative" role="alert" style="right: 0; top: 1%;display: none;" id="sucessAlert">
+          Successfully Submited...
+        </div>
+        <div class=" layout-top-spacing">
+
+
+
+
+
+          <!-- <div id="content" class="main-content">
+                                          <div class="layout-px-spacing"> -->
+
+          <div class="row layout-top-spacing layout-spacing">
+            <div class="col-lg-12 ">
+              <div class="statbox widget box box-shadow">
+
+                
+                <!-- <div class="form-group mb-0 widget-content widget-content-area pb-0 "
+                style="display: flex;justify-content: end;align-items: center;gap: 10px;">
+                <label style="font-size:20px;font-weight:500;color: #8e949d;text-wrap: nowrap;" class="mt-2">Date : </label>
+                <input id="rangeCalendarFlatpickr" class="form-control flatpickr flatpickr-input active" type="text" style="background-color: transparent !important;"
+                  placeholder="Select Date Range.." />
+              </div> -->
+                <div class="widget-content widget-content-area">
+                  <div class="table-responsive mb-4 ">
+
+                    <section>
+
+                      <table id="example" class="display nowrap" style="width: 100%">
+                        <thead>
+                          <tr>
+                           
+                            
+                            <th class="d-none">ID</th>
+                            <th>Customer No</th>
+                            <th>ADD Comments</th>
+                                   
+                                    <th>Case name</th>
+                                    <th>Scenario</th>
+                                    <th>Person Name</th>
+                                    <th>Source of Alert</th>
+                                    <th>Alert Indicator</th>
+                                    <th>Suspicious Due To proceed of Crime</th>
+                                    <th>Suspicious Due To Complex Transcaction  </th>
+                                    <th>Suspicious Due To NoecoRational</th>
+                                    <th>Suspicious Due To Financing Terrorism</th>
+                                    <th>Attempted Transcaction</th>
+                                    <th>LEA Informed</th>
+
+                                    <th>PriorityRating</th>
+                                    <th>ReportCoverage</th>
+                                    <th>leadetails</th>
+                                    <th>AdditionalDocument</th>
+                                    <th>Aroundofsuspision</th>
+                                    <th>DetailsofInvestigation</th>
+                                    <th>AccountNumber</th>
+                                    <th>AccountType</th>
+                                    <th>holdername</th>
+                                    <th>AccountHolderType</th>
+                                    <th>AccountStatus</th>
+
+                                    <th>DateofOpening</th>
+                                    <th>RiskRating</th>
+                                    <th>CummulativeCerditTurnover</th>
+                                    <th>CummulativeDebitTurnover</th>
+                                    <th>CummulativeCashDepositTurnover</th>
+                                    <th>CummulativeCashWithdrawalTurnover</th>
+                                    <th>NoOfTransactionsToBeReported</th>
+                                    <th>TransactionDate</th>
+                                    <th>TransactionsID</th>
+                                    <th>TransactionMode</th>
+                                    <th>DebitCredit</th>
+
+                                    <th>amount</th>
+                                    <th>TransactionsCurrency</th>
+                                    <th>ProductType</th>
+                                    <th>ProductIdentifiers</th>
+                                    <th>TransactionType</th>
+                                    <th>unit</th>
+                                    <th>Date</th>
+                                    <th>DispositionOfFunds</th>
+                                    <th>RelatedAccountNumber</th>
+                                    <th>RelatedInstitutionName</th>
+                                    <th>RelatedInstitutionRefNum</th>
+                                    <th>Remark</th>
+                            
+
+                          </tr>
+                        </thead>
+                          <tbody id="tableBody">
+                            {% for code, ticket_data in data.items() %}
+                              {% for document in ticket_data %}
+                                  <tr>
+                                      
+                                        
+                                      <td class="d-none">{{ document._id }}</td>
+                                      <td class="pl-5 ml-5">{{ document.Customerno }}</td>
+
+                                      <td class="pl-5 ml-5">
+                                          <!-- <button id="edit" type="button" data-bs-toggle="modal" data-bs-target="#exampleeditModal" class="btn btn-primary" style="width: 30px; height: 30px; padding: 0">
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                          </button> -->
+                                          <form id="myForm"  method="post">
+                                          
+                                            
+                                              <button type="button" class="btn btn-sm btn-blue" data-toggle="modal" data-target="#myModal{{ document._id }}" style="width: 30px; height: 30px; padding: 0">
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round" class="feather feather-file-plus">
+                                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                              <polyline points="14 2 14 8 20 8"></polyline>
+                                              <line x1="12" y1="18" x2="12" y2="12"></line>
+                                              <line x1="9" y1="15" x2="15" y2="15"></line>
+                                              </svg>
+                                                  </button>
+                                        
+                                          </form>
+                                          <!-- The View Modal -->
+                                          <div class="modal fade-bg" id="myModal{{ document._id }}" data-backdrop="false">
+                                          <div class="modal-dialog -lg">
+                                              <div class="modal-content">
+                                              
+                                              <!-- Modal Header -->
+
+                                              <div class="modal-header">
+                                                  <p class="modal-title"> <b>Account Number </b>{{ document.casename }}</p>
+                                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                  </div>
+                                              
+                                              <!-- Modal body -->
+                                              <form  action="{{url_for('update_offline_str')}}" method="POST">
+                                              <div class="row">
+                                                  <div class="col-md-12">
+                                                      <div class="modal-body">
+                                                  <!-- <div class="form-group">
+                                                      <select name="" id="">
+                                                      <option value="Case 1">Case 1</option>
+                                                      <option value="Case 2">Case 2</option>
+                                                      <option value="Case 3">Case 3</option>
+                                                      </select>
+                                                  </div> -->
+                                                      <label class="text-black">Add Your Comments</label>
+                                                      <textarea class="form-control col-md-12" name="comments" id="exampleFormControlTextarea1" rows="5" cols="8"></textarea>
+                                                      <input type="hidden" name="ticket_id" value="{{ document._id }}">
+                                              </div>
+                                                  </div>
+                                              </div>
+                                              <!-- Modal footer -->
+                                              <div class="modal-footer">
+                                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                                  <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                              </div>
+                                              </form>
+                                              
+                                              </div>
+                                          </div>
+                                          </div>
+
+                                          <!-- END Model -->
+                                          
+                                          
+                                      </td>
+                                      <td>{{ document.casename }}</td>
+                                      <td>{{ document.scenario }}</td>
+                                      <td>{{ document.personname }}</td>
+                                      <td>{{ document.SourceofAlert }}</td>
+                                      <td>{{ document.alertindicator }}</td>
+
+                                      <td>{{ document.SuspiciousDueToproceedofCrime }}</td>
+                                      <td>{{ document.SuspiciousDueToComplexTranscaction }}</td>
+                                      <td>{{ document.SuspiciousDueToNoecoRational }}</td>
+                                      <td>{{ document.SuspiciousDueToFinancingTerrorism }}</td>
+                                      <td>{{ document.AttemptedTranscaction }}</td>
+                                      <td>{{ document.LEAInformed }}</td>
+                                      <td>{{ document.PriorityRating }}</td>
+
+                                      <td>{{ document.ReportCoverage }}</td>
+                                      <td>{{ document.leadetails }}</td>
+                                      <td>{{ document.AdditionalDocument }}</td>
+                                      <td>{{ document.Aroundofsuspision }}</td>
+                                      <td>{{ document.DetailsofInvestigation }}</td>
+                                      <td>{{ document.AccountNumber }}</td>
+                                      <td>{{ document.AccountType }}</td>
+
+                                      <td>{{ document.holdername }}</td>
+                                      <td>{{ document.AccountHolderType }}</td>
+                                      <td>{{ document.AccountStatus }}</td>
+                                      <td>{{ document.DateofOpening }}</td>
+                                      <td>{{ document.RiskRating }}</td>
+                                      <td>{{ document.CummulativeCerditTurnover }}</td>
+                                      <td>{{ document.CummulativeDebitTurnover }}</td>
+
+                                      <td>{{ document.CummulativeCashDepositTurnover }}</td>
+                                      <td>{{ document.CummulativeCashWithdrawalTurnover }}</td>
+                                      <td>{{ document.NoOfTransactionsToBeReported }}</td>
+                                      <td>{{ document.TransactionDate }}</td>
+                                      <td>{{ document.TransactionsID }}</td>
+                                      <td>{{ document.TransactionMode }}</td>
+                                      <td>{{ document.DebitCredit }}</td>
+
+                                      <td>{{ document.amount }}</td>
+                                      <td>{{ document.TransactionsCurrency }}</td>
+                                      <td>{{ document.ProductType }}</td>
+                                      <td>{{ document.ProductIdentifiers }}</td>
+                                      <td>{{ document.TransactionType }}</td>
+                                      <td>{{ document.unit }}</td>
+                                      <td>{{ document.Date }}</td>
+
+                                      <td>{{ document.DispositionOfFunds }}</td>
+                                      <td>{{ document.RelatedAccountNumber }}</td>
+                                      <td>{{ document.RelatedInstitutionName }}</td>
+                                      <td>{{ document.RelatedInstitutionRefNum }}</td>
+                                      <td>{{ document.TransactionType }}</td>
+                                      
+                                  </tr>
+                                  {% endfor %}
+                                    {% endfor %}
+                            <!-- Add more rows with your own data as needed -->
+                          </tbody>
+
+                      </table>
+
+                    </section>
+
+                   
+
+
+                   
+
+                  </div>
+                </div>
+              </div>
+        </div>
+      </div>
+      <div class="footer-wrapper justify-content-center">
+        <div class="footer-section f-section-1">
+            <p class="">Copyright © 2023 <a target="_blank" href="#">AMLCFT</a>,
+                All rights reserved.</p>
+        </div>
+        
+    </div>
+    </div>
+  </div>
+                  <!-- END MAIN CONTAINER -->
+
+
+
+                  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+                  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+                  <script src="../static/bootstrap/js/popper.min.js"></script>
+                  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+                  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+                  <script src="../static/assets/js/app.js"></script>
+
+                  <!-- viwe JS start -->
+
+                  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                    crossorigin="anonymous"></script>
+              
+
+                  <!-- viwe JS ends -->
+
+
+                  <script type="text/javascript" language="javascript"
+                    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+                  <script type="text/javascript" language="javascript"
+                    src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+                  <script>
+                    $(document).ready(function () {
+                      App.init();
+                    });
+
+
+                  </script>
+                  <script src="../static/assets/js/custom.js"></script>
+                  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+                  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+                  <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+                  <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+                  <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+                  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+                  <script src="../static/plugins/table/datatable/datatables.js"></script>
+                  <script
+                  type="text/javascript"
+                  language="javascript"
+                  src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"
+                ></script>
+
+                  <script>
+// filter process start
+document.addEventListener("DOMContentLoaded", function () {
+          var dataTable;
+          var flatpickrInstance;
+          // Initialize DataTable
+          dataTable = $("#example").DataTable({
+            rowReorder: {
+              selector: "td:nth-child(2)",
+            },
+            responsive: true,
+            
+            scrollY: "300px",
+            scrollCollapse: true,
+            scrollInfinite: true,
+            info: true,
+          });
+          // Initialize Flatpickr for date range selection
+          flatpickrInstance = datePicker();
+          // Bind applyFilters function to button click
+          $('#filter-button').on('click', function () {
+            applyFilters();
+          });
+          function datePicker() {
+            // Get a reference to the input element
+            var dateRangeInput = document.getElementById('rangeCalendarFlatpickr');
+            // Initialize flatpickr with date range configuration
+            return flatpickr(dateRangeInput, {
+              mode: "range", // This enables date range selection
+            });
+          }
+          // Apply filters function
+          function applyFilters() {
+            var custId = $('#custId').val();
+            var accountNumber = $('#AccountNumber').val();
+            var scenario = $('#Scenario').val();
+            // Get selected date range
+            var selectedDates = flatpickrInstance.selectedDates;
+            var startDate = selectedDates ? selectedDates[0] : null;
+            var endDate = selectedDates ? selectedDates[1] : null;
+            // Clear existing search
+            dataTable.columns().search('');
+            // Apply filters
+            if (custId) {
+              dataTable.column(1).search(custId);
+            }
+            if (accountNumber) {
+              dataTable.column(0).search(accountNumber);
+            }
+            if (scenario) {
+              dataTable.column(2).search(scenario);
+            }
+            // Apply date range filter
+            if (startDate && endDate) {
+              filterTableByDateRange(startDate, endDate);
+            }
+            // Redraw the DataTable
+            dataTable.draw();
+          }
+          function filterTableByDateRange(startDate, endDate) {
+
+            var table = $("#example").DataTable();
+            // Use DataTable API to get all rows
+            table.rows().every(function () {
+              var row = this.node();
+              var dateCell = this.data()[5];
+              if (dateCell) {
+                var rowDate = new Date(dateCell);
+                rowDate.setHours(0);
+                rowDate.setMinutes(0);
+                rowDate.setSeconds(0);
+                rowDate.setMilliseconds(0);
+                
+                if (rowDate >= startDate && rowDate <= endDate) {
+                  row.style.display = "";
+                } else {
+                  row.style.display = "none";
+                }
+              }
+              return true;
+            });
+            // Redraw the DataTable after filtering
+            table.draw();
+          }
+        });
+
+                  </script>
+
+</body>
+
+</html>

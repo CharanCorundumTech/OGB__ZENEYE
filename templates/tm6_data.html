@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
+    />
+    <title> {{tm_sub_hedding}} -- Bank Details</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../static/assets/img/favicon.ico"
+    />
+    <link
+      href="../static/assets/css/loader.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="../static/assets/js/loader.js"></script>
+
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:400,600,700"
+      rel="stylesheet"
+    />
+    <link
+      href="../static/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="../static/assets/css/plugins.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../static/assets/css/custom.css"
+    />
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+     <link href="../static/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css" />
+    <link href="../static/assets/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" />
+    
+
+    <style>
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+     <!--  BEGIN NAVBAR  -->
+    <div class="header-container fixed-top">
+      <header class="header navbar navbar-expand-sm">
+        <ul class="navbar-item theme-brand flex-row text-center">
+          
+          <!-- <li class="nav-item theme-logo">
+            <a href="{{ url_for('dashbord') }}">
+              <img
+                src="../static/assets/img/90x90.jpg"
+                class="navbar-logo"
+                alt="logo"
+              />
+            </a>
+          </li> -->
+          <li class="nav-item theme-text">
+            <a href="{{ url_for('dashbord') }}" class="nav-link">
+              Transaction Monitoring
+            </a>
+          </li>
+        </ul>
+
+        <ul class="navbar-item flex-row ml-md-auto">
+         <li class="nav-item dropdown notification-dropdown">
+                    <a href="javascript:void(0);" class="nav-link dropdown-toggle" id="notificationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class="badge badge-success"></span>
+                    </a>
+                    <div class="dropdown-menu position-absolute" aria-labelledby="notificationDropdown">
+                        <div class="notification-scroll">
+
+                            <div class="dropdown-item">
+                                <div class="media">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    <div class="media-body">
+                                        <div class="notification-para"><span class="user-name">Shaun Park</span> likes your photo.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-item">
+                                <div class="media">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                                    <div class="media-body">
+                                        <div class="notification-para"><span class="user-name">Kelly Young</span> shared your post</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dropdown-item">
+                                <div class="media">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg>
+                                    <div class="media-body">
+                                        <div class="notification-para"><span class="user-name">Kelly Young</span> mentioned you in comment.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+          <li class="nav-item dropdown user-profile-dropdown">
+            <a
+              href="javascript:void(0);"
+              class="nav-link dropdown-toggle user"
+              id="userProfileDropdown"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="true"
+            >
+              <img src="../static/assets/img/90x90.jpg" alt="avatar" />
+            </a>
+            <div
+              class="dropdown-menu position-absolute"
+              aria-labelledby="userProfileDropdown"
+            >
+              <div class="">
+                <div class="dropdown-item">
+                  <a class="" href="user_profile.html"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="feather feather-user"
+                    >
+                      <path
+                        d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+                      ></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    My Profile</a
+                  >
+                </div>
+
+                </div>
+                <div class="dropdown-item">
+                  <a class="" href="{{ url_for('logout') }}"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="feather feather-log-out"
+                    >
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                      <polyline points="16 17 21 12 16 7"></polyline>
+                      <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Sign Out</a
+                  >
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashbord') }}">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </a></li>
+                    <li class="breadcrumb-item"><a href="{{url_for('transaction_monitoring') }}">Transaction Monitoring</a></li> 
+                    <li class="breadcrumb-item active text-blue font-weight-bold" aria-current="page">{{tm_sub_hedding}}</li>
+                </ol>
+            </nav>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+     <!--  BEGIN SIDEBAR  -->
+       {% include 'sidebar.html' %}
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div class="row layout-top-spacing mt-3">
+
+             <div class="col-12 pb-2">
+              <h4 class="font-weight-bold text-blue">{{tm_sub_hedding}}</h4>
+              <h6 class="text-secondary">{{ tm_heading }}</h6>
+            </div>
+          
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing ">
+                <h5 class="mb-5">Individual Data</h5>
+              <div class="text-right">
+                <button id="toggleButton" class="btn btn-dark">View Chart</button>
+              </div>
+              <div id="chartContainer" >
+                 <div class="text-right">
+                  <button id="downloadChartBtn" class="btn btn-sm btn-outline-dark my-1">Download PNG</button>
+                </div>
+                <!-- <canvas id="myChart"></canvas> -->
+              </div>
+              
+              <div class="table-responsive mt-4" id="individual_table">
+                <div class="text-right">
+                   <button id="downloadTableBtn" class="btn btn-outline-dark btn-sm my-1">Download CSV</button>
+                </div>
+                <table id="myTable" class="table  table-bordered individual-table ">
+                  <thead>
+                    <tr>
+                      <th>Transaction Amount</th>
+                      <th>Account Number</th>
+                      <th>Customer Profile</th>
+                      <th>Month</th>
+                    </tr>
+                  </thead>
+                  <tbody> {% for row in total_df.iterrows() %} <tr>
+                      <td>{{ row[1]['Transaction Amount'] }}</td>
+                      <td>{{ row[1]['Account Number'] }}</td>
+                      <td>{{ row[1]['Customer Profile'] }}</td>
+                      <td>{{ row[1]['Month'] }}</td>
+                      
+                    </tr> {% endfor %} </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing ">
+               <h5 class="mb-5">Non Individual Data</h5>
+              <div class="text-right">
+                <button id="toggleButton1" class="btn btn-dark ">View Chart</button>
+              </div>
+              <div id="chartContainer1" >
+                <canvas id="myChart1"></canvas>
+                 <div class="text-right">
+                  <button id="downloadChartBtn1" class="btn btn-sm btn-outline-dark my-1">Download PNG</button>
+                </div>
+              </div>
+              <div class="table-responsive mt-4" id="non_individual_table">
+                 <div class="text-right">
+                   <button id="downloadTableBtn1" class="btn btn-outline-dark btn-sm my-1">Download CSV</button>
+                </div>
+                <table id="myTable1" class="table bg-secondary table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Transaction Amount</th>
+                      <th>Account Number</th>
+                      <th>Customer Profile</th>
+                      <th>Month
+                    </tr>
+                  </thead>
+                  <tbody> {% for rows in total_df_non.iterrows() %} <tr>
+                      <td>{{ rows[1]['Transaction Amount'] }}</td>
+                      <td>{{ rows[1]['Account Number'] }}</td>
+                       <td>{{ rows[1]['Customer Profile'] }}</td>
+                      <td>{{ rows[1]['Month'] }}</td>
+                      
+                    </tr> {% endfor %} </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+          
+        </div>
+        <div class="footer-wrapper">
+          <div class="footer-section f-section-1">
+            <p class="">
+              Copyright © 2023
+              <a target="_blank" href=" " class="font-weight-bold text-blue"
+                >Banking Details</a
+              >, All rights reserved.
+            </p>
+          </div>
+         
+        </div>
+      </div>
+      <!--  END CONTENT PART  -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.1/dist/apexcharts.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/plugins/highlight/highlight.pack.js"></script>
+    <script src="../static/assets/js/custom.js"></script>
+     <!--  BEGIN CUSTOM SCRIPT FILE  -->
+   <script>
+      $(document).ready(function() {
+        var table = $('#myTable').DataTable({
+          "paging": true,
+          "pageLength": 10
+        });
+      });
+      $(document).ready(function() {
+        var table = $('#myTable1').DataTable({
+          "paging": true,
+          "pageLength": 10
+        });
+      });
+    </script>
+   <script>
+   
+    $(document).ready(function () {
+        var chart = null;
+        // Initially, hide the chart container
+        $("#chartContainer").hide();
+        // Handle button click event
+        $("#toggleButton").click(function () {
+            if (chart) {
+                chart.destroy();
+                chart = null;
+                $("#chartContainer").hide();
+                $("#individual_table").show();
+                $(this).text("View Chart");
+            } else {
+                // Show the chart and hide the tables
+                $("#chartContainer").show();
+                $("#individual_table").hide();
+                $(this).text("View Table");
+                // Create and render the chart
+                createChart();
+            }
+        });
+        // Handle button click event to download table as CSV
+    $("#downloadTableBtn").click(function () {
+      // Get table headers
+      var tableHeaders = [];
+      $('#myTable thead th').each(function () {
+        tableHeaders.push($(this).text());
+      });
+
+      // Create a CSV content with headers
+      var csvContent = "data:text/csv;charset=utf-8,\n";
+      csvContent += tableHeaders.join(',') + '\n';
+
+      // Iterate through all pages and collect data
+      var table = $('#myTable').DataTable();
+      var tableData = [];
+      for (var i = 0; i < table.page.info().pages; i++) {
+        table.page(i).draw(false); // Draw each page
+        $('#myTable tbody tr').each(function () {
+          var rowData = [];
+          $(this).find('td').each(function () {
+            rowData.push($(this).text());
+          });
+          tableData.push(rowData.join(','));
+        });
+      }
+
+      // Add data to CSV content
+      csvContent += tableData.join('\n');
+
+      // Create a data URI for the CSV file
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "table_data.csv");
+      document.body.appendChild(link);
+      link.click();
+    });
+        // Function to create and render the chart
+        function createChart() {
+            // Get the DataTable instance for your table
+            var table = $('#myTable').DataTable();
+            // Retrieve all data from the table
+            var data = table.data().toArray();
+            // Extract transaction amounts and account numbers
+            var transactionAmounts = [];
+            var accountNumbers = [];
+            var months = []; // Add this line to store months
+            for (var i = 0; i < data.length; i++) {
+                var rowData = data[i];
+                var transactionAmount = parseFloat(rowData[0]);
+                var accountNumber = rowData[1];
+                var customerProfile = rowData[2];
+                var month = rowData[3];
+                transactionAmounts.push(transactionAmount);
+                accountNumbers.push(accountNumber);
+                months.push(month); // Store the month
+            }
+            // Create chart data
+            var chartData = {
+                chart: {
+                    type: 'bar', // Set the chart type to horizontal bar
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: true, // Set to true for horizontal bars
+                    },
+                },
+                xaxis: {
+                    categories: accountNumbers, // Use account numbers as labels
+                    title: {
+                        text: 'Transaction Amount',
+                    },
+                },
+                yaxis: {
+                    title: {
+                        text: 'Account Numbers',
+                    },
+                },
+                series: [{
+                    name: "Transaction Amount",
+                    data: transactionAmounts,
+                }],
+                colors: ['#000000'],
+                // Add a tooltip with the month details
+                tooltip: {
+                    y: {
+                        formatter: function (value) {
+                            return value;
+                        }
+                    },
+                    x: {
+                        formatter: function (value, { series, seriesIndex, dataPointIndex }) {
+                            return 'Month: ' + months[dataPointIndex]; // Display the month
+                        }
+                    }
+                }
+            };
+
+            // Replace 'myChart' with the ID of the container element
+            var chartElement = document.getElementById("chartContainer");
+            chart = new ApexCharts(chartElement, chartData);
+            chart.render();
+        }
+        // Handle button click event to download chart as PNG
+          $("#downloadChartBtn").click(function () {
+            if (chart) {
+              // Use dom-to-image library to convert the chart container to a PNG image
+              domtoimage.toPng(document.getElementById("chartContainer"))
+                .then(function (dataUrl) {
+                  // Create a data URI for the PNG image
+                  var link = document.createElement("a");
+                  link.href = dataUrl;
+                  link.download = "chart.png";
+                  document.body.appendChild(link);
+                  link.click();
+                })
+                .catch(function (error) {
+                  console.error("Error generating chart image: " + error);
+                });
+            }
+          });
+
+    });
+</script>
+
+</script>
+<script>
+  $(document).ready(function() {
+          var chart = null;
+          // Initially, hide the chart container
+          $("#chartContainer1").hide();
+          // Handle button click event
+          $("#toggleButton1").click(function() {
+            if (chart) {
+              chart.destroy();
+              chart = null;
+              $("#chartContainer1").hide();
+              $("#non_individual_table").show();
+              $(this).text("View Chart");
+            } else {
+              // Show the chart and hide the tables
+              $("#chartContainer1").show();
+              $("#non_individual_table").hide();
+              $(this).text("View Table");
+              // Create and render the chart
+              createChart();
+            }
+          });
+           // Handle button click event to download table as CSV
+    $("#downloadTableBtn1").click(function () {
+      // Get table headers
+      var tableHeaders = [];
+      $('#myTable1 thead th').each(function () {
+        tableHeaders.push($(this).text());
+      });
+
+      // Create a CSV content with headers
+      var csvContent = "data:text/csv;charset=utf-8,\n";
+      csvContent += tableHeaders.join(',') + '\n';
+
+      // Iterate through all pages and collect data
+      var table = $('#myTable1').DataTable();
+      var tableData = [];
+      for (var i = 0; i < table.page.info().pages; i++) {
+        table.page(i).draw(false); // Draw each page
+        $('#myTable1 tbody tr').each(function () {
+          var rowData = [];
+          $(this).find('td').each(function () {
+            rowData.push($(this).text());
+          });
+          tableData.push(rowData.join(','));
+        });
+      }
+
+      // Add data to CSV content
+      csvContent += tableData.join('\n');
+
+      // Create a data URI for the CSV file
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "table_data.csv");
+      document.body.appendChild(link);
+      link.click();
+    });
+
+          // Function to create and render the chart
+          function createChart() {
+            // Get the DataTable instance for your table
+            var table = $('#myTable1').DataTable();
+            // Retrieve all data from the table
+            var data = table.data().toArray();
+            // Extract transaction amounts and account numbers
+            var transactionAmounts = [];
+            var accountNumbers = [];
+            for (var i = 0; i < data.length; i++) {
+              var rowData = data[i];
+              var transactionAmount = parseFloat(rowData[0]);
+              var accountNumber = rowData[1];
+              transactionAmounts.push(transactionAmount);
+              accountNumbers.push(accountNumber);
+            }
+            // Create chart data
+            var chartData = {
+              chart: {
+                type: 'bar', // Set the chart type to horizontal bar
+               
+              },
+              plotOptions: {
+                bar: {
+                  horizontal: true, // Set to true for horizontal bars
+                  
+                },
+              },
+              xaxis: {
+                categories: accountNumbers, // Use account numbers as labels
+                title: {
+                  text: 'Transaction Amount',
+                },
+              },
+              yaxis: {
+                title: {
+                  text: 'Account Numbers',
+                },
+              },
+              series: [{
+                name: "Transaction Amount",
+                data: transactionAmounts,
+              }],
+              colors: ['#000000'],
+            };
+            
+            // Replace 'myChart' with the ID of the container element
+            var chartElement = document.getElementById("chartContainer1");
+            chart = new ApexCharts(chartElement, chartData);
+            chart.render();
+          }
+          // Handle button click event to download chart as PNG
+          $("#downloadChartBtn1").click(function () {
+            if (chart) {
+              // Use dom-to-image library to convert the chart container to a PNG image
+              domtoimage.toPng(document.getElementById("chartContainer1"))
+                .then(function (dataUrl) {
+                  // Create a data URI for the PNG image
+                  var link = document.createElement("a");
+                  link.href = dataUrl;
+                  link.download = "chart.png";
+                  document.body.appendChild(link);
+                  link.click();
+                })
+                .catch(function (error) {
+                  console.error("Error generating chart image: " + error);
+                });
+            }
+          });
+          
+        });
+</script>
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  </body>
+</html>

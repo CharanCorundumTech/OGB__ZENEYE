@@ -1,0 +1,508 @@
+{
+  "alerts": [
+    {
+      "code": "RIP_One",
+      "Alert_title":"Annual summation of credit in savings account upto X value and in current/cash credit account upto Y value",
+      "Current_values": {
+        "Savings_Bank_Ac_max": 1000000,
+        "Current_Cash_credit_ac_max": 4000000
+      },
+      "Threshold_Type": "Risk"
+    },
+    {
+      "code": "RIP_Two",
+      "Alert_title": "Annual summation of credit in savings account between X1 value and X2 values, and in current/cash credit account between  Y1 and Y2 values",
+      "Current_values": {
+          "Savings_Bank_Ac_min": 1000000,  
+          "Savings_Bank_Ac_max": 2000000, 
+          "Current_Cash_credit_ac_min": 4000000,  
+          "Current_Cash_credit_ac_max": 50000000  
+      
+      },
+      "Threshold_Type": "Risk"
+    },
+    {
+      "code": "RIP_Three",
+      "Alert_title": "Annual summation of credit in savings account between X1 value and X2 values, and in current/cash credit account between Y1 and Y2 values",
+      "Current_values": {
+          "Savings_Bank_Ac_min": 2000000,  
+          "Savings_Bank_Ac_max": 3000000, 
+          "Current_Cash_credit_ac_min": 50000000,  
+          "Current_Cash_credit_ac_max": 100000000  
+      
+      },
+      "Threshold_Type": "Risk"
+    },
+    {
+      "code": "RIP_Exceptional",
+      "Alert_title":"Annual summation of credit in savings account above X value and in current/cash credit account more than Y value",
+      "Current_values": {
+        "Savings_Bank_Ac_min": 3000000,
+        "Current_Cash_credit_ac_min": 100000000
+      },
+      "Threshold_Type": "Risk"
+    },
+    
+    {
+      "code": "TM_1_1",
+      "Alert_title": "Cash Deposits in a Day Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_1_2",
+      "Alert_title": "Cash Withdrawals in a Day Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_1_3",
+      "Alert_title": "Non-cash Deposits in a Day Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_1_4",
+      "Alert_title": "Non-cash Withdrawals in a Day Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_2_1",
+      "Alert_title": "Cash Deposits in a Month Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_2_2",
+      "Alert_title": "Cash  Withdrawals in a Month Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_2_3",
+      "Alert_title": "Non-Cash Deposits in a Month Aggregating to INR For Individuals and legal customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 30000000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_2_4",
+      "Alert_title": "Non-Cash Withdrawals in a Month Aggregating to INR For Individuals and Legal Customers",
+      "Current_values": {
+        "Individual_INR_value_low_risk": 500000,
+        "Individual_INR_value_med_risk": 500000,
+        "Individual_INR_value_high_risk": 500000,
+        "Legal_Customer_INR_value_low_risk": 500000,
+        "Legal_Customer_INR_value_mid_risk": 500000,
+        "Legal_Customer_INR_value_high_risk": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_3_1",
+      "Alert_title": "Sudden high value transaction for client",
+      "Current_values": {
+        "Y_days": 180,
+        "Individual_INR": 500000,
+        "Legal_cust_INR": 500000,
+        "Z_percent": 200
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_3_2",
+      "Alert_title": "Sudden increase in value of transactions in a month",
+      "Current_values": {
+        "Y_days": 90,
+        "Individual_INR": 500000,
+        "Legal_cust_INR": 500000,
+        "Z_percent": 100
+        
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_3_3",
+      "Alert_title": "Sudden increase in number of Transactions in a month",
+      "Current_values": {
+        "Individual_INR": 500000,
+        "Legal_cust_INR": 500000,
+        "N_num_individuals": 25,
+        "N_num_legal":100,
+        "Y_days": 90,
+        "Z_percent": 200
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_4_1",
+      "Alert_title": "High value transactions in new account",
+      "Current_values": {
+        "Y_days": 180,
+        "INR": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_4_2",
+      "Alert_title": "High activity in a new account",
+      "Current_values": {
+        "Y_days": 90,
+        "N_num_indivuals": 60,
+        "N_num_legal":100
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_5_1",
+      "Alert_title": "High value transactions in a dormant account",
+      "Current_values": {
+        "INR_value": 500000,
+        "reactivation_days":7
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_5_2",
+      "Alert_title": "Sudden activity in a dormant account",
+      "Current_values": {
+        "INR_value": 200000,
+        "reactivation_days":30,
+        "N_times":5
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_6_1",
+      "Alert_title": "High value cash transactions inconsistent with profile",
+      "Current_values": {
+        "INR_low_cash_req": 100000,
+        "INR_wages_sal_req": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_6_2",
+      "Alert_title": "High cash activity inconsistent with profile",
+      "Current_values": {
+        "N_times": 10,
+        "X_INR_value": 200000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_1_1",
+      "Alert_title": "Splitting of cash deposits just below INR 10,00,000 in a single/multiple accounts in a month",
+      "Current_values": {
+        "X1": 100000,
+        "X2": 500000,
+        "N_times": 5
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_1_2",
+      "Alert_title": "Splitting of cash deposits just below INR 50,000 by a customer in a month",
+      "Current_values": {
+        "X1": 40000,
+        "X2": 49999,
+        "N_times": 10
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_1_3",
+      "Alert_title": "Frequent cash deposits just below INR 10,00,000",
+      "Current_values": {
+        "X1": 500000,
+        "X2": 1000000,
+        "N_times": 2,
+        "Y_days":7
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_1_4",
+      "Alert_title": "Frequent low cash deposits",
+      "Current_values": {
+        "X1_ind": 10000,
+        "X2_ind": 50000,
+        "N_times_ind":25,
+        "X1_legal":25000,
+        "X2_legal":250000,
+        "N_times_legal":75,
+        "Y_days": 15
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_1_5",
+      "Alert_title": "Frequent low cash withdrawls",
+      "Current_values": {
+        "X1_ind": 10000,
+        "X2_ind": 50000,
+        "N_times_ind":25,
+        "X1_legal":25000,
+        "X2_legal":250000,
+        "N_times_legal":75,
+        "Y_days": 15
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_3_1",
+      "Alert_title": "Repeated small value cash deposits followed by immediate cash withdrawls from different locations",
+      "Current_values": {
+        "N_times": 10,
+        "Y_days": 7,
+        "Z_percent": 70,
+        "x1": 10000,
+        "x2": 50000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_3_2",
+      "Alert_title": "Repeated small value transfers from multiple parties followed by immediate cash/non-cash withdrawls (through ATM's or other modes)",
+      "Current_values": {
+        "N_times": 10,
+        "Y_days": 7,
+        "Z_percent": 80,
+        "x1": 50000,
+        "x2": 100000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_3_7",
+      "Alert_title": "Repeated small value transfers to a single Indian Party",
+      "Current_values": {
+        "N_times": 10,
+        "Y_days": 7,
+        "x1": 10000,
+        "x2": 50000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "RM_1_1",
+      "Alert_title": "High value cash transactions in NPOs",
+      "Current_values": {
+        "X": 500000,
+        "Y": 7
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "RM_1_3",
+      "Alert_title": "High value cash transactions pertaining to accounts of real estate agents and dealers",
+      "Current_values": {
+        "INR_value": 500000,
+        "Y_days": 7
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_3_4",
+      "Alert_title": "Sudden increase in cash deposits of customers",
+      "Current_values": {
+        "INR_ind_value": 500000,
+        "INR_legal_customer_value": 500000,
+        "Z_percent": 200
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_3_6",
+      "Alert_title": "Sudden increase in cash withdrawls of customers",
+      "Current_values": {
+        "INR_ind_value": 500000,
+        "INR_legal_customer_value": 500000,
+        "Z_percent": 200
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_3_6",
+      "Alert_title": "Multiple cash deposits in one country followed by immediate ATM withdrawal in another country",
+      "Current_values": {
+        "INR_cash_dep": 200000,
+        "Y_days": 7
+      },
+      "Threshold_Type": "RFI"
+
+
+    },
+    {
+      "code": "TY_7_1 ",
+      "Alert_title": "High value transactions in accounts opened and closed in a short period of time",
+      "Current_values": {
+        "INR_ind_value": 200000,
+        "INR_legal_customer_value": 200000,
+        "short_period_days": 30
+      }, 
+        "Threshold_Type": "RFI"
+
+
+    },
+    {
+      "code": "TY_7_2",
+      "Alert_title": "High value transactions in new accounts followed by period of inactivity",
+      "Current_values": {
+        "INR_ind_value": 500000,
+        "INR_legal_customer_value": 500000,
+        "newly_opened": 60
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_2_5",
+      "Alert_title": "High value Cash Transactions Without PAN in a Month",
+      "Current_values": {
+        "INR_value": 200000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_2_6",
+      "Alert_title": "High value Non-Cash Transactions Without PAN in a Month",
+      "Current_values": {
+        "INR_value": 200000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TM_3_5",
+      "Alert_title": "Usually high activity in current account",
+      "Current_values": {
+        "N_times": 100,
+        "Y_days": 29
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_6_1",
+      "Alert_title": "Repayments of loan in cash ",
+      "Current_values": {
+        "Y_days": 30,
+        "Loan_repayment_value": 100000,
+        "Loan_disbursement_value": 300000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_6_3",
+      "Alert_title": "Repayments of loan in cash(cummulative)",
+      "Current_values": {
+        "Z_percent": 50,
+        "Y_days": 180,
+        "Loan_disbursement_value": 500000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_11_2",
+      "Alert_title": "Regarding maoist insurgency(Terrorist Financing)",
+      "Current_values": {
+        "N_locations": 6,
+        "Y_Hours": 72,
+        "INR_value": 20000
+      },
+      "Threshold_Type": "RFI"
+
+    },
+    {
+      "code": "TY_11_7",
+      "Alert_title": "Regarding maoist insurgency(Terrorist Financing)(Swiping of Debit cards)",
+      "Current_values": {
+        "INR_value": 20000
+      },
+      "Threshold_Type": "RFI"
+
+    }
+  ]
+}

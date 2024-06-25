@@ -1,0 +1,48 @@
+{
+    "alerts": [
+      {
+        "code": "RIP_One",
+        "Alert_title":"Annual summation of credit in savings account upto X value and in current/cash credit account upto Y value",
+        "Current_values": {
+          "Savings_Bank_Ac": 1000000,
+          "Current_Cash_credit_ac": 4000000
+        },
+        "Threshold_Type": "Risk"
+      },
+      {
+        "code": "RIP_Two",
+        "Alert_title": "Annual summation of credit in savings account between X1 value and X2 values, and in current/cash credit account between  Y1 and Y2 values",
+        "Current_values": {
+            "Savings_Bank_Ac_min": 1000000,  
+            "Savings_Bank_Ac_max": 2000000, 
+            "Current_Cash_credit_ac_min": 4000000,  
+            "Current_Cash_credit_ac_max": 50000000  
+        
+        },
+        "Threshold_Type": "Risk"
+      },
+      {
+        "code": "RIP_Three",
+        "Alert_title": "Annual summation of credit in savings account between X1 value and X2 values, and in current/cash credit account between Y1 and Y2 values",
+        "Current_values": {
+            "Savings_Bank_Ac_min": 2000000,  
+            "Savings_Bank_Ac_max": 3000000, 
+            "Current_Cash_credit_ac_min": 50000000,  
+            "Current_Cash_credit_ac_max": 100000000  
+        
+        },
+        "Threshold_Type": "Risk"
+      },
+      {
+        "code": "RIP_Exceptional",
+        "Alert_title":"Annual summation of credit in savings account above X value and in current/cash credit account more than Y value",
+        "Current_values": {
+          "Savings_Bank_Ac": 3000000,
+          "Current_Cash_credit_ac": 100000000
+        },
+        "Threshold_Type": "Risk"
+      }
+      
+    ]
+  }
+  

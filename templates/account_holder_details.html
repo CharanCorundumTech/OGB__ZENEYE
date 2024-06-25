@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+{% include 'metaData.html' %}
+    
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+     <style>
+      .dataTables_scrollHeadInner{
+        width: 99% !important;
+      }
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+      
+    td strong {
+        color: #909294 !important;
+    }
+
+    /* Add some custom styles for better appearance */
+.nav-tabs {
+    background-color: #f8f9fa; /* Light gray background color */
+    border-bottom: 2px solid #00579c;
+    
+}
+
+.nav-link {
+    color: #495057; /* Text color */
+
+}
+.btn-outline-dark {
+    border: 1px solid #00579c !important;
+    color: #495057 !important;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #ffffff;
+    background-color: #00579c;
+    border-color: #00579c #00579c #00579c;
+}
+.btn-outline-dark:hover {
+    color: #fff !important;
+    background-color: #00579c;
+}
+
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+     <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% if role == 'CM/SM' %}{{ url_for('CM_SM_dashboard') }}{% elif role == 'AGM' %}{{ url_for('AGMdashboard') }}{% elif role == 'DGM/PO' %}{{ url_for('DGMdashboard') }}{% elif role == 'MLRO' %}{{ url_for('MLROdashboard') }}{% endif %}">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </a></li>
+                     <li class="breadcrumb-item"><a href="{{url_for(type)}}">Cases</a></li>
+                    <li class="breadcrumb-item active text-blue font-weight-bold" aria-current="page">Account Holder Details</li>
+                </ol>
+            </nav>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'sidebar.html' %}
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing ">
+          <div class="row layout-top-spacing ">
+           
+             <div class="container-fluid  card mx-4">
+              
+             <ul class="nav nav-tabs  mb-3 mt-3" id="simpletab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" id="custpreprofile-tab" data-toggle="tab" href="#custpreprofile" role="tab" aria-controls="custpreprofile" aria-selected="true">Alert Summary</a>
+            </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="customerpre-tab" data-toggle="tab" href="#customerpre" role="tab" aria-controls="customerpre" aria-selected="true">Customer Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="accountdetails-tab" data-toggle="tab" href="#accountdetails" role="tab" aria-controls="accountdetails" aria-selected="false">Account Details</a>
+                </li>
+          
+          
+                <li class="nav-item">
+                    <a class="nav-link" id="investigationhistroy-tab" data-toggle="tab" href="#investigationhistroy" role="tab" aria-controls="investigationhistroy" aria-selected="false">Investigation Histroy</a>
+                </li>
+             
+                <li class="nav-item">
+                  <a class="nav-link" id="scenariotransactionhistroy-tab" data-toggle="tab" href="#scenariotransactionhistroy" role="tab" aria-controls="scenariotransactionhistroy" aria-selected="false">Scenario Transaction Histroy</a>
+                </li>
+                 <!-- <li class="nav-item">
+                    <a class="nav-link" id="graph-tab" data-toggle="tab" href="#graph" role="tab" aria-controls="graph" aria-selected="false">Graph</a>
+                </li> -->
+                
+            </ul>
+          
+               <div class="tab-content" id="simpletabContent">
+                <div class="tab-pane fade show active" id="custpreprofile" role="tabpanel" aria-labelledby="custpreprofile-tab">
+                  <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing mt-3">
+                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                      <!-- <div class="widget-content widget-content-area br-6"> -->
+                        <div class="widget-content widget-content-area ">
+                        <div class="table-responsive mb-4">
+                              <table id="zero-config" class="table table-hover" style="width:100%">
+                                  <thead>
+                                    <p class="text-primary text-center text-white p-2" style="background-color: #77777E;">Alert Details</p>
+                                  </thead>
+                                  <tbody>
+                                    
+                                    
+
+                                    <tr></tr>
+                                    <tr>
+                                      <th>Type of Account</th>
+                                    <td>{{accountsOfTheCustomer[0]['CUST_TYPE_CODE']}}</td>
+                                    </tr>
+                                    <!-- <tr>
+                                      <th>Customer Profession</th>
+                                    <td>{{cust_profile}}</td>
+                                    </tr> -->
+                                    <tr>
+                                      <th>Alerts Violated</th>
+                                      <td>
+                                        <ul>
+                                        {% for value in scenarioCodesEffected %}
+                                        {% if scenarioType == value %}
+                                        <li style="color: #00579c;font-weight: bold !important;font-size: medium !important;">
+                                        {% else %}
+                                        <li>
+                                        {% endif %}
+                                          {{value}}
+                                        </li>
+                                        {% endfor %}
+                                        </ul>
+                                      </td>
+                                   </tr>
+                                    <tr>
+                                      <th>
+                                        Scenarios violated
+                                      </th>
+                                      <td>
+                                        <ul>
+                                          {% for value in scenariosSumari %}
+                                        
+                                          <li>
+                                            {{value}}
+                                          </li>
+                                          {% endfor %}
+                                    </ul>
+                                      </td>
+                                    </tr>
+                                  
+                                  </tbody>
+                              </table>
+                          </div>
+                       </div>
+                       </div>
+                </div>
+                </div>
+                <div class="tab-pane fade" id="customerpre" role="tabpanel" aria-labelledby="customerpre-tab">
+                    <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing mt-3">
+                      <div class="widget-content widget-content-area br-6">
+                          
+                      </div>
+                  </div>
+              <!-- </div>
+          </div> -->
+          <!-- corperate details start  -->
+          <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+            <!-- <div class="widget-content widget-content-area br-6"> -->
+              <div class="widget-content widget-content-area ">
+              <div class="table-responsive mb-4">
+                    <table id="zero-config" class="table table-hover" style="width:100%">
+                        <thead>
+                          <p class="text-primary text-center text-white p-2" style="background-color: #77777E;">Personal Details</p>
+                        </thead>
+                        <tbody>
+                          
+                          <tr></tr>
+                         
+                           <tr>
+                            <th>Customer Number</th>
+                            <td>{{accountsOfTheCustomer[0]['CUSTCD']}}</td>
+                            <th>Customer Opening Date</th>
+                            <td>{{accountsOfTheCustomer[0]['CUSTID_OPENDATE']}}</td>
+                           </tr>
+                           <tr>
+                            <th>Customer Name</th>
+                            <td>{{accountsOfTheCustomer[0]['CustomerName']}}</td>
+                            <th>Title</th>
+                            <td>{{accountsOfTheCustomer[0]['Title']}}</td>
+                           </tr>
+                           <tr>
+                            <th>Date Of Birth</th>
+                            <td>{{accountsOfTheCustomer[0]['DOB']}}</td>
+                            <th>Gender</th>
+                            <td>{{accountsOfTheCustomer[0]['Gender']}}</td>
+                           </tr>
+                           
+                           <tr>
+                            <th>Marital Status</th>
+                            <td>{{accountsOfTheCustomer[0]['MaritalStatus']}}</td>
+                            <th>Customer Consition Code</th>
+                            <td>{{accountsOfTheCustomer[0]['CUST_CONSTITUTION']}}</td>
+                           </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <table id="zero-config" class="table table-hover" style="width:100%">
+                        <thead>
+                          <p class="text-primary text-center text-white p-2" style="background-color: #77777E;">Address Details</p>
+                        </thead>
+                        <tbody>
+                          
+                          <tr></tr>
+                         
+                           <tr>
+                            <th>Permanent Address Type</th>
+                            <td>{{accountsOfTheCustomer[0]['Perm_ADDRESSRECTYPE']}}</td>
+                            <th>Communication Address Type</th>
+                            <td>{{accountsOfTheCustomer[0]['Comm_ADDRESSRECTYPE']}}</td>
+                           </tr>
+                           <tr>
+                            <th>Permanent Address</th>
+                            <td>{{accountsOfTheCustomer[0]['Permanent_Address']}}</td>
+                            <th>Communication Address</th>
+                            <td>{{accountsOfTheCustomer[0]['Communication_Address']}}</td>
+                           </tr>
+                           <tr>
+                            <th>State</th>
+                            <td>{{accountsOfTheCustomer[0]['STATE']}}</td>
+                            <th>Country</th>
+                            <td>{{accountsOfTheCustomer[0]['COUNTRY']}}</td>
+                            <th>PINCode</th>
+                            <td>{{accountsOfTheCustomer[0]['PINCODE']}}</td>
+                           </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <table id="zero-config" class="table table-hover" style="width:100%">
+                        <thead>
+                          <p class="text-primary text-center text-white p-2" style="background-color: #77777E;">CKYC Details</p>
+                        </thead>
+                        <tbody>
+                          
+                          <tr></tr>
+                         
+                           <tr>
+                            <th>Aadhar Number</th>
+                            <td>{{accountsOfTheCustomer[0]['AADHARNO']}}</td>
+                            <th>PAN Number</th>
+                            <td>{{accountsOfTheCustomer[0]['PAN']}}</td>
+                           </tr>
+                           <tr>
+                            <th>Voter Id</th>
+                            <td>{{accountsOfTheCustomer[0]['VoterID']}}</td>
+                            <th>Others</th>
+                            <td>{{accountsOfTheCustomer[0]['Othr_doc']}}</td>
+                           </tr>
+                           <tr>
+                            <th>KYC Compilance</th>
+                            <td>{{accountsOfTheCustomer[0]['KYC_Compilance']}}</td>
+                            <th>KYC Last Updated On</th>
+                            <td>{{accountsOfTheCustomer[0]['KYC_UpdateDate']}}</td>
+                           </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <table id="zero-config" class="table table-hover" style="width:100%">
+                        <thead>
+                          <p class="text-primary text-center text-white p-2" style="background-color: #77777E;">Other Details</p>
+                        </thead>
+                        <tbody>
+                          
+                          <tr></tr>
+                         
+                           <tr>
+                            <th>Occupation</th>
+                            <td>{{accountsOfTheCustomer[0]['Occupation']}}</td>
+                            <th>Segment</th>
+                            <td>{{accountsOfTheCustomer[0]['Segment']}}</td>
+                           </tr>
+                           <tr>
+                            <th>Primary SOL ID</th>
+                            <td>{{accountsOfTheCustomer[0]['PRIMARY_SOL_ID']}}</td>
+                            <th>Customer Type</th>
+                            <td>{{accountsOfTheCustomer[0]['CUST_TYPE_CODE']}}</td>
+                           </tr>
+                        </tbody>
+                    </table>
+                </div>
+             </div>
+             </div>
+                
+                  </div>
+                <div class="tab-pane fade" id="accountdetails" role="tabpanel" aria-labelledby="accountdetails-tab">
+                     <!-- <div class="layout-px-spacing">
+              <div class="row layout-top-spacing"> -->
+              
+                <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing ">
+                    <div class="widget-content widget-content-area ">
+                        
+                    </div>
+                </div>
+       
+              <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing">
+                  <div class="widget-content widget-content-area ">
+                      <div class="table-responsive">
+                        {% for accDetails in accountsOfTheCustomer %}
+                        <br>
+                          <table id="zero-config" class="table table-hover" style="width:100%">
+                            {% if accnum == accDetails['ACCTNO'] %}
+                            <p class="text-primary text-center text-white p-2" style="background-color: #00579c;">Account Details of <b>{{accDetails['ACCTNO']}}</b> </p>
+                            {% else %}
+                            <p class="text-primary text-center text-white p-2" style="background-color: #77777E;">Account Details of <b>{{accDetails['ACCTNO']}}</b> </p>
+                            {% endif %}
+                      
+                              <tbody>
+                                <tr></tr>
+                                <tr>
+                                  <th>Account Number</th>
+                                  <td>{{accDetails['ACCTNO']}}</td>
+                                  <th>Acc Opening Date</th>
+                                  <td>{{accDetails['ACCT_OPENDATE']}}</td>
+                                 </tr>
+                                 <tr>
+                                  <th>Customer Type</th>
+                                  <td>{{accDetails['CUST_TYPE_CODE']}}</td>
+                                 </tr>
+                                 <tr>
+                                  <th>Branch Code</th>
+                                  <td>{{accDetails['PRIMARY_SOL_ID']}}</td>
+                                  <th>Customer Id</th>
+                                  <td>{{accDetails['CUSTCD']}}</td>
+                                 </tr>
+                                 <tr>
+                                  <th>Account Status</th>
+                                  <td>{{accDetails['ACCT_STATUS']}}</td>
+                                  <th>Type of Operartion</th>
+                                  <td>{{accDetails['TYPEOFOPRN']}}</td>
+                                 </tr>
+                                 <tr>
+                                  <th>RIP</th>
+                                  <td>{{accDetails['RIP']}}</td>
+                                  <th>RLTL Amount</th>
+                                  <td>{{accDetails['RLTLamount']}}</td>
+                                 </tr>
+                               
+                              </tbody>
+                          </table>
+                          {% endfor %}
+                      </div>
+                  </div>
+              </div>
+              </div>
+      
+                <div class="tab-pane fade" id="investigationhistroy" role="tabpanel" aria-labelledby="investigationhistroy-tab">
+                    <div class="table-responsive">
+                        <table id="zero-config" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Customer NO:</th>
+                                    <td>{{accountsOfTheCustomer[0]['CUSTCD']}}</td>
+                                    <th>Customer name:</th>
+                                    <td>{{accountsOfTheCustomer[0]['CustomerName']}}</td>
+                                    <th>Customer Risk Category:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        </table>
+                    </div>
+                <!-- </div>
+            </div>
+        -->
+     
+
+          <div id="toggleAccordion" class="mb-2">
+            <div class="card">
+                <div class="card-header" id="...">
+                    <section class="mb-0 mt-0">
+                        <div role="menu" class="collapsed" data-toggle="collapse" data-target="#defaultAccordionOne" aria-expanded="true" aria-controls="defaultAccordionOne">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="0.9em" viewBox="0 0 256 512">
+                               <path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>&nbsp;
+
+
+                            case list 
+                        </div>
+                    </section>
+                </div>
+        
+                <div id="defaultAccordionOne" class="collapse" aria-labelledby="..." data-parent="#toggleAccordion">
+                    <div class="card-body" style="height:30vh;overflow-y: scroll;">
+                        <div class="table-responsive">
+                            <table  id="zero-config" class="table table-hover mb-4" >
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Alert Date</th>
+                                        <th scope="col">List Name</th>
+                                        <th scope="col">Transaction/RectType</th>
+                                        <th scope="col">Alert Status </th>
+                                        <th scope="col">Alerts Comments </th>
+                                        <th scope="col">User Name </th>
+                                        <th scope="col">Alert Action Date </th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>22-Apr-2020</td>
+                                        <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                                        <td>AA54ER564DHT6</td>
+                                        <td>Commet added</td>
+                                        <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                                    </tr>
+                                    <tr>
+                                        <td>22-Apr-2020</td>
+                                        <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                                        <td>AA54ER564DHT6</td>
+                                        <td>Commet added</td>
+                                        <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                                    </tr>
+                                    <tr>
+                                        <td>22-Apr-2020</td>
+                                        <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                                        <td>AA54ER564DHT6</td>
+                                        <td>Commet added</td>
+                                        <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                    
+                       
+                    </div>
+                </div>
+            </div>
+            </div>
+        
+         
+</div>
+<div class="card">
+    <div class="card-header" id="...">
+        <section class="mb-0 mt-0">
+            <div role="menu" class="" data-toggle="collapse" data-target="#defaultAccordionTwo" aria-expanded="false" aria-controls="defaultAccordionTwo">
+                <svg xmlns="http://www.w3.org/2000/svg" height="0.9em" viewBox="0 0 256 512">
+                   <!-- Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>&nbsp;
+
+                caselist2
+            </div>
+        </section>
+    </div>
+    <div id="defaultAccordionTwo" class="collapse" aria-labelledby="..." data-parent="#toggleAccordion">
+        <div class="card-body" style="height:30vh;overflow-y: scroll;">
+            <div class="table-responsive">
+                <table  id="zero-config" class="table table-hover mb-4" >
+                    <thead>
+                        <tr>
+                            <th scope="col">Alert Date</th>
+                            <th scope="col">List Name</th>
+                            <th scope="col">Transaction/RectType</th>
+                            <th scope="col">Alert Status </th>
+                            <th scope="col">Alerts Comments </th>
+                            <th scope="col">User Name </th>
+                            <th scope="col">Alert Action Date </th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>22-Apr-2020</td>
+                            <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                            <td>AA54ER564DHT6</td>
+                            <td>Commet added</td>
+                            <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                        </tr>
+                        <tr>
+                            <td>22-Apr-2020</td>
+                            <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                            <td>AA54ER564DHT6</td>
+                            <td>Commet added</td>
+                            <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                        </tr>
+                        <tr>
+                            <td>22-Apr-2020</td>
+                            <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                            <td>AA54ER564DHT6</td>
+                            <td>Commet added</td>
+                            <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+        
+
+
+        </div>
+    </div>
+</div>
+</div>
+<div class="card my-2" >
+    <div class="card-header" id="...">
+        <section class="mb-0 mt-0">
+            <div role="menu" class="" data-toggle="collapse" data-target="#defaultAccordionThree" aria-expanded="false" aria-controls="defaultAccordionThree">
+                <svg xmlns="http://www.w3.org/2000/svg" height="0.9em" viewBox="0 0 256 512">
+                   <path d="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z"/></svg>&nbsp;
+
+                caselist3
+            </div>
+        </section>
+    </div>
+    <div id="defaultAccordionThree" class="collapse" aria-labelledby="..." data-parent="#toggleAccordion">
+        <div class="card-body" style="height:30vh;overflow-y: scroll;">
+            <div class="table-responsive">
+                <table  id="zero-config" class="table table-hover mb-4" >
+                    <thead>
+                        <tr>
+                            <th scope="col">Alert Date</th>
+                            <th scope="col">List Name</th>
+                            <th scope="col">Transaction/RectType</th>
+                            <th scope="col">Alert Status </th>
+                            <th scope="col">Alerts Comments </th>
+                            <th scope="col">User Name </th>
+                            <th scope="col">Alert Action Date </th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>22-Apr-2020</td>
+                            <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                            <td>AA54ER564DHT6</td>
+                            <td>Commet added</td>
+                            <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                        </tr>
+                        <tr>
+                            <td>22-Apr-2020</td>
+                            <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                            <td>AA54ER564DHT6</td>
+                            <td>Commet added</td>
+                            <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                        </tr>
+                        <tr>
+                            <td>22-Apr-2020</td>
+                            <td>BANK-51 RO-Transtaction amount ranging RS 100000 to 500000 in All New Accounts</td>
+                            <td>AA54ER564DHT6</td>
+                            <td>Commet added</td>
+                            <td>FLASE POSITIVE,TRANSACTION APPEARS TO BE NORMAL </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+        
+
+
+        </div>
+    </div>
+</div>
+</div>
+   
+    
+
+
+
+
+    </div>
+                
+             
+                <div class="tab-pane fade" id="scenariotransactionhistroy" role="tabpanel" aria-labelledby="scenariotransactionhistroy-tab">
+                  <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing mt-3">
+                    <form action="{{ url_for('TransactionDetails') }}" method="post">
+                      
+                        <div class="d-flex justify-content-end">
+
+                          <input type="hidden" name="accnum"  value="{{accnum}}">
+                          <input type="hidden" name="custid"  value="{{custid}}">
+                          <input type="hidden" name="txdate"  value="{{txdate}}">
+                          <input type="hidden" name="scenarioType"  value="{{scenarioType}}">
+                          <input type="hidden" name="txtype"  value="{{txtype}}">
+                          <input type="hidden" name="trnsflowtype"  value="{{trnsflowtype}}">
+
+
+                        <button type="submit" class="btn btn-sm btn-blue">
+                            <svg
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          fill="#ffff"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M12.5535 16.5061C12.4114 16.6615 12.2106 16.75 12 16.75C11.7894 16.75 11.5886 16.6615 11.4465 16.5061L7.44648 12.1311C7.16698 11.8254 7.18822 11.351 7.49392 11.0715C7.79963 10.792 8.27402 10.8132 8.55352 11.1189L11.25 14.0682V3C11.25 2.58579 11.5858 2.25 12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V14.0682L15.4465 11.1189C15.726 10.8132 16.2004 10.792 16.5061 11.0715C16.8118 11.351 16.833 11.8254 16.5535 12.1311L12.5535 16.5061Z"
+                              fill="#ffff"
+                            ></path>
+                            <path
+                              d="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"
+                              fill="#ffff"
+                            ></path>
+                          </g>
+                        </svg>
+                        </button>
+                    </div>
+                    </form>
+                    <div class="widget-content widget-content-area br-6">
+                        <div class="table-responsive">
+                            <table  class="table table-hover example" style="width:100%">
+                                <thead>
+                                    <tr>
+                                      <th>Account Number </th>
+                                        <th>Date Of Transaction </th>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Category</th>
+                                        <th>Transaction Amount</th>
+                                        <th>Transaction Currency Type </th>
+                                        <th>Transaction Id/No</th>
+                                        <th>Transfer Account No</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  {% for value in scenarioTransactionData %}
+                                  
+                                  <tr>
+                                    <td>{{accnum}}</td>
+                                    <td>{{value['TXDATE']}}</td>
+                                    <td>{{value['TXTYPE']}}</td>
+                                    <td>{{value['TRNFLOWTYPE']}}</td>
+                                    <td>{{value['TXAMT']}}</td>
+                                    <td>{{value['TXFRCURRCD']}}</td>
+                                    <td>{{value['TXNNO']}}</td>
+                                    <td>{{value['TRNFACCTNO']}}</td>
+                                  </tr>
+                                  {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                  <div class="col-xl-12 col-lg-12 col-sm-12  layout-spacing mt-3">
+                   
+                    <div class="widget-content widget-content-area br-6">
+                        <div class="table-responsive">
+                            <table  class="table table-hover example" style="width:100%">
+                                <thead>
+                                    <tr>
+                                      <th>Account Number </th>
+                                        <th>Date Of Transaction </th>
+                                        <th>Transaction Type</th>
+                                        <th>Transaction Category</th>
+                                        <th>Transaction Amount</th>
+                                        <th>Transaction Currency Type </th>
+                                        <th>Transaction Id/No</th>
+                                   
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  {% for value in scenarioTransactionDataMultiDrMultiCr %}
+                                  
+                                  <tr>
+                                    <td>{{value['ACCTNO']}}</td>
+                                    <td>{{value['TXDATE']}}</td>
+                                    <td>{{value['TXTYPE']}}</td>
+                                    <td>{{value['TRNFLOWTYPE']}}</td>
+                                    <td>{{value['TXAMT']}}</td>
+                                    <td>{{value['TXFRCURRCD']}}</td>
+                                    <td>{{value['TXNNO']}}</td>
+                                  </tr>
+                                  {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                  
+                </div>
+
+          
+            </div>
+          </div>
+          </div>
+        </div>
+         {% include 'footer.html' %}
+      </div>
+      <!--  END CONTENT PART  -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"
+    ></script>
+    <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/assets/js/custom.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+        var isDateFiltering = false;
+        var dataTable;
+        var dateArr = [];
+
+        // Initialize DataTable
+        $(document).ready(function () {
+          dataTable = $(".example").DataTable({
+            rowReorder: {
+              selector: "td:nth-child(2)",
+            },
+            responsive: true,
+            scrollInfinite: true, // Enable infinite scrolling
+            info: true
+          });
+          });
+          });
+
+
+            $(document).ready(function () {
+                $('#usersTab').click(function () {
+                    $('#addUserTab, #allUsersTab').toggle();
+                });
+            });
+
+            if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+        </script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  </body>
+</html>

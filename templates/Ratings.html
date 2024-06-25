@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include 'metaData.html' %}
+
+    <style>
+      /* date picker start */
+
+      /* Style the input box */
+      .form-control-sm {
+        width: 200px;
+        /* Set your desired width */
+
+        font-size: 14px;
+        border: 1px solid #ccc !important;
+        border-radius: 4px;
+        background-color: rgb(251, 255, 254);
+      }
+
+      .form-control {
+        border: 1px solid #ccc !important;
+      }
+
+      .form-control:hover {
+        border: 1px solid #ccc !important;
+      }
+
+      tr:not(:first-child):hover {
+        transform: none !important;
+      }
+
+      .input-group-text {
+        padding: 0px 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      /* Style the placeholder text */
+      ::placeholder {
+        color: #999;
+        /* Customize the placeholder color */
+      }
+
+      /* date picker ends*/
+
+      .text-primary {
+        color: #00579c !important;
+      }
+
+      .form-control-sm:hover {
+        border: 1px solid #ced4da !important;
+      }
+
+      .btn-primary {
+        background-color: #00579c !important;
+        border-color: #00579c !important;
+      }
+
+      .btn-danger {
+        background-color: #df2233 !important;
+      }
+
+      .page-item.active .page-link {
+        background-color: #00579c !important;
+      }
+
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+
+      .paths:hover {
+        text-decoration: underline;
+      }
+
+      #select-all {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #8080805b;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox:checked {
+        border: 2px solid rgb(0, 119, 255);
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      .checkbox:active {
+        border: 2px solid rgb(0, 119, 255);
+
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        /* Set the background image when the checkbox is clicked */
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      tr {
+        transition: all 0.1s ease-in-out;
+      }
+
+      tr:not(:first-child):hover {
+        transform: scale(1.01);
+      }
+
+      th:first-child::after {
+        content: "" !important;
+      }
+
+      th:first-child::before {
+        content: "" !important;
+      }
+
+      td,
+      th {
+        padding: 8px 15px !important;
+        border: none !important;
+        border-bottom: 2px solid #00000033 !important;
+        text-align: left !important;
+      }
+
+      /* .modal-content {} */
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row" style="gap: 10px">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+                <nav class="breadcrumb-one" aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a
+                        href="{{ url_for('DGMdashboard') }}"
+                        class="text-blue font-weight-bold"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-home"
+                        >
+                          <path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                          ></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                      </a>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a class="text-primary"
+              >/
+              <a href="{{ url_for('Ratings') }}"
+                ><span class="paths text-primary">Rating </span></a
+              >
+            </a>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN CONTENT PART  -->
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'sidebar.html' %}
+
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT AREA  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div
+            class="alert alert-success position-relative"
+            role="alert"
+            style="right: 0; top: 1%; display: none"
+            id="sucessAlert"
+          >
+            Successfully Submited...
+          </div>
+          <div class="layout-top-spacing">
+            <!-- <div id="content" class="main-content">
+                                            <div class="layout-px-spacing"> -->
+
+            <div class="row layout-top-spacing layout-spacing">
+              <div class="col-lg-12">
+                <div class="statbox widget box box-shadow">
+                  <div
+                    class="d-flex flex-column align-items-center widget-content widget-content-area justify-content-center pb-0 pt-0"
+                    data-backdrop="false"
+                    style="position: relative; z-index: 852px; top: 0"
+                  ></div>
+
+                  <div class="widget-content widget-content-area">
+                    <div class="table-responsive mb-1">
+                      <section>
+                        <table
+                          id="example"
+                          class="display nowrap"
+                          style="width: 100%"
+                        >
+                          <thead>
+                            <tr>
+                              {% if data %} {% for key in data[0].keys() %}
+                              <th>{{ key }}</th>
+                              {% endfor %} {% endif %}
+                            </tr>
+                          </thead>
+                          <tbody id="tableBody">
+                            {% for obj in data %}
+                            <tr>
+                              <!-- Loop through keys and values and display them in table cells -->
+                              {% for key, value in obj.items() %}
+                              <td>
+                                {% if key == 'rating' %} {{ value }}/5 {% else
+                                %} {{ value }} {% endif %}
+                              </td>
+                              {% endfor %}
+                            </tr>
+                            {% endfor %}
+                            <!-- Add more rows with your own data as needed -->
+                          </tbody>
+                        </table>
+                      </section>
+
+                      <!-- modal  -->
+
+                      <!-- Button trigger modal -->
+
+                      <!--  END CONTENT AREA  -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'footer.html' %}
+      </div>
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+
+    <!-- viwe JS start -->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- viwe JS ends -->
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+        $("#usersTab").click(function () {
+          $("#VerifyUserTab").toggle();
+        });
+      });
+    </script>
+    <script src="../static/assets/js/custom.js"></script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+    <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+    <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+    <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"
+    ></script>
+
+    <script>
+      // date picker Starts
+      document.addEventListener("DOMContentLoaded", function () {
+        var flatpickrInstance; // Define flatpickrInstance variable in the outer scope
+        flatpickrInstance = flatpickr("#rangeCalendarFlatpickr", {
+          mode: "range",
+          dateFormat: "Y-m-d H:i:S",
+        });
+        var dataTable;
+        // Initialize DataTable
+        $(document).ready(function () {
+          dataTable = $("#example").DataTable({
+            rowReorder: {
+              selector: "td:nth-child(2)",
+            },
+            responsive: true,
+            paging: true, // Disable initial pagination
+            scrollY: "300px", // Set the height of the scrollable area
+            scrollCollapse: true, // Enable the scrollbar to collapse
+            scrollInfinite: true, // Enable infinite scrolling
+            info: true,
+          });
+          // Bind applyFilters function to button click
+          $("#filter-button").on("click", function () {
+            applyFilters();
+            var minViolatedAmount =
+              document.getElementById("minViolatedAmount").value;
+            var maxViolatedAmount =
+              document.getElementById("maxViolatedAmount").value;
+            var selectedDates = flatpickrInstance.selectedDates;
+            if (selectedDates.length === 2) {
+              var startDate = selectedDates[0];
+              var endDate = selectedDates[1];
+              // var dece = filterTableByDateRange(startDate, endDate);
+              if (
+                minViolatedAmount.length != 0 &&
+                maxViolatedAmount.length != 0
+              ) {
+                filterTableByViolationAmounts(
+                  minViolatedAmount,
+                  maxViolatedAmount
+                );
+              }
+            } else if (
+              minViolatedAmount.length != 0 &&
+              maxViolatedAmount.length != 0
+            ) {
+              filterTableByViolationAmounts(
+                minViolatedAmount,
+                maxViolatedAmount
+              );
+            } else {
+              // Handle the case where the date range is not selected
+              console.log("Please select a date range");
+              var table = document.getElementById("tableBody");
+              var rows = table.getElementsByTagName("tr");
+              // Show all rows when the date range is empty
+              for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = "";
+              }
+              return; // Exit the function when the date range is empty
+            }
+          });
+        });
+
+        function applyFilters() {
+          var custId = $("#custId").val();
+          var accountNumber = $("#AccountNumber").val();
+          var branch = $("#BranchCode").val();
+          var accounttype = $("#AccType").val();
+          var dateRangeInput = $("#rangeCalendarFlatpickr").val();
+          var formattedStartDate = "";
+          var formattedEndDate = "";
+          if (dateRangeInput) {
+            var dates = dateRangeInput.split(" to ");
+            formattedStartDate = formatDate(dates[0]);
+            formattedEndDate = formatDate(dates[1]);
+          }
+          // Clear existing search
+          dataTable.columns().search("");
+          // Apply filters
+          dataTable
+            .columns(1)
+            .search(accountNumber)
+            .columns(2)
+            .search(custId)
+            .columns(3)
+            .search(branch)
+            .column(5)
+            .search(accounttype);
+          // Filter by Allocated Date range
+          dataTable
+            .column(4)
+            .data()
+            .each(function (value, index) {
+              var allocatedDate = value.trim(); // Assuming Allocated Date is stored as text
+              if (
+                allocatedDate >= formattedStartDate &&
+                allocatedDate <= formattedEndDate
+              ) {
+                dataTable.row(index).nodes().to$().show();
+              } else {
+                dataTable.row(index).nodes().to$().hide();
+              }
+            });
+          // Redraw the table
+          dataTable.draw(false);
+          // Recalculate pagination
+          var info = dataTable.page.info();
+          console.log(info);
+          var visibleRowCount = dataTable
+            .rows({ search: "applied", page: "current" })
+            .nodes().length;
+          console.log(visibleRowCount);
+          var paginationInfo =
+            "Showing 1 to " +
+            visibleRowCount +
+            " of " +
+            info.recordsDisplay +
+            " entries";
+          console.log(paginationInfo);
+          $("#example_info").text(paginationInfo);
+        }
+        function formatDate(date) {
+          if (date) {
+            // Check if date is not empty
+            // Split the date string into parts
+            var parts = date.split(" ");
+            // Ensure that we have both date and time parts
+            if (parts.length === 2) {
+              var datePart = parts[0];
+              // Ensure that the date part is in the format 'YYYY-MM-DD'
+              if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+                return datePart + " 00:00:00";
+              } else {
+                console.error("Invalid date format:", datePart);
+                return ""; // Return empty string if date format is invalid
+              }
+            } else {
+              console.error("Invalid date format:", date);
+              return ""; // Return empty string if date format is invalid
+            }
+          } else {
+            return ""; // Return empty string if date is empty
+          }
+        }
+      });
+      function filterTableByViolationAmounts(
+        minViolatedAmount,
+        maxViolatedAmount
+      ) {
+        var table = document.getElementById("tableBody");
+        var rows = table.getElementsByTagName("tr");
+        for (var i = 0; i < rows.length; i++) {
+          var row = rows[i];
+          console.log("this is amount range : ", row);
+          var dateCell_undef = row.getElementsByTagName("td")[8]; // Assuming the date is in the 5th index
+          var amountCell = dateCell_undef.textContent;
+          console.log(amountCell);
+          amountCell = Number(amountCell);
+          console.log("Parsed amountCell:", amountCell);
+          console.log("minViolatedAmount:", minViolatedAmount);
+          console.log("maxViolatedAmount:", maxViolatedAmount);
+          if (
+            !isNaN(amountCell) &&
+            amountCell >= minViolatedAmount &&
+            amountCell <= maxViolatedAmount
+          ) {
+            row.style.display = "";
+            console.log(" IN RANGE DATES");
+          } else {
+            row.style.display = "none";
+            console.log("NOT IN RANGE DATES");
+          }
+        }
+      }
+      function submitForm() {
+        // Find the parent form and submit it
+        var form = event.target.closest("form");
+        form.submit();
+      }
+    </script>
+
+    <script>
+          function downloadAll() {
+              var ticket_numbers = {{ data | tojson
+          }};
+          fetch('/activeCases', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  ticket_numbers: ticket_numbers
+              })
+          })
+              .then(response => {
+                  // Check if response is successful
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  // Convert response to blob
+                  return response.blob();
+              })
+              .then(blob => {
+                  // Create a URL for the blob
+                  const url = window.URL.createObjectURL(blob);
+                  // Create a link element
+                  const link = document.createElement('a');
+                  link.href = url;
+                  // Set the link to download the zip file
+                  link.setAttribute('download', 'dgmpendingcases.zip');
+                  // Append the link to the body
+                  document.body.appendChild(link);
+                  // Click the link to trigger the download
+                  link.click();
+                  // Remove the link from the body
+                  document.body.removeChild(link);
+              })
+              .catch(error => {
+                  // Handle error
+                  console.error('There was an error!', error);
+              });
+      }
+    </script>
+  </body>
+</html>

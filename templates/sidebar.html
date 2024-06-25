@@ -1,0 +1,827 @@
+<!--  BEGIN SIDEBAR  -->
+
+<div class="sidebar-wrapper sidebar-theme">
+
+  <nav id="sidebar">
+      <div class="shadow-bottom"></div>
+      <ul class="list-unstyled menu-categories p-0" id="accordionExample">
+        {% if role == 'IT OFFICER' %}
+
+        <li class="menu">
+          <a href="{{ url_for('ITdashboard') }}" {% if type == 'ITdashboard' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+              <div class="">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" class="feather feather-home">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                  <span>Dashboard</span>
+              </div>
+
+          </a>
+
+      </li> 
+      <li class="menu">
+          <a href="{{ url_for('FINnetReports') }}" {% if type == 'FINnetReports' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+              <div class="">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                      <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                      </g>
+                      <g id="SVGRepo_iconCarrier">
+                          <path
+                              d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                              stroke="#ffffff" stroke-width="1.5"></path>
+                          <path d="M10 16H6" stroke="#ffffff" stroke-width="1.5"
+                              stroke-linecap="round"></path>
+                          <path d="M14 13H18" stroke="#ffffff" stroke-width="1.5"
+                              stroke-linecap="round"></path>
+                          <path d="M14 16H12.5" stroke="#ffffff" stroke-width="1.5"
+                              stroke-linecap="round"></path>
+                          <path d="M9.5 13H11.5" stroke="#ffffff" stroke-width="1.5"
+                              stroke-linecap="round"></path>
+                          <path d="M18 16H16.5" stroke="#ffffff" stroke-width="1.5"
+                              stroke-linecap="round"></path>
+                          <path d="M6 13H7" stroke="#ffffff" stroke-width="1.5"
+                              stroke-linecap="round"></path>
+                      </g>
+                  </svg>
+                  <span>FINNET Reports</span>
+              </div>
+
+          </a>
+
+      </li>
+
+      <!-- <li class="menu">
+        <a href="{{ url_for('sdn') }}" {% if type=='sdn' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+              </g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                  stroke="#ffffff" stroke-width="1.5"></path>
+                <path d="M10 16H6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 13H18" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 16H12.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M9.5 13H11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M18 16H16.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M6 13H7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
+            <span>SDN</span>
+      
+      
+          </div>
+      
+        </a>
+      
+      </li> -->
+
+      <li class="menu">
+        <a href="{{url_for('customer_sdn')}}" class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+              </g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                  stroke="#FFFFFF" stroke-width="1.5"></path>
+                <path d="M10 16H6" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 13H18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 16H12.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M9.5 13H11.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M18 16H16.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M6 13H7" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
+            <span>Customers Sdn</span>
+          </div>
+        </a>
+      </li>
+
+
+
+        {% endif %}
+        
+        {% if role == 'MLRO' %}
+        <li class="menu">
+          <a href="{{ url_for('MLROdashboard') }}" {% if type == 'MLROdashboard' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+          <div class="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-home">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Dashboard</span>
+          </div>
+
+        </a>
+
+      </li>
+
+      <li class="menu" style="position: relative;">
+        <a href="{{url_for('MLRONextLevel')}}" {% if type == 'MLRONextLevel' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z"
+                  stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12 8V13" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+                <path d="M9 2H15" stroke="#ffffff" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </g>
+            </svg>
+            <span>Pending Cases</span>
+          </div>
+
+        </a>
+        
+
+      </li>
+
+      <li class="menu">
+        <a href="{{url_for('MLRONextLevelSubmitView')}}" {% if type == 'MLRONextLevelSubmitView' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 13L11.0006 15L15 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            <span> Created Cases</span>
+          </div>
+
+        </a>
+
+      </li>
+      <li class="menu" style="position: relative;">
+        <a href="{{url_for('Display_Deleted_Mlro_Alerts')}}" {% if type == 'Display_Deleted_Mlro_Alerts' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 icon">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                  </svg>
+            <span>Deleted Cases</span>
+          </div>
+        </a>
+      </li>
+      <li class="menu">
+        <a href="{{url_for('Closed_Mlro_Alerts')}}" {% if type == 'Closed_Mlro_Alerts' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 16L10 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M10 16L14 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> </g></svg>
+            <span>Closed Cases</span>
+          </div>
+
+        </a>
+
+      </li>
+
+      <li class="menu" style="position: relative;">
+        <a href="{{url_for('return_Mlro_Alerts')}}" {% if type == 'return_Mlro_Alerts' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="-0.5 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="1.4000000000000001"> <path d="M15.9098 12.3488L14.5198 7.32881C14.4298 7.00881 14.6098 6.67881 14.9198 6.57881L19.8798 4.96881" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14.0198 19.7888C17.0198 20.7088 20.2698 18.9288 21.2798 15.8188C22.2898 12.7088 20.6698 9.44882 17.6698 8.53882" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M2.4198 12.4988H11.4498" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M2.4198 6.62878H11.4498" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M2.4198 18.3688H11.4498" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> </g><g id="SVGRepo_iconCarrier"> <path d="M15.9098 12.3488L14.5198 7.32881C14.4298 7.00881 14.6098 6.67881 14.9198 6.57881L19.8798 4.96881" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14.0198 19.7888C17.0198 20.7088 20.2698 18.9288 21.2798 15.8188C22.2898 12.7088 20.6698 9.44882 17.6698 8.53882" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M2.4198 12.4988H11.4498" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M2.4198 6.62878H11.4498" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M2.4198 18.3688H11.4498" stroke="#ffffff" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            <span>Returned Closed Cases</span>
+          </div>
+        </a>
+
+        
+
+      </li>
+
+      <li class="menu" style="position: relative;">
+        <a href="{{url_for('display_Sent_Back_Alerts')}}" {% if type == 'display_Sent_Back_Alerts' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                  stroke="#FFFFFF" stroke-width="1.5"></path>
+                <path d="M10 16H6" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 13H18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 16H12.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M9.5 13H11.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M18 16H16.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M6 13H7" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
+
+            <span>Reallocated Cases</span>
+          </div>
+        </a>
+        
+      </li>
+      <li class="menu">
+        <a href="{{ url_for('sdn') }}" {% if type=='sdn' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+              </g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                  stroke="#ffffff" stroke-width="1.5"></path>
+                <path d="M10 16H6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 13H18" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 16H12.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M9.5 13H11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M18 16H16.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M6 13H7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
+            <span>SDN</span>
+      
+      
+          </div>
+      
+        </a>
+      
+      </li>
+
+      {% endif %}
+
+
+      {% if role == 'PINACA_ADMIN' %} 
+
+              
+              <li class="menu">
+                <a href="{{url_for('SDN_USER')}}" {% if type=='SDN_USER' %} data-active="true" aria-expanded="true" {% endif %}
+                  class="dropdown-toggle">
+                  <div class="">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                      <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                      </g>
+                      <g id="SVGRepo_iconCarrier">
+                        <path
+                          d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                          stroke="#ffffff" stroke-width="1.5"></path>
+                        <path d="M10 16H6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                        <path d="M14 13H18" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                        <path d="M14 16H12.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                        <path d="M9.5 13H11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                        <path d="M18 16H16.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                        <path d="M6 13H7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                      </g>
+                    </svg>
+                    <span>SDN_UPLOAD</span>
+              
+              
+                  </div>
+              
+                </a>
+              
+              </li>
+      {% endif %}
+
+
+      {% if role == 'CM/SM' %}
+      <li class="menu">
+        <a href="{{ url_for('CM_SM_dashboard') }}" {% if type == 'CM_SM_dashboard' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+            <div class="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Dashboard</span>
+            </div>
+       
+        </a>
+      
+    </li>
+   
+   <li class="menu" style="position: relative;">
+    <a href="{{url_for('CM_SM_NextLevel')}}" {% if type == 'CM_SM_NextLevel' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M12 8V13" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 2H15" stroke="#ffffff" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+    <span>Pending Cases</span>
+    </div>
+
+    </a>
+</li>
+
+<li class="menu" style="position: relative;">
+<a href="{{url_for('closed_Data_To_CM')}}" {% if type == 'closed_Data_To_CM' %} data-active="true" aria-expanded="true" {% endif %}
+class="dropdown-toggle">
+<div class="">
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="1" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="#ffffff" stroke-width="1.5"></path> <path d="M7.5 18.5V5.5L4.5 8.5" stroke="#ffffff" stroke-linecap="round"   stroke-width="2" stroke-linejoin="round" transform="scale(0.9, 0.9)"></path> <path d="M10.5 12C10.5 7 11.5833 5.5 14.5 5.5C17.4167 5.5 18.5 7 18.5 12C18.5 17 17.4167 18.5 14.5 18.5C11.5833 18.5 10.5 17 10.5 12Z" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" transform="scale(0.9, 0.9)"></path> <path d="M12 7L17 17" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" transform="scale(0.9, 0.9)"></path> </g></svg>
+<span>Verify 10% Closed Cases</span>
+</div>
+</a>
+
+</li>
+
+<li class="menu">
+<a href="{{url_for('CM_SM_NextLevelSubmitView')}}" {% if type == 'CM_SM_NextLevelSubmitView' %} data-active="true" aria-expanded="true" {% endif %}
+class="dropdown-toggle">
+<div class="">
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 13L11.0006 15L15 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+<span>Submited  Cases</span>
+</div>
+
+</a>
+
+</li>
+
+<li class="menu">
+<a href="{{url_for('closed_alerts_cm')}}" {% if type == 'closed_alerts_cm' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+<div class="">
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 16L10 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M10 16L14 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> </g></svg>
+<span>Closed Cases</span>
+</div>
+
+</a>
+
+</li>
+<li class="menu" style="position: relative;">
+  <a href="{{url_for('Display_Deleted_Mlro_Alerts')}}" {% if type == 'Display_Deleted_Mlro_Alerts' %} data-active="true" aria-expanded="true" {% endif %}
+  class="dropdown-toggle">
+  <div class="">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 icon">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                  </svg>
+  <span>Deleted Cases</span>
+  </div>
+  </a>
+  </li>
+<li class="menu" style="position: relative;">
+<a href="{{url_for('display_Sent_Back_Alerts')}}" {% if type == 'display_Sent_Back_Alerts' %} data-active="true" aria-expanded="true" {% endif %}
+class="dropdown-toggle">
+<div class="">
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                  stroke="#FFFFFF" stroke-width="1.5"></path>
+                <path d="M10 16H6" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 13H18" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 16H12.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M9.5 13H11.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M18 16H16.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M6 13H7" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
+
+
+<span>Reallocated Cases</span>
+</div>
+</a>
+
+</li>
+
+      {% endif %}
+
+{% if role == 'DGM/PO' or ROLE == 'DGM' %}
+<li class="menu">
+  <!-- <a href="{{ url_for('DGMdashboard') }}" {% if type == 'DGMdashboard' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle"> -->
+    <a href="{{ url_for('DGMdashboard') }}" {% if type == 'DGMdashboard' or type == 'CM_SM_NextLevel' or type=='closed_alerts_cm' or type=='CM_SM_NextLevelSubmitView' or type=='display_Sent_Back_Alerts' or type=='MLRONextLevel' or type=='Closed_Mlro_Alerts' or type=='MLRONextLevelSubmitView'  %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Dashboard</span>
+    </div>
+
+</a>
+
+</li>
+ 
+<li class="menu" style="position: relative;">
+<a href="{{ url_for('DGMNextLevel') }}"  {% if type == 'DGMNextLevel' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+  <div class="">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M12 8V13" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 2H15" stroke="#ffffff" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+      <span>Pending Cases</span>
+  </div>
+ 
+</a>
+
+
+</li>
+
+<li class="menu">
+  <a href="{{ url_for('DGMNextLevelSubmitView') }}"  {% if type == 'DGMNextLevelSubmitView' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 13L11.0006 15L15 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+      <span>Approved Cases</span>
+  </div>
+ 
+</a>
+
+</li>
+<li class="menu">
+  <a href="{{ url_for('Display_Deleted_Mlro_Alerts') }}"  {% if type == 'Display_Deleted_Mlro_Alerts' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 icon">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                  </svg>
+      <span>Deleted Cases</span>
+  </div>
+</a>
+</li>
+
+
+<li class="menu">
+  <a href="{{ url_for('DGMNextLevelSubmitViewRejected') }}"  {% if type == 'DGMNextLevelSubmitViewRejected' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 16L10 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M10 16L14 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> </g></svg>
+
+      <span>Rejected Cases</span>
+  </div>
+ 
+</a>
+
+</li>
+
+<li class="menu">
+  <a href="{{ url_for('DGMofflinedashboard') }}" {% if type == 'DGMofflinedashboard' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Offline Dashboard</span>
+    </div>
+
+</a>
+
+</li>
+
+
+<li class="menu">
+  <a href="{{ url_for('offline_dgm_Str') }}"  {% if type == 'offline_dgm_Str' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+    <div class="">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<path fill="#f1f2f3" d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z"/></svg> 
+
+        <span>Offline Pending Cases</span>
+    </div>
+   
+  </a>
+  
+  </li>
+
+  <li class="menu">
+    <a href="{{ url_for('offline_dgm_submited_Str') }}" {% if type == 'offline_dgm_submited_Str' %} data-active="true" aria-expanded="true" {% endif %}
+    class="dropdown-toggle">
+    <div class="">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <path fill="#fcfcfc" d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"/></svg>
+  
+    <span>Offline Submited Cases</span>
+    </div>
+    </a>
+    </li>
+
+
+  <li class="menu" >
+    <a href="{{ url_for('offline_dgm_rejected_submited_Str') }}"  {% if type == 'offline_dgm_rejected_submited_Str' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+      <div class="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<path fill="#f2f4f7" d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c-9.4 9.4-9.4 24.6 0 33.9l47 47-47 47c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l47-47 47 47c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-47-47 47-47c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-47 47-47-47c-9.4-9.4-24.6-9.4-33.9 0z"/></svg>
+
+          <span>Offline Rejected Cases</span>
+      </div>
+     
+    </a>
+    
+    
+    </li>
+  
+
+
+  <li class="menu">
+    <a href="{{ url_for('archived') }}" {% if type == 'archived' %} data-active="true" aria-expanded="true" {% endif %} 
+      class="dropdown-toggle">
+      <div class="">
+  <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12.5303 17.5303C12.3897 17.671 12.1989 17.75 12 17.75C11.8011 17.75 11.6103 17.671 11.4697 17.5303L8.96967 15.0303C8.67678 14.7374 8.67678 14.2626 8.96967 13.9697C9.26256 13.6768 9.73744 13.6768 10.0303 13.9697L11.25 15.1893V11C11.25 10.5858 11.5858 10.25 12 10.25C12.4142 10.25 12.75 10.5858 12.75 11V15.1893L13.9697 13.9697C14.2626 13.6768 14.7374 13.6768 15.0303 13.9697C15.3232 14.2626 15.3232 14.7374 15.0303 15.0303L12.5303 17.5303Z" fill="#ffffff"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0574 1.25H11.9426C9.63423 1.24999 7.82519 1.24998 6.41371 1.43975C4.96897 1.63399 3.82895 2.03933 2.93414 2.93414C2.03933 3.82895 1.63399 4.96897 1.43975 6.41371C1.24998 7.82519 1.24999 9.63422 1.25 11.9426V12H1.26092C1.25 12.5788 1.25 13.2299 1.25 13.9664V14.0336C1.25 15.4053 1.24999 16.4807 1.32061 17.3451C1.39252 18.2252 1.54138 18.9523 1.87671 19.6104C2.42799 20.6924 3.30762 21.572 4.38956 22.1233C5.04769 22.4586 5.7748 22.6075 6.65494 22.6794C7.51927 22.75 8.59469 22.75 9.96637 22.75H14.0336C15.4053 22.75 16.4807 22.75 17.3451 22.6794C18.2252 22.6075 18.9523 22.4586 19.6104 22.1233C20.6924 21.572 21.572 20.6924 22.1233 19.6104C22.4586 18.9523 22.6075 18.2252 22.6794 17.3451C22.75 16.4807 22.75 15.4053 22.75 14.0336V13.9664C22.75 13.2302 22.75 12.5787 22.7391 12H22.75V11.9426C22.75 9.63423 22.75 7.82519 22.5603 6.41371C22.366 4.96897 21.9607 3.82895 21.0659 2.93414C20.1711 2.03933 19.031 1.63399 17.5863 1.43975C16.1748 1.24998 14.3658 1.24999 12.0574 1.25ZM4.38956 5.87671C3.82626 6.16372 3.31781 6.53974 2.88197 6.98698C2.89537 6.85884 2.91012 6.73444 2.92637 6.61358C3.09825 5.33517 3.42514 4.56445 3.9948 3.9948C4.56445 3.42514 5.33517 3.09825 6.61358 2.92637C7.91356 2.75159 9.62177 2.75 12 2.75C14.3782 2.75 16.0864 2.75159 17.3864 2.92637C18.6648 3.09825 19.4355 3.42514 20.0052 3.9948C20.5749 4.56445 20.9018 5.33517 21.0736 6.61358C21.0899 6.73445 21.1046 6.85884 21.118 6.98698C20.6822 6.53975 20.1737 6.16372 19.6104 5.87671C18.9523 5.54138 18.2252 5.39252 17.3451 5.32061C16.4807 5.24999 15.4053 5.25 14.0336 5.25H9.96645C8.59472 5.25 7.51929 5.24999 6.65494 5.32061C5.7748 5.39252 5.04769 5.54138 4.38956 5.87671ZM5.07054 7.21322C5.48197 7.00359 5.9897 6.87996 6.77708 6.81563C7.57322 6.75058 8.58749 6.75 10 6.75H14C15.4125 6.75 16.4268 6.75058 17.2229 6.81563C18.0103 6.87996 18.518 7.00359 18.9295 7.21322C19.7291 7.62068 20.3793 8.27085 20.7868 9.07054C20.9964 9.48197 21.12 9.9897 21.1844 10.7771C21.2494 11.5732 21.25 12.5875 21.25 14C21.25 15.4125 21.2494 16.4268 21.1844 17.2229C21.12 18.0103 20.9964 18.518 20.7868 18.9295C20.3793 19.7291 19.7291 20.3793 18.9295 20.7868C18.518 20.9964 18.0103 21.12 17.2229 21.1844C16.4268 21.2494 15.4125 21.25 14 21.25H10C8.58749 21.25 7.57322 21.2494 6.77708 21.1844C5.9897 21.12 5.48197 20.9964 5.07054 20.7868C4.27085 20.3793 3.62068 19.7291 3.21322 18.9295C3.00359 18.518 2.87996 18.0103 2.81563 17.2229C2.75058 16.4268 2.75 15.4125 2.75 14C2.75 12.5875 2.75058 11.5732 2.81563 10.7771C2.87996 9.9897 3.00359 9.48197 3.21322 9.07054C3.62068 8.27085 4.27085 7.62069 5.07054 7.21322Z" fill="#ffffff"></path> </g></svg>      
+  <span>Offline Archive</span>
+      </div>
+    </a>
+  </li>
+   <li class="menu">
+          <a href="{{ url_for('update_threshold_values') }}" {% if type=='update_threshold_values' %} data-active="true" aria-expanded="true"
+            {% endif %} class="dropdown-toggle">
+            <div class="">
+              <svg fill="#ffffff" height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" stroke="#ffffff">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#fcfcfc"
+                  stroke-width="19.456">
+                  <g>
+                    <g>
+                      <g>
+                        <path
+                          d="M459.509,221.885c-4.693,0.358-8.218,4.454-7.859,9.156c0.41,5.402,0.614,10.931,0.614,16.427 c0,4.71,3.823,8.533,8.533,8.533c4.719,0,8.533-3.823,8.533-8.533c0-5.931-0.222-11.887-0.666-17.715 C468.315,225.051,464.202,221.518,459.509,221.885z">
+                        </path>
+                        <path
+                          d="M442.633,184.7c1.911,5.914,3.567,12.049,4.924,18.227c0.87,3.994,4.403,6.716,8.329,6.716 c0.606,0,1.212-0.06,1.826-0.196c4.608-1.007,7.518-5.555,6.519-10.163c-1.476-6.724-3.277-13.397-5.367-19.84 c-1.442-4.48-6.238-6.946-10.743-5.487C443.64,175.407,441.183,180.22,442.633,184.7z">
+                        </path>
+                        <path
+                          d="M431.921,158.542c1.502,2.987,4.506,4.702,7.637,4.702c1.28,0,2.594-0.29,3.814-0.905 c4.215-2.116,5.914-7.245,3.797-11.46c-3.072-6.11-6.511-12.134-10.214-17.903c-2.543-3.968-7.834-5.12-11.785-2.568 c-3.968,2.543-5.12,7.825-2.568,11.784C425.981,147.465,429.113,152.961,431.921,158.542z">
+                        </path>
+                        <path
+                          d="M353.479,80.091c5.615,2.825,11.11,5.965,16.341,9.318c1.434,0.922,3.029,1.357,4.608,1.357 c2.807,0,5.555-1.382,7.185-3.917c2.543-3.968,1.399-9.25-2.568-11.793c-5.726-3.678-11.75-7.117-17.894-10.206 c-4.224-2.125-9.336-0.427-11.452,3.78C347.574,72.846,349.272,77.975,353.479,80.091z">
+                        </path>
+                        <path
+                          d="M392.243,106.501c4.625,4.147,9.097,8.619,13.278,13.286c1.69,1.877,4.019,2.833,6.357,2.833 c2.031,0,4.062-0.717,5.7-2.176c3.507-3.149,3.797-8.55,0.649-12.058c-4.599-5.128-9.506-10.035-14.592-14.592 c-3.516-3.157-8.917-2.842-12.049,0.657C388.437,97.968,388.736,103.361,392.243,106.501z">
+                        </path>
+                        <path
+                          d="M309.121,64.458c6.187,1.348,12.322,3.012,18.227,4.924c0.879,0.282,1.758,0.418,2.628,0.418 c3.601,0,6.955-2.304,8.124-5.905c1.451-4.489-1.007-9.301-5.495-10.752c-6.434-2.082-13.107-3.891-19.831-5.359 c-4.625-1.007-9.156,1.911-10.163,6.511C301.603,58.903,304.513,63.451,309.121,64.458z">
+                        </path>
+                        <path
+                          d="M281.613,60.375c4.42,0,8.166-3.405,8.499-7.885c0.358-4.702-3.166-8.806-7.859-9.156 c-5.837-0.444-11.793-0.666-17.715-0.666c-4.719,0-8.533,3.823-8.533,8.533s3.814,8.533,8.533,8.533 c5.495,0,11.017,0.205,16.418,0.614C281.178,60.367,281.399,60.375,281.613,60.375z">
+                        </path>
+                        <path
+                          d="M52.488,290.113c4.702-0.358,8.218-4.454,7.859-9.156c-0.401-5.402-0.614-10.931-0.614-16.427 c0-4.71-3.823-8.533-8.533-8.533s-8.533,3.823-8.533,8.533c0,5.931,0.222,11.887,0.666,17.724 c0.341,4.48,4.079,7.885,8.499,7.885C52.052,290.138,52.266,290.13,52.488,290.113z">
+                        </path>
+                        <path
+                          d="M80.079,353.458c-2.125-4.207-7.253-5.905-11.452-3.797c-4.215,2.116-5.914,7.245-3.797,11.46 c3.072,6.11,6.511,12.134,10.214,17.903c1.63,2.543,4.378,3.925,7.185,3.925c1.579,0,3.174-0.435,4.599-1.357 c3.968-2.543,5.12-7.825,2.569-11.785C86.019,364.535,82.887,359.039,80.079,353.458z">
+                        </path>
+                        <path
+                          d="M69.367,327.3c-1.911-5.914-3.567-12.049-4.924-18.227c-1.007-4.608-5.555-7.509-10.155-6.519 c-4.608,1.007-7.518,5.555-6.519,10.163c1.476,6.724,3.277,13.397,5.367,19.84c1.161,3.61,4.514,5.914,8.115,5.914 c0.87,0,1.749-0.145,2.628-0.427C68.36,336.593,70.817,331.78,69.367,327.3z">
+                        </path>
+                        <path
+                          d="M202.879,447.542c-6.187-1.348-12.322-3.012-18.227-4.924c-4.489-1.442-9.301,1.016-10.752,5.487 c-1.451,4.489,1.007,9.301,5.495,10.752c6.434,2.082,13.107,3.891,19.831,5.359c0.623,0.137,1.229,0.196,1.835,0.196 c3.925,0,7.458-2.722,8.329-6.707C210.397,453.097,207.487,448.549,202.879,447.542z">
+                        </path>
+                        <path
+                          d="M158.521,431.909c-5.615-2.825-11.11-5.965-16.341-9.318c-3.968-2.551-9.242-1.399-11.793,2.56 c-2.543,3.968-1.399,9.25,2.569,11.793c5.726,3.678,11.75,7.117,17.894,10.206c1.229,0.623,2.534,0.913,3.823,0.913 c3.132,0,6.135-1.715,7.629-4.693C164.426,439.154,162.728,434.025,158.521,431.909z">
+                        </path>
+                        <path
+                          d="M119.757,405.499c-4.625-4.147-9.097-8.619-13.278-13.286c-3.157-3.499-8.542-3.806-12.058-0.657 c-3.507,3.149-3.797,8.55-0.648,12.058c4.599,5.129,9.506,10.035,14.592,14.592c1.63,1.459,3.669,2.176,5.692,2.176 c2.347,0,4.676-0.956,6.357-2.833C123.563,414.032,123.264,408.639,119.757,405.499z">
+                        </path>
+                        <path
+                          d="M247.467,452.267c-5.495,0-11.025-0.205-16.427-0.614c-4.779-0.41-8.798,3.157-9.156,7.859 c-0.358,4.702,3.166,8.798,7.868,9.156c5.828,0.444,11.793,0.666,17.715,0.666c4.71,0,8.533-3.823,8.533-8.533 S252.177,452.267,247.467,452.267z">
+                        </path>
+                        <path
+                          d="M238.933,213.333V25.6c0-14.114-11.486-25.6-25.6-25.6H25.6C11.486,0,0,11.486,0,25.6v187.733 c0,14.114,11.486,25.6,25.6,25.6h187.733C227.447,238.933,238.933,227.447,238.933,213.333z M42.667,42.667H128 c4.71,0,8.533,3.823,8.533,8.533s-3.823,8.533-8.533,8.533H42.667c-4.71,0-8.533-3.823-8.533-8.533S37.956,42.667,42.667,42.667z M34.133,153.6c0-4.71,3.823-8.533,8.533-8.533H76.8c4.71,0,8.533,3.823,8.533,8.533c0,4.71-3.823,8.533-8.533,8.533H42.667 C37.956,162.133,34.133,158.31,34.133,153.6z M128,196.267H59.733c-4.71,0-8.533-3.823-8.533-8.533s3.823-8.533,8.533-8.533H128 c4.71,0,8.533,3.823,8.533,8.533S132.71,196.267,128,196.267z M128,128H42.667c-4.71,0-8.533-3.823-8.533-8.533 s3.823-8.533,8.533-8.533H128c4.71,0,8.533,3.823,8.533,8.533S132.71,128,128,128z M162.133,93.867H68.267 c-4.71,0-8.533-3.823-8.533-8.533c0-4.71,3.823-8.533,8.533-8.533h93.867c4.71,0,8.533,3.823,8.533,8.533 C170.667,90.044,166.844,93.867,162.133,93.867z">
+                        </path>
+                        <path
+                          d="M486.4,273.067H298.667c-14.114,0-25.6,11.486-25.6,25.6V486.4c0,14.114,11.486,25.6,25.6,25.6H486.4 c14.114,0,25.6-11.486,25.6-25.6V298.667C512,284.553,500.514,273.067,486.4,273.067z M315.733,315.733h85.333 c4.71,0,8.533,3.823,8.533,8.533s-3.823,8.533-8.533,8.533h-85.333c-4.71,0-8.533-3.823-8.533-8.533 S311.023,315.733,315.733,315.733z M307.2,426.667c0-4.71,3.823-8.533,8.533-8.533h34.133c4.71,0,8.533,3.823,8.533,8.533 s-3.823,8.533-8.533,8.533h-34.133C311.023,435.2,307.2,431.377,307.2,426.667z M401.067,469.333H332.8 c-4.71,0-8.533-3.823-8.533-8.533s3.823-8.533,8.533-8.533h68.267c4.71,0,8.533,3.823,8.533,8.533 S405.777,469.333,401.067,469.333z M401.067,401.067h-85.333c-4.71,0-8.533-3.823-8.533-8.533c0-4.71,3.823-8.533,8.533-8.533 h85.333c4.71,0,8.533,3.823,8.533,8.533C409.6,397.244,405.777,401.067,401.067,401.067z M435.2,366.933h-93.867 c-4.71,0-8.533-3.823-8.533-8.533s3.823-8.533,8.533-8.533H435.2c4.71,0,8.533,3.823,8.533,8.533S439.91,366.933,435.2,366.933z">
+                        </path>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+                <g id="SVGRepo_iconCarrier">
+                  <g>
+                    <g>
+                      <g>
+                        <path
+                          d="M459.509,221.885c-4.693,0.358-8.218,4.454-7.859,9.156c0.41,5.402,0.614,10.931,0.614,16.427 c0,4.71,3.823,8.533,8.533,8.533c4.719,0,8.533-3.823,8.533-8.533c0-5.931-0.222-11.887-0.666-17.715 C468.315,225.051,464.202,221.518,459.509,221.885z">
+                        </path>
+                        <path
+                          d="M442.633,184.7c1.911,5.914,3.567,12.049,4.924,18.227c0.87,3.994,4.403,6.716,8.329,6.716 c0.606,0,1.212-0.06,1.826-0.196c4.608-1.007,7.518-5.555,6.519-10.163c-1.476-6.724-3.277-13.397-5.367-19.84 c-1.442-4.48-6.238-6.946-10.743-5.487C443.64,175.407,441.183,180.22,442.633,184.7z">
+                        </path>
+                        <path
+                          d="M431.921,158.542c1.502,2.987,4.506,4.702,7.637,4.702c1.28,0,2.594-0.29,3.814-0.905 c4.215-2.116,5.914-7.245,3.797-11.46c-3.072-6.11-6.511-12.134-10.214-17.903c-2.543-3.968-7.834-5.12-11.785-2.568 c-3.968,2.543-5.12,7.825-2.568,11.784C425.981,147.465,429.113,152.961,431.921,158.542z">
+                        </path>
+                        <path
+                          d="M353.479,80.091c5.615,2.825,11.11,5.965,16.341,9.318c1.434,0.922,3.029,1.357,4.608,1.357 c2.807,0,5.555-1.382,7.185-3.917c2.543-3.968,1.399-9.25-2.568-11.793c-5.726-3.678-11.75-7.117-17.894-10.206 c-4.224-2.125-9.336-0.427-11.452,3.78C347.574,72.846,349.272,77.975,353.479,80.091z">
+                        </path>
+                        <path
+                          d="M392.243,106.501c4.625,4.147,9.097,8.619,13.278,13.286c1.69,1.877,4.019,2.833,6.357,2.833 c2.031,0,4.062-0.717,5.7-2.176c3.507-3.149,3.797-8.55,0.649-12.058c-4.599-5.128-9.506-10.035-14.592-14.592 c-3.516-3.157-8.917-2.842-12.049,0.657C388.437,97.968,388.736,103.361,392.243,106.501z">
+                        </path>
+                        <path
+                          d="M309.121,64.458c6.187,1.348,12.322,3.012,18.227,4.924c0.879,0.282,1.758,0.418,2.628,0.418 c3.601,0,6.955-2.304,8.124-5.905c1.451-4.489-1.007-9.301-5.495-10.752c-6.434-2.082-13.107-3.891-19.831-5.359 c-4.625-1.007-9.156,1.911-10.163,6.511C301.603,58.903,304.513,63.451,309.121,64.458z">
+                        </path>
+                        <path
+                          d="M281.613,60.375c4.42,0,8.166-3.405,8.499-7.885c0.358-4.702-3.166-8.806-7.859-9.156 c-5.837-0.444-11.793-0.666-17.715-0.666c-4.719,0-8.533,3.823-8.533,8.533s3.814,8.533,8.533,8.533 c5.495,0,11.017,0.205,16.418,0.614C281.178,60.367,281.399,60.375,281.613,60.375z">
+                        </path>
+                        <path
+                          d="M52.488,290.113c4.702-0.358,8.218-4.454,7.859-9.156c-0.401-5.402-0.614-10.931-0.614-16.427 c0-4.71-3.823-8.533-8.533-8.533s-8.533,3.823-8.533,8.533c0,5.931,0.222,11.887,0.666,17.724 c0.341,4.48,4.079,7.885,8.499,7.885C52.052,290.138,52.266,290.13,52.488,290.113z">
+                        </path>
+                        <path
+                          d="M80.079,353.458c-2.125-4.207-7.253-5.905-11.452-3.797c-4.215,2.116-5.914,7.245-3.797,11.46 c3.072,6.11,6.511,12.134,10.214,17.903c1.63,2.543,4.378,3.925,7.185,3.925c1.579,0,3.174-0.435,4.599-1.357 c3.968-2.543,5.12-7.825,2.569-11.785C86.019,364.535,82.887,359.039,80.079,353.458z">
+                        </path>
+                        <path
+                          d="M69.367,327.3c-1.911-5.914-3.567-12.049-4.924-18.227c-1.007-4.608-5.555-7.509-10.155-6.519 c-4.608,1.007-7.518,5.555-6.519,10.163c1.476,6.724,3.277,13.397,5.367,19.84c1.161,3.61,4.514,5.914,8.115,5.914 c0.87,0,1.749-0.145,2.628-0.427C68.36,336.593,70.817,331.78,69.367,327.3z">
+                        </path>
+                        <path
+                          d="M202.879,447.542c-6.187-1.348-12.322-3.012-18.227-4.924c-4.489-1.442-9.301,1.016-10.752,5.487 c-1.451,4.489,1.007,9.301,5.495,10.752c6.434,2.082,13.107,3.891,19.831,5.359c0.623,0.137,1.229,0.196,1.835,0.196 c3.925,0,7.458-2.722,8.329-6.707C210.397,453.097,207.487,448.549,202.879,447.542z">
+                        </path>
+                        <path
+                          d="M158.521,431.909c-5.615-2.825-11.11-5.965-16.341-9.318c-3.968-2.551-9.242-1.399-11.793,2.56 c-2.543,3.968-1.399,9.25,2.569,11.793c5.726,3.678,11.75,7.117,17.894,10.206c1.229,0.623,2.534,0.913,3.823,0.913 c3.132,0,6.135-1.715,7.629-4.693C164.426,439.154,162.728,434.025,158.521,431.909z">
+                        </path>
+                        <path
+                          d="M119.757,405.499c-4.625-4.147-9.097-8.619-13.278-13.286c-3.157-3.499-8.542-3.806-12.058-0.657 c-3.507,3.149-3.797,8.55-0.648,12.058c4.599,5.129,9.506,10.035,14.592,14.592c1.63,1.459,3.669,2.176,5.692,2.176 c2.347,0,4.676-0.956,6.357-2.833C123.563,414.032,123.264,408.639,119.757,405.499z">
+                        </path>
+                        <path
+                          d="M247.467,452.267c-5.495,0-11.025-0.205-16.427-0.614c-4.779-0.41-8.798,3.157-9.156,7.859 c-0.358,4.702,3.166,8.798,7.868,9.156c5.828,0.444,11.793,0.666,17.715,0.666c4.71,0,8.533-3.823,8.533-8.533 S252.177,452.267,247.467,452.267z">
+                        </path>
+                        <path
+                          d="M238.933,213.333V25.6c0-14.114-11.486-25.6-25.6-25.6H25.6C11.486,0,0,11.486,0,25.6v187.733 c0,14.114,11.486,25.6,25.6,25.6h187.733C227.447,238.933,238.933,227.447,238.933,213.333z M42.667,42.667H128 c4.71,0,8.533,3.823,8.533,8.533s-3.823,8.533-8.533,8.533H42.667c-4.71,0-8.533-3.823-8.533-8.533S37.956,42.667,42.667,42.667z M34.133,153.6c0-4.71,3.823-8.533,8.533-8.533H76.8c4.71,0,8.533,3.823,8.533,8.533c0,4.71-3.823,8.533-8.533,8.533H42.667 C37.956,162.133,34.133,158.31,34.133,153.6z M128,196.267H59.733c-4.71,0-8.533-3.823-8.533-8.533s3.823-8.533,8.533-8.533H128 c4.71,0,8.533,3.823,8.533,8.533S132.71,196.267,128,196.267z M128,128H42.667c-4.71,0-8.533-3.823-8.533-8.533 s3.823-8.533,8.533-8.533H128c4.71,0,8.533,3.823,8.533,8.533S132.71,128,128,128z M162.133,93.867H68.267 c-4.71,0-8.533-3.823-8.533-8.533c0-4.71,3.823-8.533,8.533-8.533h93.867c4.71,0,8.533,3.823,8.533,8.533 C170.667,90.044,166.844,93.867,162.133,93.867z">
+                        </path>
+                        <path
+                          d="M486.4,273.067H298.667c-14.114,0-25.6,11.486-25.6,25.6V486.4c0,14.114,11.486,25.6,25.6,25.6H486.4 c14.114,0,25.6-11.486,25.6-25.6V298.667C512,284.553,500.514,273.067,486.4,273.067z M315.733,315.733h85.333 c4.71,0,8.533,3.823,8.533,8.533s-3.823,8.533-8.533,8.533h-85.333c-4.71,0-8.533-3.823-8.533-8.533 S311.023,315.733,315.733,315.733z M307.2,426.667c0-4.71,3.823-8.533,8.533-8.533h34.133c4.71,0,8.533,3.823,8.533,8.533 s-3.823,8.533-8.533,8.533h-34.133C311.023,435.2,307.2,431.377,307.2,426.667z M401.067,469.333H332.8 c-4.71,0-8.533-3.823-8.533-8.533s3.823-8.533,8.533-8.533h68.267c4.71,0,8.533,3.823,8.533,8.533 S405.777,469.333,401.067,469.333z M401.067,401.067h-85.333c-4.71,0-8.533-3.823-8.533-8.533c0-4.71,3.823-8.533,8.533-8.533 h85.333c4.71,0,8.533,3.823,8.533,8.533C409.6,397.244,405.777,401.067,401.067,401.067z M435.2,366.933h-93.867 c-4.71,0-8.533-3.823-8.533-8.533s3.823-8.533,8.533-8.533H435.2c4.71,0,8.533,3.823,8.533,8.533S439.91,366.933,435.2,366.933z">
+                        </path>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </svg>
+              <span>Threshold SETTING</span>
+            </div>
+        
+          </a>
+        
+        </li>
+
+        <li class="menu">
+          <a href="{{ url_for('Ratings') }}" class="dropdown-toggle">
+            <div class="">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#0293D6">
+                <path fill="#FFFFFF" d="M0 0h24v24H0z" />
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+              <span>Ratings</span>
+            </div>
+          </a>
+        </li>
+    
+
+
+{% endif %}
+
+{% if role == 'BranchMakers' %}
+
+      <li class="menu">
+        <a href="{{ url_for('branchmakers') }}" {% if type == 'branchmakers' %} data-active="true" aria-expanded="true" {% endif %}  class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.9944 10.0011L11.9944 13.9989" stroke="#ffffff" stroke-width="1.69904" stroke-linecap="round"></path> <path d="M13.9933 12H9.99553" stroke="#ffffff" stroke-width="1.69904" stroke-linecap="round"></path> <path d="M20.8448 12V6.50968C20.8448 4.48821 19.2061 2.84949 17.1846 2.84949H6.50406C4.4826 2.84949 2.84387 4.48821 2.84387 6.50968V17.4903C2.84387 19.5117 4.4826 21.1504 6.50406 21.1504H11.8444" stroke="#ffffff" stroke-width="1.69904" stroke-linecap="round"></path> <path d="M20.7845 15.8827L18.8314 13.8971C18.6334 13.6957 18.3122 13.6957 18.1141 13.8971L14.3578 17.716C14.249 17.8266 14.1955 17.9813 14.2122 18.1368L14.427 20.1323C14.44 20.2525 14.5333 20.3474 14.6516 20.3605L16.6143 20.5789C16.7672 20.5959 16.9194 20.5415 17.0282 20.431L20.7845 16.612C20.9826 16.4106 20.9826 16.0841 20.7845 15.8827Z" stroke="#ffffff" stroke-width="1.69904" stroke-linecap="round"></path> </g></svg>
+            <span> Add New Case </span>
+          </div>
+        </a>
+      </li>
+      
+      <li class="menu">
+        <a href="{{ url_for('offline_sumited_branchmaker') }}" {% if type == 'offline_sumited_branchmaker' %} data-active="true" aria-expanded="true" {% endif %} 
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 13L11.0006 15L15 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            <span>Submited Cases</span>
+          </div>
+        </a>
+      </li>
+      
+     
+      <li class="menu">
+        <a href="{{ url_for('archived') }}" {% if type == 'archived' %} data-active="true" aria-expanded="true" {% endif %} 
+          class="dropdown-toggle">
+          <div class="">
+      <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12.5303 17.5303C12.3897 17.671 12.1989 17.75 12 17.75C11.8011 17.75 11.6103 17.671 11.4697 17.5303L8.96967 15.0303C8.67678 14.7374 8.67678 14.2626 8.96967 13.9697C9.26256 13.6768 9.73744 13.6768 10.0303 13.9697L11.25 15.1893V11C11.25 10.5858 11.5858 10.25 12 10.25C12.4142 10.25 12.75 10.5858 12.75 11V15.1893L13.9697 13.9697C14.2626 13.6768 14.7374 13.6768 15.0303 13.9697C15.3232 14.2626 15.3232 14.7374 15.0303 15.0303L12.5303 17.5303Z" fill="#ffffff"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0574 1.25H11.9426C9.63423 1.24999 7.82519 1.24998 6.41371 1.43975C4.96897 1.63399 3.82895 2.03933 2.93414 2.93414C2.03933 3.82895 1.63399 4.96897 1.43975 6.41371C1.24998 7.82519 1.24999 9.63422 1.25 11.9426V12H1.26092C1.25 12.5788 1.25 13.2299 1.25 13.9664V14.0336C1.25 15.4053 1.24999 16.4807 1.32061 17.3451C1.39252 18.2252 1.54138 18.9523 1.87671 19.6104C2.42799 20.6924 3.30762 21.572 4.38956 22.1233C5.04769 22.4586 5.7748 22.6075 6.65494 22.6794C7.51927 22.75 8.59469 22.75 9.96637 22.75H14.0336C15.4053 22.75 16.4807 22.75 17.3451 22.6794C18.2252 22.6075 18.9523 22.4586 19.6104 22.1233C20.6924 21.572 21.572 20.6924 22.1233 19.6104C22.4586 18.9523 22.6075 18.2252 22.6794 17.3451C22.75 16.4807 22.75 15.4053 22.75 14.0336V13.9664C22.75 13.2302 22.75 12.5787 22.7391 12H22.75V11.9426C22.75 9.63423 22.75 7.82519 22.5603 6.41371C22.366 4.96897 21.9607 3.82895 21.0659 2.93414C20.1711 2.03933 19.031 1.63399 17.5863 1.43975C16.1748 1.24998 14.3658 1.24999 12.0574 1.25ZM4.38956 5.87671C3.82626 6.16372 3.31781 6.53974 2.88197 6.98698C2.89537 6.85884 2.91012 6.73444 2.92637 6.61358C3.09825 5.33517 3.42514 4.56445 3.9948 3.9948C4.56445 3.42514 5.33517 3.09825 6.61358 2.92637C7.91356 2.75159 9.62177 2.75 12 2.75C14.3782 2.75 16.0864 2.75159 17.3864 2.92637C18.6648 3.09825 19.4355 3.42514 20.0052 3.9948C20.5749 4.56445 20.9018 5.33517 21.0736 6.61358C21.0899 6.73445 21.1046 6.85884 21.118 6.98698C20.6822 6.53975 20.1737 6.16372 19.6104 5.87671C18.9523 5.54138 18.2252 5.39252 17.3451 5.32061C16.4807 5.24999 15.4053 5.25 14.0336 5.25H9.96645C8.59472 5.25 7.51929 5.24999 6.65494 5.32061C5.7748 5.39252 5.04769 5.54138 4.38956 5.87671ZM5.07054 7.21322C5.48197 7.00359 5.9897 6.87996 6.77708 6.81563C7.57322 6.75058 8.58749 6.75 10 6.75H14C15.4125 6.75 16.4268 6.75058 17.2229 6.81563C18.0103 6.87996 18.518 7.00359 18.9295 7.21322C19.7291 7.62068 20.3793 8.27085 20.7868 9.07054C20.9964 9.48197 21.12 9.9897 21.1844 10.7771C21.2494 11.5732 21.25 12.5875 21.25 14C21.25 15.4125 21.2494 16.4268 21.1844 17.2229C21.12 18.0103 20.9964 18.518 20.7868 18.9295C20.3793 19.7291 19.7291 20.3793 18.9295 20.7868C18.518 20.9964 18.0103 21.12 17.2229 21.1844C16.4268 21.2494 15.4125 21.25 14 21.25H10C8.58749 21.25 7.57322 21.2494 6.77708 21.1844C5.9897 21.12 5.48197 20.9964 5.07054 20.7868C4.27085 20.3793 3.62068 19.7291 3.21322 18.9295C3.00359 18.518 2.87996 18.0103 2.81563 17.2229C2.75058 16.4268 2.75 15.4125 2.75 14C2.75 12.5875 2.75058 11.5732 2.81563 10.7771C2.87996 9.9897 3.00359 9.48197 3.21322 9.07054C3.62068 8.27085 4.27085 7.62069 5.07054 7.21322Z" fill="#ffffff"></path> </g></svg>      
+      <span>Archive</span>
+          </div>
+        </a>
+      </li>
+      <li class="menu">
+        <a href="{{ url_for('sdn') }}" {% if type=='sdn' %} data-active="true" aria-expanded="true" {% endif %}
+          class="dropdown-toggle">
+          <div class="">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+              </g>
+              <g id="SVGRepo_iconCarrier">
+                <path
+                  d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                  stroke="#ffffff" stroke-width="1.5"></path>
+                <path d="M10 16H6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 13H18" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M14 16H12.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M9.5 13H11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M18 16H16.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M6 13H7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              </g>
+            </svg>
+            <span>SDN</span>
+      
+      
+          </div>
+      
+        </a>
+      
+      </li>
+
+      
+      {% endif %}
+      <!-- END -->
+
+
+      <!-- Menu bar for ROS -->
+
+      {% if role == 'ROS' %}
+          
+      <li class="menu">
+        <a href="{{url_for('ROSDashboard')}}" {% if type == 'ROSDashboard' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+          <div class="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-home">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Dashboard</span>
+          </div>
+
+        </a>
+
+      </li>
+
+      <li class="menu" style="position: relative;">
+        <a href="{{url_for('ros')}}" {% if type == 'ros' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
+          <div class="">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20.75 13.25C20.75 18.08 16.83 22 12 22C7.17 22 3.25 18.08 3.25 13.25C3.25 8.42 7.17 4.5 12 4.5C16.83 4.5 20.75 8.42 20.75 13.25Z" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M12 8V13" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 2H15" stroke="#ffffff" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            <span>Pending Cases</span>
+          </div>
+
+        </a>
+    </li>
+    <li class="menu">
+      <a href="{{ url_for('offline_submited_Str') }}" {% if type == 'offline_submited_Str' %} data-active="true" aria-expanded="true" {% endif %}
+        class="dropdown-toggle">
+        <div class="">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 4C4 3.44772 4.44772 3 5 3H14H14.5858C14.851 3 15.1054 3.10536 15.2929 3.29289L19.7071 7.70711C19.8946 7.89464 20 8.149 20 8.41421V20C20 20.5523 19.5523 21 19 21H5C4.44772 21 4 20.5523 4 20V4Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path> <path d="M20 8H15V3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 13L11.0006 15L15 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+          <span>Submited Cases</span>
+        </div>
+      </a>
+    </li>
+  
+    </li>
+    
+    <li class="menu">
+      <a href="{{ url_for('archived') }}" {% if type == 'archived' %} data-active="true" aria-expanded="true" {% endif %} 
+        class="dropdown-toggle">
+        <div class="">
+    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12.5303 17.5303C12.3897 17.671 12.1989 17.75 12 17.75C11.8011 17.75 11.6103 17.671 11.4697 17.5303L8.96967 15.0303C8.67678 14.7374 8.67678 14.2626 8.96967 13.9697C9.26256 13.6768 9.73744 13.6768 10.0303 13.9697L11.25 15.1893V11C11.25 10.5858 11.5858 10.25 12 10.25C12.4142 10.25 12.75 10.5858 12.75 11V15.1893L13.9697 13.9697C14.2626 13.6768 14.7374 13.6768 15.0303 13.9697C15.3232 14.2626 15.3232 14.7374 15.0303 15.0303L12.5303 17.5303Z" fill="#ffffff"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0574 1.25H11.9426C9.63423 1.24999 7.82519 1.24998 6.41371 1.43975C4.96897 1.63399 3.82895 2.03933 2.93414 2.93414C2.03933 3.82895 1.63399 4.96897 1.43975 6.41371C1.24998 7.82519 1.24999 9.63422 1.25 11.9426V12H1.26092C1.25 12.5788 1.25 13.2299 1.25 13.9664V14.0336C1.25 15.4053 1.24999 16.4807 1.32061 17.3451C1.39252 18.2252 1.54138 18.9523 1.87671 19.6104C2.42799 20.6924 3.30762 21.572 4.38956 22.1233C5.04769 22.4586 5.7748 22.6075 6.65494 22.6794C7.51927 22.75 8.59469 22.75 9.96637 22.75H14.0336C15.4053 22.75 16.4807 22.75 17.3451 22.6794C18.2252 22.6075 18.9523 22.4586 19.6104 22.1233C20.6924 21.572 21.572 20.6924 22.1233 19.6104C22.4586 18.9523 22.6075 18.2252 22.6794 17.3451C22.75 16.4807 22.75 15.4053 22.75 14.0336V13.9664C22.75 13.2302 22.75 12.5787 22.7391 12H22.75V11.9426C22.75 9.63423 22.75 7.82519 22.5603 6.41371C22.366 4.96897 21.9607 3.82895 21.0659 2.93414C20.1711 2.03933 19.031 1.63399 17.5863 1.43975C16.1748 1.24998 14.3658 1.24999 12.0574 1.25ZM4.38956 5.87671C3.82626 6.16372 3.31781 6.53974 2.88197 6.98698C2.89537 6.85884 2.91012 6.73444 2.92637 6.61358C3.09825 5.33517 3.42514 4.56445 3.9948 3.9948C4.56445 3.42514 5.33517 3.09825 6.61358 2.92637C7.91356 2.75159 9.62177 2.75 12 2.75C14.3782 2.75 16.0864 2.75159 17.3864 2.92637C18.6648 3.09825 19.4355 3.42514 20.0052 3.9948C20.5749 4.56445 20.9018 5.33517 21.0736 6.61358C21.0899 6.73445 21.1046 6.85884 21.118 6.98698C20.6822 6.53975 20.1737 6.16372 19.6104 5.87671C18.9523 5.54138 18.2252 5.39252 17.3451 5.32061C16.4807 5.24999 15.4053 5.25 14.0336 5.25H9.96645C8.59472 5.25 7.51929 5.24999 6.65494 5.32061C5.7748 5.39252 5.04769 5.54138 4.38956 5.87671ZM5.07054 7.21322C5.48197 7.00359 5.9897 6.87996 6.77708 6.81563C7.57322 6.75058 8.58749 6.75 10 6.75H14C15.4125 6.75 16.4268 6.75058 17.2229 6.81563C18.0103 6.87996 18.518 7.00359 18.9295 7.21322C19.7291 7.62068 20.3793 8.27085 20.7868 9.07054C20.9964 9.48197 21.12 9.9897 21.1844 10.7771C21.2494 11.5732 21.25 12.5875 21.25 14C21.25 15.4125 21.2494 16.4268 21.1844 17.2229C21.12 18.0103 20.9964 18.518 20.7868 18.9295C20.3793 19.7291 19.7291 20.3793 18.9295 20.7868C18.518 20.9964 18.0103 21.12 17.2229 21.1844C16.4268 21.2494 15.4125 21.25 14 21.25H10C8.58749 21.25 7.57322 21.2494 6.77708 21.1844C5.9897 21.12 5.48197 20.9964 5.07054 20.7868C4.27085 20.3793 3.62068 19.7291 3.21322 18.9295C3.00359 18.518 2.87996 18.0103 2.81563 17.2229C2.75058 16.4268 2.75 15.4125 2.75 14C2.75 12.5875 2.75058 11.5732 2.81563 10.7771C2.87996 9.9897 3.00359 9.48197 3.21322 9.07054C3.62068 8.27085 4.27085 7.62069 5.07054 7.21322Z" fill="#ffffff"></path> </g></svg>      
+    <span>Archive</span>
+        </div>
+      </a>
+    </li>
+    <li class="menu">
+      <a href="{{ url_for('sdn') }}" {% if type=='sdn' %} data-active="true" aria-expanded="true" {% endif %}
+        class="dropdown-toggle">
+        <div class="">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+            </g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z"
+                stroke="#ffffff" stroke-width="1.5"></path>
+              <path d="M10 16H6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M14 13H18" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M14 16H12.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M9.5 13H11.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M18 16H16.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+              <path d="M6 13H7" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"></path>
+            </g>
+          </svg>
+          <span>SDN</span>
+    
+    
+        </div>
+    
+      </a>
+    
+    </li>
+
+
+    {% endif %}
+
+      <!-- END -->
+
+
+      </ul>
+  </nav>
+
+</div>
+
+<script>
+   if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+</script>
+
+
+
+
+<!--  END SIDEBAR  -->

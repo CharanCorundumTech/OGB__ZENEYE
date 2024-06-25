@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+
+  {% include 'metaData.html' %}
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  <style>
+     .form-control {
+       width: 100%;
+        padding: 8px;
+        font-size: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: rgb(251, 255, 254);
+      }
+    
+    .text-primary {
+      color: #00579c !important;
+    }
+
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+    .paths:hover {
+      text-decoration: underline;
+    }
+
+    .btn-primary {
+      background-color: #00579c !important;
+      border-color: #00579c !important;
+    }
+
+    .page-item.active .page-link {
+      background-color: #00579c !important;
+    }
+
+    #select-all {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+   
+    tr {
+      transition: all 0.1s ease-in-out;
+    }
+
+    tr:not(:first-child):hover {
+      transform: scale(1.01);
+    }
+
+    th:first-child::after {
+      content: "" !important;
+    }
+
+    th:first-child::before {
+      content: "" !important;
+    }
+
+    td,
+    th {
+      padding: 15px !important;
+      border: none !important;
+      border-bottom: 2px solid #00000033 !important;
+      text-align: left !important;
+    }
+
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+.leftSide{
+  right: 100% !important;
+  left: auto !important;
+}
+
+
+  </style>
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  {% include 'header.html' %}
+
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a
+        href="javascript:void(0);"
+        class="sidebarCollapse"
+        data-placement="bottom"
+        ><svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="feather feather-menu"
+        >
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{ url_for('DGMdashboard') }}" class="text-blue font-weight-bold">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                  </a></li>
+                  <!-- <li class="breadcrumb-item"><a href="javascript:void(0);">Components</a></li> -->
+                  <!-- <li class="breadcrumb-item active" aria-current="page">Transaction Monitoring</li> -->
+              </ol>
+          </nav>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="{{ url_for('Updatedthreshold') }}" class="text-primary">/ <span class="paths ">Update Threshold</span></a>
+          
+        </li>
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN MAIN CONTAINER  -->
+  <div class="main-container" id="container">
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+      <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="row layout-px-spacing">
+
+        <div class=" layout-top-spacing">
+
+          <div class=" layout-top-spacing layout-spacing">
+            
+              <div class="statbox widget box box-shadow" style="width:80vw">
+
+                <div class="row">
+
+                  {% for data_dict in dropdown_data %}
+                  <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+                    {% for classification,code in data_dict.items() %}
+                    <div class="dropdown">
+                      <button class="btn  dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="card shadow border-0 bg-blue cards">
+                          <div class="card-body text-center">
+                            {% if classification=="TM" %}
+                            <h5 class="card-title mb-0 text-white">Transaction Monitoring</h5>
+                            {% elif classification=="TY" %}
+                            <h5 class="card-title mb-0 text-white">Typology</h5>
+                            {% elif classification=="RM" %}
+                            <h5 class="card-title mb-0 text-white">Risk Monitoring</h5>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </button>
+                      {% set code_dict = {} %}
+                      
+                        {% for alertcode in code %}
+                            {% set prefix = alertcode.split('_')[:-1]|join('_') %}
+                            {% set _ = code_dict.setdefault(prefix, []).append(alertcode) %}
+                        {% endfor %}
+                      <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                        
+                        {% for prefix, items in code_dict.items() %}
+                        <li class="dropdown-submenu">
+                            <a class="dropdown-item" tabindex="-1" href="#">DV_{{ prefix }}</a>
+                            <ul class="dropdown-menu">
+                                {% for alertcode in items %}
+                                    <li class="dropdown-submenu">
+                                      <form method="post" action="{{ url_for('DV_threshold_values') }}">
+                                        <input type="text" name="route_code" value="{{alertcode}}" style="display: none;"/>
+                                        <button type="submit" class="dropdown-item" style="font-size: 12px; font-weight: 700;color: #888ea8; padding: 11px 8px; ">DV_{{ alertcode }}</button>
+                                      </form>
+                                    </li>
+                                    <li class="dropdown-divider"></li>
+                                {% endfor %}
+                                
+                            </ul>
+                        </li>
+                        <li class="dropdown-divider"></li>
+                    {% endfor %}
+
+                        </ul>
+                        
+                    </div>
+                    {% endfor %} 
+                  </div>
+                  {% endfor %}
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% include 'footer.html' %}
+
+    </div>
+  </div>
+  <!-- END MAIN CONTAINER -->
+
+
+
+
+
+
+  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+  <script src="../static/bootstrap/js/popper.min.js"></script>
+  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="../static/assets/js/app.js"></script>
+
+
+  <!-- viwe JS start -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
+
+
+  <!-- viwe JS ends -->
+
+
+
+  <script type="text/javascript" language="javascript"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+
+
+    
+ <script>
+  $(document).ready(function () {
+      $('#usersTab').click(function () {
+          $('#VerifyUserTab').toggle();
+      });
+  });
+</script>
+
+  <script>
+    $(document).ready(function () {
+      App.init();
+    });
+
+
+  </script>
+  <script src="../static/assets/js/custom.js"></script>
+  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+  <script src="../static/assets/js/dashboard/dash_1.js"></script>\
+
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+  <!-- retrive data tbody through JS -->
+
+  <!-- <script src="../static/assets/js/tables/tableCheckBox.js"></script> -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+  <script src="../static/plugins/table/datatable/datatables.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+
+  <script>
+
+    $(document).ready(function () {
+      let table = $("#example").DataTable({
+        rowReorder: {
+          selector: "td:nth-child(2)",
+        },
+        responsive: true,
+      });
+      
+    });
+
+  </script>
+</body>
+
+</html>

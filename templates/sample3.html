@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   {% include 'metaData.html' %}
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+     <style>
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+      
+    td strong {
+        color: #909294 !important;
+    }
+
+    /* Add some custom styles for better appearance */
+.nav-tabs {
+    background-color: #f8f9fa; /* Light gray background color */
+    border-bottom: 2px solid #00579c;
+    
+}
+
+.nav-link {
+    color: #495057; /* Text color */
+
+}
+.btn-outline-dark {
+    border: 1px solid #00579c !important;
+    color: #495057 !important;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: #ffffff;
+    background-color: #00579c;
+    border-color: #00579c #00579c #00579c;
+}
+.btn-outline-dark:hover {
+    color: #fff !important;
+    background-color: #00579c;
+}
+.node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 3px;
+        cursor: pointer;
+        /* Add cursor style */
+      }
+
+      .node.collapsed circle {
+        fill: lightcoral;
+        /* Change color for collapsed nodes */
+      }
+
+      .node text {
+        font: 12px sans-serif;
+      }
+
+      .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 2px;
+      }
+
+      .tooltip {
+        position: absolute;
+        text-align: center;
+        width: 120px;
+        padding: 8px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+      }
+
+      .container {
+        display: flex;
+      }
+
+      #tableContainer {
+        float: left;
+      }
+
+      h4 {
+    text-align: center;
+    }
+
+    </style>
+
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+     <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% if role == 'CM/SM' %}{{ url_for('CM_SM_dashboard') }}{% elif role == 'AGM' %}{{ url_for('AGMdashboard') }}{% elif role == 'DGM/PO' %}{{ url_for('DGMdashboard') }}{% elif role == 'MLRO' %}{{ url_for('MLROdashboard') }}{% endif %}">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </a></li>
+                    <li class="breadcrumb-item"><a href={{url_for(type)}}>Total Alerts </a></li> 
+                    <li class="breadcrumb-item"><a href="{{url_for('acc_holder_history')}}">Account Holder Details</a></li> 
+                    <li class="breadcrumb-item active text-blue font-weight-bold" aria-current="page">Graph-2</li>
+                </ol>
+            </nav>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'sidebar.html' %}
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing ">
+          <div class="row layout-top-spacing ">
+           
+             <!-- <div class="container-fluid  card mx-4"> -->
+
+
+    <h4>Graph for {{value}}</h4>
+    <div id="graph"></div>
+
+</div>
+</div>
+</div>
+{% include 'footer.html' %}
+</div>
+<!--  END CONTENT PART  -->
+</div>
+<!-- END MAIN CONTAINER -->
+
+<!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+<script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+<script src="../static/bootstrap/js/popper.min.js"></script>
+<script src="../static/bootstrap/js/bootstrap.min.js"></script>
+<script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="../static/assets/js/app.js"></script>
+<script>
+$(document).ready(function () {
+App.init();
+});
+</script>
+<script src="../static/assets/js/custom.js"></script>
+<script>
+  $(document).ready(function () {
+      $('#usersTab').click(function () {
+          $('#addUserTab, #allUsersTab').toggle();
+      });
+  });
+</script>
+<!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <script src="https://unpkg.com/force-graph"></script>
+
+    <script>
+
+    const myObject = {{ data | safe }};
+    const account_number = {{value|safe}}
+    const nodes = [];
+    const links = [];
+    Object.keys(myObject).forEach(function (customerKey) {
+    var customer = myObject[customerKey];
+
+    var accountNumbers = customer['Account Numbers'];
+
+    console.log("accountNumbers : ",accountNumbers);
+
+    // Use a Set to keep track of unique node IDs
+    var uniqueNodeIds = new Set();
+
+    accountNumbers.forEach(function (accountNumber, index) {
+        if(accountNumber==account_number)
+        {// Check if the node is already in the set
+          console.log("accountNumbers : ",accountNumbers," account_number : ",account_number);
+        if (!uniqueNodeIds.has(accountNumber)) {
+            nodes.push({ id: accountNumber, label: accountNumber });
+            uniqueNodeIds.add(accountNumber);
+        }
+
+        var count = 0;
+        var temp_value;
+
+        customer['Connections'][index].forEach(function (connection) {
+            connection.forEach(function (c) {
+                // Check if the node is already in the set
+                if (!uniqueNodeIds.has(c)) {
+                    nodes.push({ id: c, label: c });
+                    uniqueNodeIds.add(c);
+                }
+
+                if (count == 0) {
+                    links.push({ source: accountNumber, target: c });
+                } else if (count >= 1) {
+                    links.push({ source: temp_value, target: c });
+                }
+
+                temp_value = c;
+                count = count + 1;
+            });
+        });}
+    });
+});
+
+
+
+
+        const Graph = ForceGraph()(document.getElementById("graph"))
+            .linkDirectionalParticles(2)
+            .nodeAutoColorBy("label")
+            .nodeCanvasObject((node, ctx, globalScale) => {
+                const label = node.label || '';
+                const fontSize = 12 / globalScale;
+                ctx.font = `${fontSize}px Sans-Serif`;
+                const textWidth = ctx.measureText(label).width;
+                const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.2);
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 8, 0, 2 * Math.PI);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+                ctx.closePath();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'black';
+                ctx.fillText(label, node.x, node.y);
+            })
+            .d3Force('link', d3.forceLink().distance(200))
+            .d3Force('center', d3.forceCenter().x(0).y(0))
+            .graphData({ nodes, links });
+
+    </script>
+    </body>
+    </html>

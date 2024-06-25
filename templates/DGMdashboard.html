@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-store, no-cache, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.datatables.net https://ajax.googleapis.com https://cdnjs.cloudflare.com http://gyrocode.github.io https://maxcdn.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net http://gyrocode.github.io; font-src 'self' https://fonts.gstatic.com;"
+    />
+    <title>{{role}} {{ ROLE }} -- ODISHA GRAMYA BANK</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../static/assets/img/favicon.ico"
+    />
+    <link
+      href="../static/assets/css/loader.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="../static/assets/js/loader.js"></script>
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:400,600,700"
+      rel="stylesheet"
+    />
+    <link
+      href="../static/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="../static/assets/css/plugins.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../static/assets/css/custom.css"
+    />
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+    <link
+      href="../static/plugins/apex/apexcharts.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="../static/assets/css/dashboard/dash_1.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+      .text-primary {
+        color: #00579c !important;
+      }
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+      .mlro-table tr th {
+        color: #dee0e5 !important;
+      }
+      .agm-table {
+        background-color: #3e6306 !important;
+        border-top-left-radius: 0.25rem !important;
+        border-top-right-radius: 0.25rem !important;
+      }
+      .cm-table {
+        background-color: #033053 !important;
+        border-top-left-radius: 0.25rem !important;
+        border-top-right-radius: 0.25rem !important;
+      }
+      .cm-table tr th,
+      .agm-table tr th {
+        color: #dee0e5 !important;
+      }
+      #tb_1 {
+        cursor: default;
+        background-color: #00579c !important;
+        border-color: #00579c !important;
+      }
+      #profileMLRO {
+        cursor: pointer;
+        transition: all 0.5s ease-in-out;
+        border-bottom: 2px solid rgba(128, 128, 128, 0.114);
+        padding-bottom: 10px;
+      }
+      #profileMLRO:hover {
+        background-color: rgba(128, 128, 128, 0.346);
+        border-radius: 5px;
+      }
+      .paths:hover {
+        text-decoration: underline;
+      }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body
+    onload="dgmCount({{count}},{{approved_count}},{{rejected_count}},{{allocatedperday}},{{DGMApprovedperDay}},{{DGMRejectedperDay}})"
+  >
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row" style="gap: 10px">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+                <nav class="breadcrumb-one" aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a
+                        href="{{ url_for('DGMdashboard') }}"
+                        class="text-blue font-weight-bold"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-home"
+                        >
+                          <path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                          ></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                      </a>
+                    </li>
+                    <!-- <li class="breadcrumb-item"><a href="javascript:void(0);">Components</a></li> -->
+                    <!-- <li class="breadcrumb-item active" aria-current="page">Transaction Monitoring</li> -->
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <a href="{{ url_for('DGMdashboard') }}" class="text-primary"
+              >/ <span class="paths">Dashboard</span></a
+            >
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'sidebar.html' %}
+
+      <!--  END SIDEBAR  -->
+
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div class="row layout-top-spacing">
+            <div
+              class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing"
+            >
+              <div class="widget widget-chart-one">
+                <div class="widget-heading">
+                  <h5 class="">Weekly Cases</h5>
+                  <ul class="tabs tab-pills">
+                    <li>
+                      <a href="javascript:void(0);" id="tb_1" class="tabmenu"
+                        >Weekly</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="widget-content">
+                  <div class="tabs tab-content">
+                    <div id="content_1" class="tabcontent">
+                      <div id="revenueMonthlydgm"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing"
+            >
+              <div class="widget widget-chart-two">
+                <div class="widget-heading">
+                  <h5 class="">Cases raised</h5>
+                </div>
+                <div class="widget-content">
+                  <div id="chart-10" class=""></div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing"
+            >
+              <div class="widget widget-chart-two">
+                <!-- Display CM data in a nested table -->
+                <table class="table table-hover">
+                  <thead class="cm-table">
+                    <tr>
+                      <th scope="col">CM</th>
+                      <th scope="col">CM EMP ID</th>
+                      <th scope="col">PENDING</th>
+                      <th scope="col">CLOSED</th>
+                      <th scope="col">CREATED</th>
+                      <th scope="col">REALLOCATED</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ cm_mailid }}</td>
+                      <td>{{ cm_id}}</td>
+                      <td>
+                        <form
+                          action="{{ url_for('CM_SM_NextLevel') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ cm_mailid }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{ cm_count }}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form
+                          action="{{ url_for('closed_alerts_cm') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ cm_mailid }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{ closed_cm_count }}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form
+                          action="{{ url_for('CM_SM_NextLevelSubmitView') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ cm_mailid }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{ created_count }}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form
+                          action="{{ url_for('display_Sent_Back_Alerts') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ cm_mailid }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{sentbackcount}}
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!-- Display MLRO data in a nested table -->
+                <table class="table table-hover">
+                  <thead
+                    class="cm-table"
+                    style="background-color: #810902 !important"
+                  >
+                    <tr>
+                      <th scope="col">MLRO</th>
+                      <th scope="col">MLRO EMP ID</th>
+                      <th scope="col">PENDING</th>
+                      <th scope="col">CLOSED</th>
+                      <th scope="col">CREATED</th>
+                      <th scope="col">RE ALLOCATED</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ mail }}</td>
+                      <td>{{ id }}</td>
+                      <td>
+                        <form
+                          action="{{ url_for('MLRONextLevel') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ mail }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{ count_mlro }}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form
+                          action="{{ url_for('Closed_Mlro_Alerts') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ mail }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{ countcommentedtickets }}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form
+                          action="{{ url_for('MLRONextLevelSubmitView') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ mail }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{ countSubmited }}
+                          </button>
+                        </form>
+                      </td>
+                      <td>
+                        <form
+                          action="{{ url_for('display_Sent_Back_Alerts') }}"
+                          method="post"
+                        >
+                          <input
+                            type="hidden"
+                            name="u_mailid"
+                            value="{{ mail }}"
+                          />
+                          <button
+                            type="submit"
+                            style="cursor: pointer"
+                            class="btn btn-sm btn-blue"
+                          >
+                            {{countSentBackCaseAlerts}}
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'footer.html' %}
+      </div>
+      <!--  END CONTENT AREA  -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#usersTab").click(function () {
+          $("#addUserTab, #allUsersTab").toggle();
+        });
+      });
+    </script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/assets/js/custom.js"></script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+    <script src="../static/assets/js/dashboard/dash_1.js"></script>
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+    <script>
+      $(document).ready(function () {
+        $("#usersTab").click(function () {
+          $("#VerifyUserTab").toggle();
+        });
+      });
+    </script>
+  </body>
+</html>

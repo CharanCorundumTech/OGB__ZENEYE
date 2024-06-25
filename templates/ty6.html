@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    {% include 'metaData.html' %}
+
+    <style>
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+     <!--  BEGIN NAVBAR  -->
+     {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashbord') }}">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </a></li>
+                    <li class="breadcrumb-item"><a href="{{url_for('typology') }}">Typology</a></li> 
+                    <li class="breadcrumb-item active text-blue font-weight-bold" aria-current="page">{{tm_sub_hedding}}</li>
+                </ol>
+            </nav>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+       {% include 'alldashboardSidebar.html' %}
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div class="row layout-top-spacing mt-3">
+
+             <div class="col-12 pb-2">
+              <h4 class="font-weight-bold text-blue">{{tm_sub_hedding}}</h4>
+              <h6 class="text-secondary">{{ tm_heading }}</h6>
+            </div>
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing ">
+                <h5 class="mb-3">{{t2_heading}}</h5>
+               <div class="text-right">
+                 <button id="toggleButton2" class="btn btn-dark">View Chart</button>
+               </div>
+               <div id="chartContainer2" >
+                  <div class="text-right">
+                   <button id="downloadChartBtn2" class="btn btn-sm btn-outline-dark my-1">Download PNG</button>
+                 </div>
+                 <canvas id="myChart2"></canvas>
+               </div>
+               <div class="table-responsive " id="individual_table">
+                 <div class="text-right">
+                    <button id="downloadTableBtn2" class="btn btn-outline-dark btn-sm my-1">Download CSV</button>
+                 </div>
+                 <table id="myTable2" class="table bg-secondary ">
+                    <thead>
+                      <tr>
+  
+                        <th>Loan Account Number</th>
+                        <th>Loan Amount</th>
+                        <th>Transaction Date</th>
+                        <th>Transaction Type</th>
+                        <th>Transaction Currency</th>
+                        <th>Annual Interest Rate</th>
+                        <th>Repayment Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody> {% for rows in total_df.iterrows() %} <tr>
+                        
+                        <td>{{ rows[1]['Loan Account Number'] }}</td>
+                        <td>{{ rows[1]['Loan Amount'] }}</td>
+                        <td>{{rows[1]['Transaction Date']}}</td>
+                        <td>{{rows[1]['Transaction Type']}}</td>
+                        <td>{{rows[1]['Transaction Currency']}}</td>
+                        <td>{{rows[1]['Annual Interest Rate']}}</td>
+                        <td>{{rows[1]['Repayment Amount']}}</td>
+                        
+                      </tr> {% endfor %} </tbody>
+                  </table>
+                 
+               </div>
+             </div>
+
+          </div>
+          
+        </div>
+        {% include 'footer.html' %}
+
+      </div>
+      <!--  END CONTENT PART  -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.1/dist/apexcharts.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/plugins/highlight/highlight.pack.js"></script>
+    <script src="../static/assets/js/custom.js"></script>
+     <!--  BEGIN CUSTOM SCRIPT FILE  -->
+   <script>
+      $(document).ready(function() {
+        var table = $('#myTable').DataTable({
+          "paging": true,
+          "pageLength": 10,
+          "scrollX": true
+        });
+      });
+      $(document).ready(function() {
+        var table = $('#myTable1').DataTable({
+          "paging": true,
+          "pageLength": 10,
+          "scrollX": true
+        });
+      });
+       $(document).ready(function() {
+        var table = $('#myTable2').DataTable({
+          "paging": true,
+          "pageLength": 10,
+          "scrollX": true
+        });
+      });
+    </script>
+   <script>
+   $(document).ready(function() {
+          var chart = null;
+          // Initially, hide the chart container
+          $("#chartContainer").hide();
+          // Handle button click event
+          $("#toggleButton").click(function() {
+            if (chart) {
+              chart.destroy();
+              chart = null;
+              $("#chartContainer").hide();
+              $("#individual_table").show();
+              $(this).text("View Chart");
+            } else {
+              // Show the chart and hide the tables
+              $("#chartContainer").show();
+              $("#individual_table").hide();
+              $(this).text("View Table");
+              // Create and render the chart
+              createChart();
+            }
+          });
+
+        // Handle button click event to download table as CSV
+    $("#downloadTableBtn").click(function () {
+      // Get table headers
+      var tableHeaders = [];
+      $('#myTable thead th').each(function () {
+        tableHeaders.push($(this).text());
+      });
+
+      // Create a CSV content with headers
+      var csvContent = "data:text/csv;charset=utf-8,\n";
+      csvContent += tableHeaders.join(',') + '\n';
+
+      // Iterate through all pages and collect data
+      var table = $('#myTable').DataTable();
+      var tableData = [];
+      for (var i = 0; i < table.page.info().pages; i++) {
+        table.page(i).draw(false); // Draw each page
+        $('#myTable tbody tr').each(function () {
+          var rowData = [];
+          $(this).find('td').each(function () {
+            rowData.push($(this).text());
+          });
+          tableData.push(rowData.join(','));
+        });
+      }
+
+      // Add data to CSV content
+      csvContent += tableData.join('\n');
+
+      // Create a data URI for the CSV file
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "table_data.csv");
+      document.body.appendChild(link);
+      link.click();
+    });
+          // Function to create and render the chart
+          function createChart() {
+        // Get the DataTable instance for your table
+        var table = $('#myTable').DataTable();
+        // Retrieve all data from the table
+        var data = table.data().toArray();
+
+        // Extract customer IDs and number of transactions
+        var customerIDs = [];
+        var transactionCounts = [];
+        for (var i = 0; i < data.length; i++) {
+            var rowData = data[i];
+            var customerID = rowData[0]; // Assuming customer ID is in the first column
+            var transactionCount = parseFloat(rowData[1]); // Assuming transaction count is in the second column
+            customerIDs.push(customerID);
+            transactionCounts.push(transactionCount);
+        }
+
+        // Create chart data
+        var chartData = {
+            chart: {
+                type: 'pie', // Use a pie chart to display the data
+            },
+            labels: customerIDs, // Customer IDs as labels
+            series: transactionCounts, // Transaction counts as data series
+            colors: ['#000000', '#333333', '#666666'], // Customize colors as needed
+        };
+
+        // Replace 'chartContainer' with the ID of the container element
+        var chartElement = document.getElementById("chartContainer");
+        chart = new ApexCharts(chartElement, chartData);
+        chart.render();
+    }
+     function createChart() {
+        // Get the DataTable instance for your table
+        var table = $('#myTable').DataTable();
+        // Retrieve all data from the table
+        var data = table.data().toArray();
+
+        // Extract customer IDs and number of transactions
+        var customerIDs = [];
+        var transactionCounts = [];
+        for (var i = 0; i < data.length; i++) {
+            var rowData = data[i];
+            var customerID = rowData[0]; // Assuming customer ID is in the first column
+            var transactionCount = parseFloat(rowData[1]); // Assuming transaction count is in the second column
+            customerIDs.push(customerID);
+            transactionCounts.push(transactionCount);
+        }
+
+        // Create chart data
+        var chartData = {
+            chart: {
+                type: 'pie', // Use a pie chart to display the data
+            },
+            labels: customerIDs, // Customer IDs as labels
+            series: transactionCounts, // Transaction counts as data series
+            colors: ['#000000', '#333333', '#666666'], // Customize colors as needed
+        };
+
+        // Replace 'chartContainer' with the ID of the container element
+        var chartElement = document.getElementById("chartContainer");
+        chart = new ApexCharts(chartElement, chartData);
+        chart.render();
+    }
+
+    // Handle button click event to download chart as PNG
+    $("#downloadChartBtn").click(function () {
+      if (chart) {
+        // Use dom-to-image library to convert the chart container to a PNG image
+        domtoimage.toPng(document.getElementById("chartContainer"))
+          .then(function (dataUrl) {
+            // Create a data URI for the PNG image
+            var link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "chart.png";
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch(function (error) {
+            console.error("Error generating chart image: " + error);
+          });
+      }
+    });
+    
+});
+</script>
+<script>
+  $(document).ready(function() {
+          var chart = null;
+          // Initially, hide the chart container
+          $("#chartContainer1").hide();
+          // Handle button click event
+          $("#toggleButton1").click(function() {
+            if (chart) {
+              chart.destroy();
+              chart = null;
+              $("#chartContainer1").hide();
+              $("#non_individual_table").show();
+              $(this).text("View Chart");
+            } else {
+              // Show the chart and hide the tables
+              $("#chartContainer1").show();
+              $("#non_individual_table").hide();
+              $(this).text("View Table");
+              // Create and render the chart
+              createChart();
+            }
+          });
+          
+           // Handle button click event to download table as CSV
+    $("#downloadTableBtn1").click(function () {
+      // Get table headers
+      var tableHeaders = [];
+      $('#myTable1 thead th').each(function () {
+        tableHeaders.push($(this).text());
+      });
+
+      // Create a CSV content with headers
+      var csvContent = "data:text/csv;charset=utf-8,\n";
+      csvContent += tableHeaders.join(',') + '\n';
+
+      // Iterate through all pages and collect data
+      var table = $('#myTable1').DataTable();
+      var tableData = [];
+      for (var i = 0; i < table.page.info().pages; i++) {
+        table.page(i).draw(false); // Draw each page
+        $('#myTable1 tbody tr').each(function () {
+          var rowData = [];
+          $(this).find('td').each(function () {
+            rowData.push($(this).text());
+          });
+          tableData.push(rowData.join(','));
+        });
+      }
+
+      // Add data to CSV content
+      csvContent += tableData.join('\n');
+
+      // Create a data URI for the CSV file
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "table_data.csv");
+      document.body.appendChild(link);
+      link.click();
+    });
+           function createChart() {
+        // Get the DataTable instance for your table
+        var table = $('#myTable1').DataTable();
+        // Retrieve all data from the table
+        var data = table.data().toArray();
+
+        // Extract customer IDs and number of transactions
+        var customerIDs = [];
+        var transactionCounts = [];
+        for (var i = 0; i < data.length; i++) {
+            var rowData = data[i];
+            var customerID = rowData[0]; // Assuming customer ID is in the first column
+            var transactionCount = parseFloat(rowData[1]); // Assuming transaction count is in the second column
+            customerIDs.push(customerID);
+            transactionCounts.push(transactionCount);
+        }
+
+        // Create chart data
+        var chartData = {
+            chart: {
+                type: 'pie', // Use a pie chart to display the data
+            },
+            labels: customerIDs, // Customer IDs as labels
+            series: transactionCounts, // Transaction counts as data series
+            colors: ['#000000', '#333333', '#666666'], 
+            tooltip: {
+                y: {
+                    formatter: function(value) {
+                        // Find the corresponding index for the transaction amount
+                        var index = transactionCounts.indexOf(value);
+
+                        var Account_Nature = data[index][2];
+                        var Customer_Profile = data[index][3];
+                        var Charity = data[index][4];
+                        var RealEstate_Agent = data[index][5];
+                        var Metal_Dealer = data[index][6];
+                        var PAN = data[index][7];
+                        var Acc_Type = data[index][8];
+                        var Acc_Number = data[index][9];
+                        var Acc_Opening_Date = data[index][10];
+                        var Transaction_Date = data[index][11];
+                        var Transaction_Type = data[index][12];
+                        var Transaction_Category = data[index][13];
+                        var Transaction_Currency = data[index][14];
+
+                        return 'Transaction Amount: ' + value +
+                            '<br>Nature of account : ' + Account_Nature +
+                            '<br>Customer Profile: ' + Customer_Profile +
+                            '<br>NPO/Charity: ' + Charity +
+                            '<br>Real estate agent/dealer: ' + RealEstate_Agent +
+                            '<br>Precious Metal Dealer: ' + Metal_Dealer +
+                            '<br>PAN: ' + PAN +
+                            '<br>Type of account: ' + Acc_Type +
+                            '<br>Account Number : ' + Acc_Number +
+                            '<br>Acc_Opening_Date: ' + Acc_Opening_Date +
+                            '<br>Transaction Date: ' + Transaction_Date +
+                            '<br>Transaction Type: ' + Transaction_Type +
+                            '<br>Transaction Category: ' + Transaction_Category +
+                            '<br>Transaction Currency: ' + Transaction_Currency;
+                    }
+                }
+            }
+        
+        };
+
+        // Replace 'chartContainer' with the ID of the container element
+        var chartElement = document.getElementById("chartContainer1");
+        chart = new ApexCharts(chartElement, chartData);
+        chart.render();
+    }    
+     // Handle button click event to download chart as PNG
+    $("#downloadChartBtn1").click(function () {
+      if (chart) {
+        // Use dom-to-image library to convert the chart container to a PNG image
+        domtoimage.toPng(document.getElementById("chartContainer1"))
+          .then(function (dataUrl) {
+            // Create a data URI for the PNG image
+            var link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "chart.png";
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch(function (error) {
+            console.error("Error generating chart image: " + error);
+          });
+      }
+    });
+        });
+</script>
+<script>
+  $(document).ready(function() {
+          var chart = null;
+          // Initially, hide the chart container
+          $("#chartContainer2").hide();
+          // Handle button click event
+          $("#toggleButton2").click(function() {
+            if (chart) {
+              chart.destroy();
+              chart = null;
+              $("#chartContainer2").hide();
+              $("#individual_table2").show();
+              $(this).text("View Chart");
+            } else {
+              // Show the chart and hide the tables
+              $("#chartContainer2").show();
+              $("#individual_table2").hide();
+              $(this).text("View Table");
+              // Create and render the chart
+              createChart();
+            }
+          });
+          // Handle button click event to download table as CSV
+    $("#downloadTableBtn2").click(function () {
+      // Get table headers
+      var tableHeaders = [];
+      $('#myTable2 thead th').each(function () {
+        tableHeaders.push($(this).text());
+      });
+
+      // Create a CSV content with headers
+      var csvContent = "data:text/csv;charset=utf-8,\n";
+      csvContent += tableHeaders.join(',') + '\n';
+
+      // Iterate through all pages and collect data
+      var table = $('#myTable2').DataTable();
+      var tableData = [];
+      for (var i = 0; i < table.page.info().pages; i++) {
+        table.page(i).draw(false); // Draw each page
+        $('#myTable2 tbody tr').each(function () {
+          var rowData = [];
+          $(this).find('td').each(function () {
+            rowData.push($(this).text());
+          });
+          tableData.push(rowData.join(','));
+        });
+      }
+
+      // Add data to CSV content
+      csvContent += tableData.join('\n');
+
+      // Create a data URI for the CSV file
+      var encodedUri = encodeURI(csvContent);
+      var link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "table_data.csv");
+      document.body.appendChild(link);
+      link.click();
+    });
+          // Function to create and render the chart
+          function createChart() {
+        // Get the DataTable instance for your table
+        var table = $('#myTable2').DataTable();
+        // Retrieve all data from the table
+        var data = table.data().toArray();
+
+        // Extract customer IDs and number of transactions
+        var customerIDs = [];
+        var transactionCounts = [];
+        for (var i = 0; i < data.length; i++) {
+            var rowData = data[i];
+            var customerID = rowData[0]; // Assuming customer ID is in the first column
+            var transactionCount = parseFloat(rowData[1]); // Assuming transaction count is in the second column
+            customerIDs.push(customerID);
+            transactionCounts.push(transactionCount);
+        }
+
+        // Create chart data
+        var chartData = {
+            chart: {
+                type: 'pie', // Use a pie chart to display the data
+            },
+            labels: customerIDs, // Customer IDs as labels
+            series: transactionCounts, // Transaction counts as data series
+            colors: ['#000000', '#333333', '#666666'], 
+            tooltip: {
+                y: {
+                    formatter: function(value) {
+                        // Find the corresponding index for the transaction amount
+                        var index = transactionCounts.indexOf(value);
+
+                        var Account_Nature = data[index][2];
+                        var Customer_Profile = data[index][3];
+                        var Charity = data[index][4];
+                        var RealEstate_Agent = data[index][5];
+                        var Metal_Dealer = data[index][6];
+                        var PAN = data[index][7];
+                        var Acc_Type = data[index][8];
+                        var Acc_Number = data[index][9];
+                        var Acc_Opening_Date = data[index][10];
+                        var Transaction_Date = data[index][11];
+                        var Transaction_Type = data[index][12];
+                        var Transaction_Category = data[index][13];
+                        var Transaction_Currency = data[index][14];
+
+                        return 'Transaction Amount: ' + value +
+                            '<br>Nature of account : ' + Account_Nature +
+                            '<br>Customer Profile: ' + Customer_Profile +
+                            '<br>NPO/Charity: ' + Charity +
+                            '<br>Real estate agent/dealer: ' + RealEstate_Agent +
+                            '<br>Precious Metal Dealer: ' + Metal_Dealer +
+                            '<br>PAN: ' + PAN +
+                            '<br>Type of account: ' + Acc_Type +
+                            '<br>Account Number : ' + Acc_Number +
+                            '<br>Acc_Opening_Date: ' + Acc_Opening_Date +
+                            '<br>Transaction Date: ' + Transaction_Date +
+                            '<br>Transaction Type: ' + Transaction_Type +
+                            '<br>Transaction Category: ' + Transaction_Category +
+                            '<br>Transaction Currency: ' + Transaction_Currency;
+                    }
+                }
+            }
+        };
+
+        // Replace 'chartContainer' with the ID of the container element
+        var chartElement = document.getElementById("chartContainer2");
+        chart = new ApexCharts(chartElement, chartData);
+        chart.render();
+    }
+ // Handle button click event to download chart as PNG
+    $("#downloadChartBtn2").click(function () {
+      if (chart) {
+        // Use dom-to-image library to convert the chart container to a PNG image
+        domtoimage.toPng(document.getElementById("chartContainer2"))
+          .then(function (dataUrl) {
+            // Create a data URI for the PNG image
+            var link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "chart.png";
+            document.body.appendChild(link);
+            link.click();
+          })
+          .catch(function (error) {
+            console.error("Error generating chart image: " + error);
+          });
+      }
+    });
+          
+        });
+</script>
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  </body>
+</html>

@@ -1,0 +1,460 @@
+{
+  "alerts": [
+    {
+      "code": "TM_1_1",
+      "Alert_title": "Cash Deposits in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 20000,
+        "Non_Individual": 50000
+      }
+    },
+    {
+      "code": "TM_1_2",
+      "Alert_title": "Cash Withdrawals in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 20000,
+        "Non_Individual": 50000
+      }
+    },
+    {
+      "code": "TM_1_3",
+      "Alert_title": "Non-cash Deposits in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 200000,
+        "Non_Individual": 1000000
+      }
+    },
+    {
+      "code": "TM_1_4",
+      "Alert_title": "Non-cash Withdrawals in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 200000,
+        "Non_Individual": 1000000
+      }
+    },
+    {
+      "code": "TM_2_1",
+      "Alert_title": "Cash Deposits in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 200000,
+        "Non_Individual": 1000000
+      }
+    },
+    {
+      "code": "TM_2_2",
+      "Alert_title": "Cash  Withdrawals in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 200000,
+        "Non_Individual": 1000000
+      }
+    },
+    {
+      "code": "TM_2_3",
+      "Alert_title": "Non-Cash Deposits in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 1000000,
+        "Non_Individual": 5000000
+      }
+    },
+    {
+      "code": "TM_2_4",
+      "Alert_title": "Non-Cash Withdrawals in a Day Aggregating to INR For Individuals and Non-individuals",
+      "Current_values": {
+        "Individual": 1000000,
+        "Non_Individual": 5000000
+      }
+    },
+    {
+      "code": "TM_2_5",
+      "Alert_title": "Cash Transactions Without PAN in a Month",
+      "Current_values": {
+        "X1": 200000
+      }
+    },
+    {
+      "code": "TM_2_6",
+      "Alert_title": "Non-Cash Transactions Without PAN in a Month",
+      "Current_values": {
+        "X1": 1000000
+      }
+    },
+    {
+      "code": "TM_3_1",
+      "Alert_title": "Sudden high value transaction for client,Value of transaction more than  [x] is more than [z] percent of the previous largest transaction for the client in previous [Y] months.",
+      "Current_values": {
+        "Y": 120,
+        "X": 200000,
+        "Z": 20
+      }
+    },
+
+    {
+      "code": "TM_4_1",
+      "Alert_title": "New Account Transactions greater than INR [x] in newly opened account within [y] months",
+      "Current_values": {
+        "Y": 100,
+        "X": 1000000
+      }
+    },
+    {
+      "code": "TM_4_2",
+      "Alert_title": "High activity in a new account, No. of transactions morethan [N] in newly opened account within [y] months",
+      "Current_values": {
+        "Y": 120,
+        "N": 5
+      }
+    },
+    {
+      "code": "TM_8_1",
+      "Alert_title": "Outward foreign remittances in newly opened accounts",
+      "Current_values": {
+        "Y": 100,
+        "X": 20000
+      }
+    },
+    {
+      "code": "TM_8_3",
+      "Alert_title": "Cash deposits followed by immediate outward remittance transactions",
+      "Current_values": {
+        "X": 200000,
+        "Z": 30,
+        "Y": 6
+      }
+    },
+    {
+      "code": "TY_1_1",
+      "Alert_title": "Splitting of cash deposits just below INR 10,00,000 in a single/multiple accounts in a month",
+      "Current_values": {
+        "X1": 900000,
+        "X2": 1000000,
+        "N": 1
+      }
+    },
+    {
+      "code": "TY_1_2",
+      "Alert_title": "Splitting of cash deposits just below INR 50,000 by a customer in a month",
+      "Current_values": {
+        "X1": 45000,
+        "X2": 50000,
+        "N": 1
+      }
+    },
+    {
+      "code": "TY_1_3",
+      "Alert_title": "Frequent cash deposits just below INR 10,00,000",
+      "Current_values": {
+        "X1": 900000,
+        "X2": 1000000,
+        "N": 1,
+        "Y": 10
+      }
+    },
+    {
+      "code": "TY_1_4",
+      "Alert_title": "Frequent low cash deposits",
+      "Current_values": {
+        "X1": 5000,
+        "X2": 10000,
+        "Y": 20,
+        "N": 1
+      }
+    },
+    {
+      "code": "TY_1_5",
+      "Alert_title": "Frequent low cash withdrawls",
+      "Current_values": {
+        "X1": 5000,
+        "X2": 10000,
+        "Y": 20,
+        "N": 1
+      }
+    },
+    {
+      "code": "TY_2_2",
+      "Alert_title": "One to many fund transfer",
+      "Current_values": {
+        "N": 5
+      }
+    },
+    {
+      "code": "TY_10_2",
+      "Alert_title": "Inward remittance followed by immediate withdrawl/transfer to other accounts",
+      "Current_values": {
+        "X1": 200000,
+        "Y": 6,
+        "Z": 30
+      }
+    },
+    {
+      "code": "TY_3_1",
+      "Alert_title": "Repeated small value cash deposits followed by immediate cash withdrawls from different locations",
+      "Current_values": {
+        "N": 3,
+        "Y": 7,
+        "Z": 75,
+        "x1": 2000,
+        "x2": 10000
+      }
+    },
+    {
+      "code": "TY_3_2",
+      "Alert_title": "Repeated small value transfers from multiple parties followed by immediate cash/non-cash withdrawls (through ATM's or other modes)",
+      "Current_values": {
+        "N": 3,
+        "Y": 7,
+        "Z": 75,
+        "x1": 2000,
+        "x2": 10000
+      }
+    },
+    {
+      "code": "TY_3_3",
+      "Alert_title": "Repeated small value inward remittance from unrelated parties followed by immediate cash withdrawls (through ATM's or other modes) ",
+      "Current_values": {
+        "N": 3,
+        "Y": 7,
+        "Z": 75,
+        "x1": 2000,
+        "x2": 10000
+      }
+    },
+    {
+      "code": "TY_3_5",
+      "Alert_title": "Repeated small value foreign inward remittance from unrelated parties followed by expenditure on specified activities such as purchase of tickets, hotel bookings etc",
+      "Current_values": {
+        "N": 3,
+        "Y": 6,
+        "Z": 75,
+        "x1": 2000,
+        "x2": 10000
+      }
+    },
+    {
+      "code": "TY_5_1",
+      "Alert_title": "Majority of credit card repayments in cash",
+      "Current_values": {
+        "x": 100000,
+        "Y": 20
+      }
+    },
+    {
+      "code": "TY_6_1",
+      "Alert_title": "Repayments of loan in cash ",
+      "Current_values": {
+        "N": 59,
+        "X": 1000000,
+        "X1": 1500000
+      }
+    },
+    {
+      "code": "TY_6_3",
+      "Alert_title": "Repayments of loan in cash",
+      "Current_values": {
+        "Z": 50,
+        "N": 90,
+        "X1": 1000000
+      }
+    },
+    {
+      "code": "TY_7_2",
+      "Alert_title": "High value transactions in new accounts followed by period of inactivity",
+      "Current_values": {
+        "x1": 4000000,
+        "newly_opened": 90,
+        "N": 40
+      }
+    },
+    {
+      "code": "TY_8_2",
+      "Alert_title": "Person getting cash deposits below threshold reporting limits are being followed by immediate ATM withdrawal Afghanistan/Pakistan",
+      "Current_values": {
+        "Y": 6,
+        "N": 1,
+        "x1": 45000,
+        "x2": 49999
+      }
+    },
+    {
+      "code": "TY_10_4",
+      "Alert_title": "Structuring of cross border transactions to avoid reporting in Cross Border Wire Transfer Report(CBWTR)",
+      "Current_values": {
+        "N": 4
+      }
+    },
+    {
+      "code": "TY_11_1",
+      "Alert_title": "Cash deposits made in home bank accounts located on Indo-Nepal border areas in Bihar with quick ATM withdrawals or cash withdrawal from branches.",
+      "Current_values": {
+        "N": 2,
+        "x1": 45000,
+        "x2": 49999
+      }
+    },
+    {
+      "code": "RM_1_1",
+      "Alert_title": "High value cash transactions in NPOs",
+      "Current_values": {
+        "X": 500000,
+        "Y": 15
+      }
+    },
+    {
+      "code": "RM_1_3",
+      "Alert_title": "High value cash transactions pertaining to accounts of real estate agents and dealers",
+      "Current_values": {
+        "X": 50000,
+        "Y": 15
+      }
+    },
+    {
+      "code": "RM_1_4",
+      "Alert_title": "High value cash transactions by dealer in precious metal or stone",
+      "Current_values": {
+        "X": 50000,
+        "Y": 15
+      }
+    },
+    {
+      "code": "RM_2_1",
+      "Alert_title": "High value foreign inward remittance",
+      "Current_values": {
+        "X": 500000,
+        "Y": 15
+      }
+    },
+    {
+      "code": "RM_2_2",
+      "Alert_title": "Inward foreign remittance in a new account",
+      "Current_values": {
+        "Y": 100,
+        "X": 20000
+      }
+    },
+    {
+      "code": "RM_2_3",
+      "Alert_title": "Inward foreign remittance inconsistent with client profile",
+      "Current_values": {
+        "Y": 100,
+        "X": 20000
+      }
+    },
+    {
+      "code": "TM_8_2",
+      "Alert_title": "High value outward remittances in accounts",
+      "Current_values": {
+        "X": 100000,
+        "Y": 15
+      }
+    },
+    {
+      "code": "TM_3_2",
+      "Alert_title": "Sudden increase in value of transactions in a month",
+      "Current_values": {
+        "X": 500000,
+        "Z": 20
+      }
+    },
+    {
+      "code": "TM_3_3",
+      "Alert_title": "Sudden increase in number of Transactions in a month",
+      "Current_values": {
+        "X": 1000000,
+        "Z": 50
+      }
+    },
+    {
+      "code": "TM_3_4",
+      "Alert_title": "Sudden increase in cash deposits of customers",
+      "Current_values": {
+        "X": 500000,
+        "Z": 20
+      }
+    },
+    {
+      "code": "TM_3_6",
+      "Alert_title": "Sudden increase in cash withdrawls of customers",
+      "Current_values": {
+        "X": 500000,
+        "Z": 20
+      }
+    },
+    {
+      "code": "TM_6_1",
+      "Alert_title": "High value cash transactions inconsistent with profile",
+      "Current_values": {
+        "IND": 2000000,
+        "NON_IND": 1000000
+      }
+    },
+    {
+      "code": "TM_3_5",
+      "Alert_title": "Usually high activity in current account",
+      "Current_values": {
+        "N": 4,
+        "Y": 29
+      }
+    },
+    {
+      "code": "TM_6_2",
+      "Alert_title": "High cash activity inconsistent with profile",
+      "Current_values": {
+        "N": 2,
+        "X": 2000000
+      }
+    },
+    {
+      "code": "TM_9_1",
+      "Alert_title": "Foreign exchange transactions for non-account holder transactions",
+      "Current_values": {
+        "Y": 29,
+        "X": 1000000
+      }
+    },
+    {
+      "code": "TM_9_2",
+      "Alert_title": "Foreign exchange transactions for non-account holder transactions",
+      "Current_values": {
+        "Y": 29,
+        "X": 1000000
+      }
+    },
+    {
+      "code": "RM_3_1",
+      "Alert_title": "High value cross border transactions with a country or location with high ML risk/tax havens",
+      "Current_values": {
+        "X": 2000000
+      }
+    },
+    {
+      "code": "RM_3_2",
+      "Alert_title": "Cross border transaction involving a country with high Terrorist Financing (TF) risk",
+      "Current_values": {}
+    },
+    {
+      "code": "TY_5_3",
+      "Alert_title": "Large value credit card transactions for purchase of high value goods",
+      "Current_values": {
+        "X": 400000,
+        "Y": 20
+      }
+    },
+    {
+      "code": "TY_5_6",
+      "Alert_title": "Large repetitive credit card usage at the same merchant",
+      "Current_values": {
+        "X": 400000,
+        "Y": 20,
+        "N": 1
+      }
+    },
+    {
+      "code": "TY_5_7",
+      "Alert_title": "Majority of credit card repayments in cash",
+      "Current_values": {
+        "X": 50000,
+        "Y": 20,
+        "Z": 50
+      }
+    }
+  ]
+}

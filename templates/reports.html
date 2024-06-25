@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include 'metaData.html' %}
+    
+    <style>
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+     <!--  BEGIN NAVBAR  -->
+     {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashbord') }}">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </a></li>
+                    <!-- <li class="breadcrumb-item"><a href="{{url_for('transaction_monitoring') }}">Transaction Monitoring</a></li>  -->
+                    <li class="breadcrumb-item active text-blue font-weight-bold" aria-current="page">Reports</li>
+                </ol>
+            </nav>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+     <!--  BEGIN SIDEBAR  -->
+       {% include 'alldashboardSidebar.html' %}
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div class="row layout-top-spacing mt-3">
+
+             
+          
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing ">
+              <div class="row mt-3 mb-5">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                  <a href="{{ url_for('display_report', report_type='NTR') }}" class="">
+                              <div class="card shadow border-0 bg-blue cards">
+                                <div class="card-body text-center">
+                                  <h5 class="card-title mb-0 text-white">NTR</h5>
+                                </div>
+                              </div>
+                  </a>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                  <a href="{{ url_for('display_report', report_type='CRT') }}" class="">
+                              <div class="card shadow border-0 bg-blue cards">
+                                <div class="card-body text-center">
+                                  <h5 class="card-title mb-0 text-white">CTR</h5>
+                                </div>
+                              </div>
+                  </a>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                  <a href="{{ url_for('display_report', report_type='CWTR') }}" class="">
+                              <div class="card shadow border-0 bg-blue cards">
+                                <div class="card-body text-center">
+                                  <h5 class="card-title mb-0 text-white">CWTR</h5>
+                                </div>
+                              </div>
+                  </a>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                  <a href="" class="">
+                              <div class="card shadow border-0 bg-blue cards">
+                                <div class="card-body text-center">
+                                  <h5 class="card-title mb-0 text-white">CCR</h5>
+                                </div>
+                              </div>
+                  </a>
+                </div>
+              </div>
+                <div class="table-responsive">
+                <table id="myTable" class="table ">
+                  <thead class="bg-blue text-white">
+                    <tr>
+                      <th class="text-white">Code</th>
+                      <th class="text-white">Description</th>
+                      <th class="text-white">Downlaod Csv File</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for k,v in total_reports_data.items() %}
+                    {% if k not in ['TM_8_3','TY_10_2','TM_3_1'] %}
+                    <tr>
+                      <td>DV_{{k}}</td>
+                      <td>{{v}}</td>
+                      <td>
+                          <form action="{{ url_for(k) }}" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-dark" name="download">Download</button>
+                        </form>
+                        
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+          
+        </div>
+        {% include 'footer.html' %}
+
+      </div>
+      <!--  END CONTENT PART  -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.1/dist/apexcharts.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/plugins/highlight/highlight.pack.js"></script>
+    <script src="../static/assets/js/custom.js"></script>
+     <!--  BEGIN CUSTOM SCRIPT FILE  -->
+  <script>
+      $(document).ready(function() {
+        var table = $('#myTable').DataTable({
+          "paging": true,
+          "pageLength": 10
+        });
+      });
+    </script>
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  </body>
+</html>

@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Check if a success message is provided and display it as a popup
+    var successMessage = "{{ success_message }}";
+    if (successMessage && successMessage !== 'None') {
+      alert(successMessage);  // You can use a more sophisticated popup library here if needed
+    }
+  </script>
+
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  {% include 'metaData.html' %}
+
+
+  <style>
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+    .form-control {
+      border: 1px solid #ced4da !important;
+    }
+
+    .form-control:hover {
+      border: 1px solid #ced4da !important;
+    }
+
+    select.form-select option {
+      margin-bottom: 5px;
+      /* Adjust the margin-bottom as needed */
+    }
+
+    select.form-select {
+      width: 300px;
+      /* Set the width as needed */
+    }
+
+    /* Apply styles to the option elements */
+    select.form-select option {
+      white-space: normal;
+      /* Allow text to wrap within options */
+    }
+  </style>
+
+  <!-- <script>
+        alert("Form submitted successfully!");
+        window.location.href = "/";
+    </script> -->
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  {% include 'header.html' %}
+
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-menu">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+              <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{ url_for('branchmakers') }}"
+                      class="text-blue font-weight-bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>
+                    </a></li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="{{url_for('branchmakers')}}" class="text-primary">/ <span class="paths ">Branch Maker</span></a>
+
+        </li>
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN MAIN CONTAINER  -->
+  <div class="main-container" id="container">
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+    <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT PART  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing ">
+        <div class="row layout-top-spacing ">
+          <div class="col-lg-12">
+            <div class="statbox widget box box-shadow">
+              <div class="border rounded  shadow-sm  bg-white">
+                <div class="row justify-content-center">
+
+                  <h5 class="text-blue font-weight-bold my-3 text-center">MANUAL STR DETAILS</h5>
+                  <div class="col-12">
+                    <form action="{{ url_for('post_manual_str') }}" method="POST" id="myForm">
+                      <div class="row my-3 mx-3">
+                        <div class="mb-3 col-md-2 ">
+                          <label for="customerno" class=" mt-1 ">Customer NO</label>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                          <input type="text" class="form-control " id="userId" onkeyup="getUserInfo('TXNDATA')"
+                            name="Customerno">
+                          <p id="userIdError" style="color: red;"></p>
+                        </div>
+                        <div class="mb-3 col-md-2">
+                          <label for="casename" class="form-label mt-1 ms-2">Case Name</label>
+                        </div>
+                        <div class=" mb-3 col-md-4">
+                          <input type="text" class="form-control" name="casename" id="casename">
+                          <p id="casenameError" style="color: red;"></p>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="row  my-3 mx-3">
+                  <div class="mb-3 col-md-2">
+                    <label for="scenario" name="" class="form-label mt-1 ms-2">Scenario</label>
+                  </div>
+                  <div class=" mb-3 col-md-4">
+                    <select class="form-select form-control" aria-label="Default select example" name="scenario"
+                      id="mainSelect" onchange="updateSecondarySelect()">
+                      <option value="Scenario" selected>Functional Clasification</option>
+                      <option value="AM">AM</option>
+                      <option value="ADB">ADB</option>
+                      <option value="CDD">CDD</option>
+                      <option value="LOM">LOM</option>
+                      <option value="NCM">NCM</option>
+                      <option value="SCI">SCI</option>
+                      <option value="TF">TF</option>
+                      <option value="TBML">TBML</option>
+                      <option value="TDD">TDD</option>
+                      <option value="FICN">FICN</option>
+                      <option value="MICN">MICN</option>
+                      <option value="ODI">ODI</option>
+
+
+                    </select>
+                    <p id="scenarioError" style="color: red;"></p>
+                  </div>
+                </div>
+
+                <div class="row  my-3 mx-3">
+                  <div class="mb-3 col-md-2">
+                    <label for="scenario" class="form-label mt-1 ms-2">Person Name</label>
+                  </div>
+                  <div class=" mb-3 col-md-4">
+                    <input type="text" class="form-control" id="personname" name="personname">
+                    <p id="personnameError" style="color: red;"></p>
+                  </div>
+                </div>
+                <h5 class="text-white  mt-4 p-2 text-center" style="background-color: #00579C;">Suspicious Details</h5>
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-12">
+                    <label for="sourceofalert" class="form-label  mt-1 ms-2">Indicative Rule/Scenario*</label>
+                  </div>
+                  <div class=" mb-3 col-md-12">
+                    <select class=" form-control form-select-sm" name="RuleScenario" id="secondarySelect"
+                      onchange="updateAlertIndicator()">
+                      <small>
+                        <option value="select Scenario" class="py-3"> Scenario</option>
+                      </small>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-2">
+                    <label for="alertindicator" class="form-label mt-1 ms-2">Source of Alert*</label>
+                  </div>
+                  <div class=" mb-3 col-md-10">
+                    <input type="text" class="form-control" style="font-weight:bold;" name="sourceofalert"
+                      id="sourceofalert" readonly>
+                  </div>
+                  <div class="mb-3 col-md-2">
+                    <label for="alertindicator" class="form-label mt-1 ms-2">Alert Indicator*</label>
+                  </div>
+                  <div class=" mb-3 col-md-10">
+                    <textarea type="text" class="form-control" style="font-weight:bold;resize:none;"
+                      name="alertindicator" id="alertindicator" readonly></textarea>
+                  </div>
+
+                  <div class="mb-3 col-md-2">
+                    <label for="alertindicator" class="form-label mt-1 ms-2">Guidance*</label>
+                  </div>
+                  <div class=" mb-3 col-md-10">
+                    <textarea type="text" rows="3" cols="60" class="form-control" style="font-weight:bold;resize:none;"
+                      name="Guidance" readonly></textarea>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="col-md-3">
+                    <label for="SuspiciousDueToproceedofCrime" class="form-label mt-1">Suspicious Due To proceed of
+                      Crime*</label>
+                  </div>
+                  <div class="col-md-3">
+                    <select class="form-select form-control" name="SuspiciousDueToproceedofCrime"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="suspiciousDueToComplexTranscaction" class="form-label mt-1 ms-2">Suspicious Due To
+                      Complex Transcaction*</label>
+                  </div>
+                  <div class="col-md-3">
+                    <select class="form-select form-control" name="SuspiciousDueToComplexTranscaction"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+
+                    </select>
+                  </div>
+                </div>
+
+
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="SuspiciousDueToNoecoRational" class="form-label mt-1 ms-2">Suspicious Due To No eco
+                      Rational*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="SuspiciousDueToNoecoRational"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="suspiciousDueToFinancingTerrorism" class="form-label mt-1 ms-2">Suspicious Due To
+                      Financing Terrorism*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="SuspiciousDueToFinancingTerrorism"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="AttemptedTranscaction" class="form-label mt-1 ms-2">Attempted Transcaction*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="AttemptedTranscaction"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="suspiciousDueToFinancingTerrorism" class="form-label mt-1 ms-2">LEA Informed*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="LEAInformed" aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Priority Rating" class="form-label mt-1 ms-2">Priority Rating*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="PriorityRating" aria-label="Default select example">
+                      <option selected>NOT CATEGORIZED</option>
+                      <option value="veryhigh">Very High</option>
+                      <option value="high">High</option>
+                      <option value="normal">Normal</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="suspiciousDueToFinancingTerrorism" class="form-label mt-1 ms-2">Report Coverage*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="ReportCoverage" aria-label="Default select example">
+                      <option selected>NOT CATEGORIZED</option>
+                      <option value="Complete">Complete</option>
+                      <option value="Partial">Partial</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="leadetails" class="form-label mt-1 ms-2">LEA Details</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="leadetails" id="leadetails">
+                    <p id="leadetailsError" style="color: red;"></p>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="AdditionalDocument" class="form-label mt-1 ms-2">Additional Document*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="AdditionalDocument"
+                      aria-label="Default select example">
+                      <option selected>NOT CATEGORIZED</option>
+                      <option value="yes">YES</option>
+                      <option value="no">NO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Aroundofsuspision" class="form-label">Around of suspision</label>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <textarea name="Aroundofsuspision" class="form-control" rows="3" cols="60"></textarea>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="DetailsofInvestigation" class="form-label">Details of Investigation</label>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <textarea name="DetailsofInvestigation" class="form-control" rows="3" cols="60"></textarea>
+                  </div>
+                </div>
+
+                <h5 class="text-white  mt-4 p-2 text-center" style="background-color: #00579C;">Account Details</h5>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Accountnumber" class="form-label mt-1 ms-2">Account Number*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="AccountNumber" id="accountNumber"
+                      onkeyup="getUserInfo('Account Number')">
+                    <div id="errorMsgAccountNumber" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="AccountType" class="form-label mt-1 ms-2">Account Type*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" id="AccountType" name="AccountType"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="Savings Account">Savings Account</option>
+                      <option value="Current Account">Current Account</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="holdernumber" class="form-label mt-1 ms-2">Holder Name*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " id="holdername" name="holdername">
+                    <p id="holdernameError" style="color: red;"></p>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="AccountHolderType" class="form-label mt-1 ms-2">Account Holder Type*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="AccountHolderType"
+                      aria-label="Default select example" id="AccountHolderType">
+                      <option selected>Select</option>
+                      <option value="Private person">Private person</option>
+                      <option value="Joint account holder">Joint account holder</option>
+                      <option value="Company account">Company account</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="accountstatus" class="form-label mt-1 ms-2">Account Status*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="AccountStatus" id="AccountStatus"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="Active">Active</option>
+                      <option value="INActive">IN Active</option>
+                      <option value="Dormant">Dormant</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="DateOfOpening" class="form-label mt-1 ms-2">Date Of Opening</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="DateofOpening" id="DateofOpening">
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="riskrating" class="form-label mt-1 ms-2">Risk Rating*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="RiskRating" aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="Low">Low</option>
+                      <option value="Middle">Middle</option>
+                      <option value="High">High</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="CummulativeCerditTurnover" class="form-label mt-1 ms-2">Cummulative Cerdit
+                      Turnover</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="CummulativeCerditTurnover"
+                      oninput="validateInput(this, 'errorMsgdec')">
+                    <div id="errorMsgdec" style="color: red;"></div>
+                  </div>
+                </div>
+
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Cummulative Debit Turnover" class="form-label mt-1 ms-2">Cummulative Debit
+                      Turnover</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="CummulativeDebitTurnover"
+                      oninput="validateInput(this, 'errorMsgDebitTurnover')">
+                    <div id="errorMsgDebitTurnover" style="color: red;"></div>
+
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="CummulativeCashDepositTurnover" class="form-label mt-1 ms-2">Cummulative Cash Deposit
+                      Turnover</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="CummulativeCashDepositTurnover"
+                      oninput="validateInput(this, 'errorMsgCashDepositTurnover')">
+                    <div id="errorMsgCashDepositTurnover" style="color: red;"></div>
+                  </div>
+                </div>
+
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="CummulativeCashWithdrawalTurnover" class="form-label mt-1 ms-2">Cummulative Cash
+                      Withdrawal Turnover</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="CummulativeCashWithdrawalTurnover"
+                      oninput="validateInput(this, 'errorMsgCashwithdrawalturn')">
+                    <div id="errorMsgCashwithdrawalturn" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="riskrating" class="form-label mt-1 ms-2">No Of Transactions To Be Reported*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="NoOfTransactionsToBeReported"
+                      id="NoOfTransactionsToBeReported">
+                    <div id="errorMsgNoOfTransactions" style="color: red;"></div>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Address" class="form-label mt-1 ms-2">Address*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="Address" id="Address"
+                      onkeyup="getUserInfo('Address')">
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="Pincode" class="form-label mt-1 ms-2">Pincode*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="number" class="form-control " name="Pincode" id="Pincode" min="0"
+                      onkeyup="getUserInfo('Pincode')">
+                  </div>
+
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="City" class="form-label mt-1 ms-2">City</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="City" id="City" onkeyup="getUserInfo('City')">
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="DOB" class="form-label mt-1 ms-2">DOB</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="date" class="form-control " name="DOB" id="DOB" onkeyup="getUserInfo('DOB')">
+                  </div>
+
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="MobileNumber" class="form-label mt-1 ms-2">Mobile Number</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="MobileNumber" id="MobileNumber"
+                      onkeyup="getUserInfo('Mobile Number')">
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="PAN" class="form-label mt-1 ms-2">PAN</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="PAN" id="PAN" onkeyup="getUserInfo('PAN')">
+                  </div>
+
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionAmount" class="form-label mt-1 ms-2">Transaction Amount</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="number" class="form-control " name="TransactionAmount" id="TransactionAmount"
+                      onkeyup="getUserInfo('Transaction Amount')" min="0">
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionTypeacc" class="form-label mt-1 ms-2">Transaction Type</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="TransactionTypeacc" id="TransactionTypeacc"
+                      onkeyup="getUserInfo('Transaction Type acc')">
+                  </div>
+
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionCategory" class="form-label mt-1 ms-2">Transaction Category</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="TransactionCategory" id="TransactionCategory"
+                      onkeyup="getUserInfo('Transaction Category')">
+                    <div id="errorMsgtranscat" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionCurrency" class="form-label mt-1 ms-2">Transaction Currency</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="number" class="form-control " name="TransactionCurrency" id="TransactionCurrency"
+                      onkeyup="getUserInfo('Transaction Currency')" min="0">
+                  </div>
+
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="BankName" class="form-label mt-1 ms-2">Bank Name</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="BankName" id="BankName"
+                      onkeyup="getUserInfo('Bank Name')">
+                    <div id="errorMsgtextbank" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="BankState" class="form-label mt-1 ms-2">Bank State</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="BankState" id="BankState"
+                      onkeyup="getUserInfo('Bank State')">
+                    <div id="errorMsgtextbankstate" style="color: red;"></div>
+                  </div>
+
+                </div>
+
+
+
+
+                <h5 class="text-white  mt-4 p-2 text-center" style="background-color: #00579C;">Transaction Details</h5>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionDate" class="form-label mt-1 ms-2">Transaction Date*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="date" class="form-control " name="TransactionDate">
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionsID" class="form-label mt-1 ms-2">Transactions ID</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="TransactionsID" id="TransactionsID">
+                    <div id="errorMsgTransactionsID" style="color: red;"></div>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionMode" class="form-label mt-1 ms-2">Transaction Mode*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="TransactionMode" aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="Transfer">Transfer</option>
+                      <option value="WithdrawalTransfer">Withdrawal Transfer</option>
+                      <option value="Others">Others</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="DebitCredit" class="form-label mt-1 ms-2">Debit Credit*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="DebitCredit" id="DebitCredit"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="Debit">Debit</option>
+                      <option value="Credit">Credit</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="amount" class="form-label mt-1 ms-2">Amount(in RS)*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="amount"
+                      oninput="validateInput(this, 'errorMsgamount')">
+                    <div id="errorMsgamount" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="TransactionsCurrency" class="form-label mt-1 ms-2">Transactions Currency*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="TransactionsCurrency" id="TransactionsCurrency"
+                      aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="TransactionsCurrency">INR</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="producttype" class="form-label mt-1 ms-2">Product Type*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="ProductType" aria-label="Default select example">
+                      <option selected>SELECT</option>
+                      <option value="CD">CD</option>
+                      <option value="CP">CP</option>
+                      <option value="EquityShares">EquityShares</option>
+                      <option value="EquityShares">Brands</option>
+                      <option value="OptionSecurity">Option Security</option>
+                      <option value="Others">Others</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="ProductIdentifiers" class="form-label mt-1 ms-2">Product Identifiers</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="ProductIdentifiers" id="ProductIdentifiers">
+                    <div id="errorMsgProductIdentifiers" style="color: red;"></div>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Transactiontype" class="form-label mt-1 ms-2">Transaction Type*</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <select class="form-select form-control" name="TransactionType" aria-label="Default select example">
+                      <option selected>Select</option>
+                      <option value="Withdrawal">Withdrawal</option>
+                      <option value="PremiumFund">Premium Fund</option>
+                      <option value="PremiumFund">Pension</option>
+                      <option value="Others">Others</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="unit" class="form-label mt-1 ms-2">Unit</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="unit" id="unit">
+                    <div id="errorMsgUnit" style="color: red;"></div>
+                  </div>
+                </div>
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="Transactiontype" class="form-label mt-1 ms-2">Date</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="date" class="form-control " name="Date">
+                  </div>
+                  <div class="mb-3 col-md-3">
+                    <label for="DispositionOfFunds" class="form-label mt-1 ms-2">Disposition Of Funds</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="DispositionOfFunds" id="DispositionOfFunds">
+                    <div id="errorMsgdepositionfund" style="color: red;"></div>
+                  </div>
+                </div>
+
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="RelatedAccountNumber" class="form-label mt-1 ms-2">Related Account Number</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control " name="RelatedAccountNumber" id="RelatedAccountNumber">
+                    <div id="errorMsg" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-2">
+                    <label for="RelatedInstitutionName" class="form-label mt-1 ms-2">Related Institution Name</label>
+                  </div>
+                  <div class=" mb-3 col-md-4">
+                    <input type="text" class="form-control" name="RelatedInstitutionName" id="RelatedInstitutionName">
+                    <div id="errorMsginstname" style="color: red;"></div>
+
+                  </div>
+                </div>
+
+
+                <div class="row my-3 mx-3">
+                  <div class="mb-3 col-md-3">
+                    <label for="RelatedInstitutionRefNum" class="form-label mt-1 ms-2">Related Institution
+                      RefNum</label>
+                  </div>
+                  <div class=" mb-3 col-md-3">
+                    <input type="text" class="form-control" name="RelatedInstitutionRefNum"
+                      id="RelatedInstitutionRefNum">
+                    <div id="errorMsgRefNum" style="color: red;"></div>
+                  </div>
+                  <div class="mb-3 col-md-2">
+                    <label for="Remark" class="form-label mt-1 ms-2">Remark</label>
+                  </div>
+                  <div class=" mb-3 col-md-4">
+                    <input type="text" class="form-control" name="Remark" id="Remark">
+                    <div id="errorMsgRemark" style="color: red;"></div>
+                  </div>
+                </div>
+
+                <div class="text-center mt-3 mb-4">
+                  <input type="hidden" name="offlineArc" id="offlineDec" />
+                  <button type="submit" class="btn text-white" style="display: none;" id="finalSub"></button>
+
+                  <button type="button" class="btn text-white" style="background-color: #00579C; font-size:15px;"
+                    onclick="subOffline('submit')">Submit</button>
+                  <button type="button" class="btn text-white" style="background-color: #da251c; font-size:15px;"
+                    onclick="subOffline('archive')">Save as Archive</button>
+                </div>
+                </form>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% include 'footer.html' %}
+
+    </div>
+    <!--  END CONTENT PART  -->
+  </div>
+  <!-- END MAIN CONTAINER -->
+
+  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+  <script src="../static/bootstrap/js/popper.min.js"></script>
+  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="../static/assets/js/app.js"></script>
+  <script>
+    $(document).ready(function () {
+      App.init();
+    });
+  </script>
+  <script src="../static/assets/js/custom.js"></script>
+  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <script>
+    function updateSecondarySelect() {
+      var mainSelect = document.getElementById("mainSelect");
+      var secondarySelect = document.getElementById("secondarySelect");
+      // Set both horizontal and vertical overflow to 'auto'
+      secondarySelect.style.overflowX = 'auto';
+      secondarySelect.style.overflowY = 'auto';
+
+
+
+
+      // Clear previous options
+      secondarySelect.innerHTML = "";
+      // sourceofalert.innerHTML = "";
+      //alertindicator.innerHTML = "";
+      // Guidance.innerHTML = "";
+
+      // Define options based on the selected value
+      var optionsMap = {
+        'Scenario': ['select Scenario'],
+        'AM': ['Transactions greater than INR [X1] between more than [N] accounts in the same bank aggregating to more than [X2] on the same day',
+          'Inward foreign remittance of same value from the same remitter (more than[N] transactions in last [Y] days) with a minimum transaction value of each transaction above [X]',
+          'Any person receiving foreign contribution in its account (not designated as FCRA account) or without obtaining prior permission from MHA. [Banks to update this list as per Orders issued by RBI (as advised by MHA) from time to	time.',
+          'Receipt of funds in account of an NGO or payments from account of an NGO which is not in line with stated activity or purpose of NGO.'
+        ],
+        'ADB': ['Round large value wire transfers (more than X amount) received from/sent to Afghanistan as advance for export/import without good being exported/ imported',
+          'Students from other countries (having Afghan nationality) staying in India, maintaining more than one account and generating cash more than INR 10 lakh in a year',
+          'Persons of Afghan nationality staying in India and sending multiple maximum	permissible amounts to Afghanistan',
+          'Parties transacting in goods with Afghanistan which are not in the normal line of their declared business',
+          'A company is used for making payments under international contracts for delivery of goods from India to Afghanistan and the company is not a contract party',
+        ],
+        'CDD': ['Customer did not open account after being informed about KYC requirements',
+          'Customer	gives		false identification/address documents or documents that	appear	to		be counterfeited, altered and inaccurate',
+          'Address provided by the customer is found to be non existent or wrong',
+          'Customer uses complex legal structures or where it is difficult to identify the beneficial owner',
+          'Same Directors/authorized signatories/partners of a company,	LLP	or partnership open multiple accounts in the same branch without proper rationale',
+          'Customer has been the subject of inquiry from any law   enforcement   agency relating to criminal offences',
+          'Customer has been the subject of inquiry from any law enforcement agency relating to TF or terrorist Activities',
+          'Match of customer details with persons reported in local media/open source for criminal offences',
+          'Match of customer details with persons reported in local media/open source for terrorism or terrorist financing related activities',
+          'Customer did not complete transaction after queries such as source of funds etc.',
+          'Customer is hurried or nervous/over cautious in explaining genuineness of the transaction',
+          'Customer changes the information provided after more detailed information is requested. Customer provides information that seems minimal, possibly false or inconsistent.',
+          'Customer has vague or no knowledge about the transaction(s) in his/her account; or, customer is taking instructions from a third party for conducting transactions of which he/she is not aware of',
+          'Multiple customers arrive together but pretend to ignore each other',
+          'Customer	travels unexplained distances to open account or conduct transactions',
+          'Customer makes inquiries or tries to convince staff to avoid reporting',
+          'Customer could not explain source	of	funds satisfactorily',
+          'Complaint received from public for abuse of account for committing fraud etc.',
+          'Alert raised against the customer by employed agents, business associates,overseas	branches,subsidiaries,other institutions or correspondent banks',
+          'Fraudsters hand over counterfeit FDR to investor and subsequently within span of few days avail loan/OD facility against original FDR and other forged documents',
+          'Customer	provided different IDs or Email id, mobile number or Date of Birth at different instances',
+          'Accounts opened by multiple	unrelated customers linked by a common PAN, address, mobile number or email address',
+          'Transacting parties appear to be affiliated, conduct business out of a residential address or provide only a registered agent’s address',
+        ],
+        'LOM': ['Number of locker operations greater than [N] times in [Y] days',],
+        'NCM': ['Many-to-one remittances from the perspective of the clients of banks AD-Category II account holder, which routes high value forex remittances through the bank'],
+        'SCI': ['Generally no	physical presence (other than a mailing address)',
+          'Directors are persons of very low means - individually they have nil or low net worth and do not have any substantial source of income',
+          'Payments have no stated purpose, do not have reference to goods or services, or identify only a contract or invoice number',
+          'Transacting businesses i.e. entities doing business with the company share the same address or there are address	related inconsistencies',
+          'Funds are transferred from the company to an unusually large number and different kind of beneficiaries(from different sectors/businesses)',
+          'Little or no withdrawal from account of a company for business purposes/ no recurrent	business expenses',
+          'Transfer of funds between account of companies having nominal authorized share capital and having same authorized signatory'
+        ],
+        'TF': ['Transaction involving a location prior to or immediately after a terrorist incident',
+          'Bank accounts in which money is received from companies or firms, which are not linked to the account holder by way of business or other legitimate activity.',
+        ],
+        'TBML': ['Advance for supply of goods or services is a major part/percentage of the total value of goods or services',
+          'Consignment	size is unreasonable compared to customer profile/capacity/size	of business',
+          'Underlying goods or services not in line with customers profile and declared business',
+          'Enhanced Due Diligence for high sea sales/ merchanting trades above value [X]',
+          'Transactions involving third parties which may not be contract parties (consignee and remitter are different)',
+          'Description of goods or services provided is vague',
+          'Substantial discrepancies/inconsistenci es in the description of goods/services are noticed:(a)	between the trade instrument (L/C etc.) and the submitted trade documents;or(b)	within the trade documents(when compared with each other)and(c)	substantial discrepancies are seen in airway bills and bills of lading in particular.',
+          'Import payments being made against old bills after lapse of considerable period of time from import of goods, without appropriate justification and documentation',
+          'Receipt	of multiple payments via internet payment service provider like Paypal,etc.',
+          'Frequent	changes	in payment instructions at the last minute or the use of repeatedly amended or frequently extended letters of	credit	without reasonable justification or for reasons like changes of beneficiary or location',
+          'Importer of goods or services not from same country from where wire (payment for import) originated',
+          'Routing of import payments above [X] value through India by a foreign based entity having operations and customer base outside India',
+          'High value remittances for frequent	ticket/tour packages booked by tour operators',
+          'A customer deviates significantly from its historical pattern of trade activity (i.e. in terms of markets, monetary value, frequency of transactions, volume, or merchandise type)',
+          'The LC contains non- standard clauses or phrases or	has	unusual characteristics',
+          'Amount of advance is not in line	with	normal international trade for the kind of goods or services',
+          'Underlying goods or services involved in the trade transaction are of sensitive nature and/or the Value/Quantity of goods or services is not easily ascertainable',
+          'Transactions not in-line with normal international trade for the given kind of goods & line of business of the parties involved',
+          'Circuitous route of shipment/ shipment of goods inconsistent with normal geographic trade',
+          'Import of goods from countries where underlying goods	are	not manufactured',
+          'Inward remittance received from Exchange House for the purpose of trade settlements',
+          'Over/under	invoicing	of goods or services',
+          'Many proprietorship firms importing from same exporter from a foreign land',
+          'Advance waivers provided or	pre-accepted discrepancy (s) by the applicant and/or the applicant is over-keen to waive discrepancy',
+          'Re-presentation of third- party trade / official document immediately after a turn-down for discrepancy',
+          'Submission/	payment	of round figure bills',
+          'Outward	foreign remittances to a single unrelated overseas party in amounts ranging between INR [X1] to [X2] greater than [N] times in [Y] days',
+        ],
+        'TDD': ['Transaction is unnecessarily complex	for	its	stated purpose',
+          'The amounts or frequency or the stated reason of the transaction does not make sense for the particular customer',
+          'Transaction	involving movement of funds which is inconsistent with the customers business',
+          'Conversion of financial assets - single or multiple of value more than INR 5 lakhs in a calendar month to a virtual currency/currencies',
+          'Originator/beneficiary information missing in wire transfers received by a customer for more than [N] times in [Y] days',
+          'Transactions related to acquisition or sale of intangibles like specialised software, etc.',
+        ],
+        'FICN': ['FICNs attempted to be deposited in single/multiple accounts of3the customer, greater than [N] FICN notes in a month',
+          'FICNs attempted to be deposited in single/multiple accounts of the customer, aggregating to greater than INR [X] value in a month'
+        ],
+        'MICN': ['Customer/non-account holder attempts to deposit, exchange	or	adjudicate mutilated Indian Currency Notes at a Bank’s branch or currency chest, aggregating to greater than INR [X] value in a month'
+        ],
+        'ODI': ['For Overseas Direct Investment(ODI)remittance(s) of value greater than USD [X] or equivalent where the remitting	Indian Party/customer has not submitted documentary evidence of the ODI to the A.D. Bank within the RBI stipulated timeline from the date of ODI remittance'
+        ]
+
+      };
+
+      optionsMap[mainSelect.value].forEach(function (optionText) {
+        var option = new Option(optionText, optionText);
+
+        // Set styles for each option directly
+        option.setAttribute('style', 'width: 200px; word-wrap: break-word; font-size: 14px;');
+
+        secondarySelect.add(option);
+      });
+
+
+
+      // Update the alert indicator when the secondary select changes
+      updateAlertIndicator();
+    }
+
+
+    function updateAlertIndicator() {
+      var secondarySelect = document.getElementById("secondarySelect");
+      var sourceOfAlertInput = document.getElementById("sourceofalert");
+      var alertIndicatorInput = document.getElementById("alertindicator");
+      var guidanceInput = document.getElementsByName("Guidance")[0];
+
+      // Get the selected value from the secondary select
+      var selectedValue = secondarySelect.value;
+
+      // Define sentences for each option
+      var sentenceMap = {
+        //AM start
+        //first option
+        'Transactions greater than INR [X1] between more than [N] accounts in the same bank aggregating to more than [X2] on the same day': {
+          sourceOfAlert: 'TY 12.3',
+          alertIndicator: 'Routing of funds through multiple accounts',
+          guidance: 'Member banks to suitably build processes or scenarios to identify and mitigate the highlighted risk in the alert indicator',
+        },
+        //second option
+        'Inward foreign remittance of same value from the same remitter (more than[N] transactions in last [Y] days) with a minimum transaction value of each transaction above [X]': {
+          sourceOfAlert: 'TY 10.37',
+          alertIndicator: 'Inward remittance of same value from same remitter',
+          guidance: 'Multiple inward foreign remittances of same foreign currency amounts from the same remitter is suggestive of trade- based money laundering and warrants enhanced due diligence',
+        },
+        //third option 
+        'Any person receiving foreign contribution in its account (not designated as FCRA account) or without obtaining prior permission from MHA. [Banks to update this list as per Orders issued by RBI (as advised by MHA) from time to	time.': {
+          sourceOfAlert: 'TY 11.5',
+          alertIndicator: 'Reg. NGOs',
+          guidance: 'Note: Any breach of these RFIs should be reported as STRs by banks',
+        },
+        //fouth option 
+        'Receipt of funds in account of an NGO or payments from account of an NGO which is not in line with stated activity or purpose of NGO.': {
+          sourceOfAlert: 'TY 11.6',
+          alertIndicator: 'Reg. NGOs',
+          guidance: 'Self-explanatory',
+        },
+        //AM END
+
+        //ADB START
+        //OPTION 1
+        'Round large value wire transfers (more than X amount) received from/sent to Afghanistan as advance for export/import without good being exported/ imported': {
+          sourceOfAlert: 'TY 8.5',
+          alertIndicator: 'Large funds are received from or sent to Afghanistan as advances for export/ import without goods being exported/ imported',
+          guidance: 'Note: This RFI is a specific typology involving the country Afghanistan,',
+        },
+        //OPTION 2
+        'Students from other countries (having Afghan nationality) staying in India, maintaining more than one account and generating cash more than INR 10 lakh in a year': {
+          sourceOfAlert: 'TY 8.6',
+          alertIndicator: 'Students from other countries (having Afghan nationality) staying in India, maintaining more than one account and generating cash more than INR 10 lakh in a year',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 3
+        'Persons of Afghan nationality staying in India and sending multiple maximum	permissible amounts to Afghanistan': {
+          sourceOfAlert: 'TY 8.7',
+          alertIndicator: 'Persons of Afghan nationality staying in India and sending multiple maximum	permissible amounts to Afghanistan',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 4
+        'Parties transacting in goods with Afghanistan which are not in the normal line of their declared business': {
+          sourceOfAlert: 'TY 8.8',
+          alertIndicator: 'Parties transacting in goods with Afghanistan which are not in the normal line of their declared business',
+          guidance: 'Note: The aspects highlighted in this RFI are covered in the implementation of TY 10.10 (List 2)',
+        },
+        //OPTION 5
+        'A company is used for making payments under international contracts for delivery of goods from India to Afghanistan and the company is not a contract party': {
+          sourceOfAlert: 'TY 8.9',
+          alertIndicator: 'A company is used for making payments under international contracts for delivery of goods from India to Afghanistan and the company is not a contract party',
+          guidance: 'Self explanatory',
+        },
+        //ADB END
+        //CDD START
+        //OPTION 1
+        'Customer did not open account after being informed about KYC requirements': {
+          sourceOfAlert: 'CV 1.1',
+          alertIndicator: 'Customer left	without opening account',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 2
+        'Customer	gives		false identification/address documents or documents that	appear	to		be counterfeited, altered and inaccurate': {
+          sourceOfAlert: 'CV 2.1',
+          alertIndicator: 'Customer offered false or forged identification/address documents',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 3
+        'Address provided by the customer is found to be non existent or wrong': {
+          sourceOfAlert: 'CV 3.1',
+          alertIndicator: 'Address found to be non existent or wrong',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 4
+        'Customer uses complex legal structures or where it is difficult to identify the beneficial owner': {
+          sourceOfAlert: 'CV 4.1',
+          alertIndicator: 'Difficult	to	identify beneficial owner',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 5
+        'Same Directors/authorized signatories/partners of a company,	LLP	or partnership open multiple accounts in the same branch without proper rationale': {
+          sourceOfAlert: 'CV 4.2',
+          alertIndicator: 'Multiple	accounts	by individual customer/company under various heads in a single branch',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 6
+        'Customer has been the subject of inquiry from any law   enforcement   agency relating to criminal offences': {
+          sourceOfAlert: 'LQ 1.1',
+          alertIndicator: 'Customer is being investigated for criminal offences',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 7
+        'Customer has been the subject of inquiry from any law enforcement agency relating to TF or terrorist Activities': {
+          sourceOfAlert: 'LQ 2.1',
+          alertIndicator: 'Customer	is	being investigated for TF offences',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 8
+        'Match of customer details with persons reported in local media/open source for criminal offences': {
+          sourceOfAlert: 'MR 1.1',
+          alertIndicator: 'Adverse media report about criminal activities of customer',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 9
+        'Match of customer details with persons reported in local media/open source for terrorism or terrorist financing related activities': {
+          sourceOfAlert: 'MR 2.1',
+          alertIndicator: 'Adverse media report about TF or terrorist activities of customer',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 10
+        'Customer did not complete transaction after queries such as source of funds etc.': {
+          sourceOfAlert: 'EI 1.1',
+          alertIndicator: 'Customer did not complete transaction',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 11
+        'Customer is hurried or nervous/over cautious in explaining genuineness of the transaction': {
+          sourceOfAlert: 'EI 2.1',
+          alertIndicator: 'Customer is nervous or over cautious',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 12
+        'Customer changes the information provided after more detailed information is requested. Customer provides information that seems minimal, possibly false or inconsistent.': {
+          sourceOfAlert: 'EI 2.2',
+          alertIndicator: 'Customer provides inconsistent information',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 13
+        'Customer has vague or no knowledge about the transaction(s) in his/her account; or, customer is taking instructions from a third party for conducting transactions of which he/she is not aware of': {
+          sourceOfAlert: 'EI 3.1',
+          alertIndicator: 'Customer acting on behalf of a third party',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 14
+        'Multiple customers arrive together but pretend to ignore each other': {
+          sourceOfAlert: 'EI 3.2',
+          alertIndicator: 'Multiple	customers working as a group',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 15
+        'Customer	travels unexplained distances to open account or conduct transactions': {
+          sourceOfAlert: 'EI 4.1',
+          alertIndicator: 'Customer avoiding nearer branches',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 16
+        'Customer makes inquiries or tries to convince staff to avoid reporting': {
+          sourceOfAlert: 'EI 4.2',
+          alertIndicator: 'Customer wants to avoid reporting',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 17
+        'Customer could not explain source	of	funds satisfactorily': {
+          sourceOfAlert: 'EI 4.3',
+          alertIndicator: 'Customer could not explain source of funds',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 18
+        'Complaint received from public for abuse of account for committing fraud etc.': {
+          sourceOfAlert: 'PC 1.1',
+          alertIndicator: 'Complaint received from public',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 19
+        'Alert raised against the customer by employed agents, business associates,overseas	branches,subsidiaries,other institutions or correspondent banks': {
+          sourceOfAlert: 'BA 1.1',
+          alertIndicator: 'Alert raised by other agents/subsidiaries/associa tes/other institutions',
+          guidance: 'Complaint, Adverse news or Referral against a Customer of the member bank',
+        },
+        //OPTION 20
+        'Fraudsters hand over counterfeit FDR to investor and subsequently within span of few days avail loan/OD facility against original FDR and other forged documents': {
+          sourceOfAlert: 'TY 6.2',
+          alertIndicator: 'Availing loan facility/ OD (Overdraft) facility against FDR (Fixed Deposit Receipt) within few days of creation',
+          guidance: 'This scenario is applicable for all customers and constitutions types.',
+        },
+        //OPTION 21
+        'Customer	provided different IDs or Email id, mobile number or Date of Birth at different instances': {
+          sourceOfAlert: 'TY 12.1',
+          alertIndicator: 'Customer	providing different details to avoid linkage',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 21
+        'Accounts opened by multiple	unrelated customers linked by a common PAN, address, mobile number or email address': {
+          sourceOfAlert: 'TY 12.2',
+          alertIndicator: 'Multiple customers working together',
+          guidance: 'Self explanatory',
+        },
+        //OPTION 22
+        'Transacting parties appear to be affiliated, conduct business out of a residential address or provide only a registered agent’s address': {
+          sourceOfAlert: 'TY 10.28',
+          alertIndicator: 'Transacting parties appear to be affiliated, conduct business out of a residential address or provide only a registered agent’s address',
+          guidance: 'Self explanatory',
+        },
+        //CDD END
+        //LOM START
+        //OPTION 1
+        'Number of locker operations greater than [N] times in [Y] days': {
+          sourceOfAlert: 'EI 6.1',
+          alertIndicator: 'Frequent Locker operations',
+          guidance: 'Member banks to suitably build processes or scenarios to identify and mitigate the highlighted risk in the alert indicator',
+        },
+        //LOM END
+
+        //NCM START
+        //OPTION 1
+        'Many-to-one remittances from the perspective of the clients of banks AD-Category II account holder, which routes high value forex remittances through the bank': {
+          sourceOfAlert: 'TM 10.1',
+          alertIndicator: 'High Forex Activity Authorised Dealer – Category II (AD Cat-II) accounts',
+          guidance: 'Note:Banks to conduct due diligence on its Authorised Dealer – Category II account holders remitting funds above value [X] in	six	months.Based on submission of the LRS reporting data by their AD Cat-II account holders (which containing the name and PAN of the AD Cat-II clients who have initiated such remittances) banks to ascertain many-to-one transactions i.e., where multiple clients of the same AD- Cat II have been sending remittances to a single foreign beneficiary. Further due diligence checks like google search etc. may then be conducted on the common foreign beneficiary of remittances to check whether this is a dubious entity or has other negative EDD findings.',
+        },
+        //NCM END
+
+        //SCI START
+        //OPTION 1
+        'Generally no	physical presence (other than a mailing address)': {
+          sourceOfAlert: 'TY 13.1',
+          alertIndicator: 'Generally	no	physical presence (other than a mailing address)',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 2
+        'Directors are persons of very low means - individually they have nil or low net worth and do not have any substantial source of income': {
+          sourceOfAlert: 'TY 13.2',
+          alertIndicator: 'Directors are persons of very low means - individually they have nil or low net worth and do not have any substantial source of income',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 3
+        'Payments have no stated purpose, do not have reference to goods or services, or identify only a contract or invoice number': {
+          sourceOfAlert: 'TY 13.3',
+          alertIndicator: 'Payments have no stated purpose, do not have reference to goods or services, or identify only a contract or invoice number',
+          guidance: 'Note: This RFI is related to examination of the Invoice by banks and should be read in conjunction with RFI TY 10.16 (List 2)'
+        },
+        //OPTION 4
+        'Transacting businesses i.e. entities doing business with the company share the same address or there are address	related inconsistencies': {
+          sourceOfAlert: 'TY 13.4',
+          alertIndicator: 'Transacting businesses i.e. entities doing business with the company share the same address or there are address	related inconsistencies',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 5
+        'Funds are transferred from the company to an unusually large number and different kind of beneficiaries(from different sectors/businesses)': {
+          sourceOfAlert: 'TY 13.5',
+          alertIndicator: 'Funds are transferred from the company to an unusually large number and different	kind of beneficiaries(from different sectors/businesses)',
+          guidance: 'Note: The aspects highlighted in this RFI are covered in the implementation of RFI TY 2.2 (List 1).'
+        },
+        //OPTION 6
+        'Little or no withdrawal from account of a company for business purposes/ no recurrent	business expenses': {
+          sourceOfAlert: 'TY 13.6',
+          alertIndicator: 'Little or no withdrawal from account for business purposes/ no recurrent business expenses',
+          guidance: 'Self-explanatory'
+        },
+        //OPTION 7
+        'Transfer of funds between account of companies having nominal authorized share capital and having same authorized signatory': {
+          sourceOfAlert: 'TY 13.7',
+          alertIndicator: 'Rotation of funds between account of companies having same authorized signatory',
+          guidance: 'Self-explanatory'
+        },
+        //SCI END
+        //TF START
+        //OPTION 1
+        'Transaction involving a location prior to or immediately after a terrorist incident': {
+          sourceOfAlert: 'TY 11.11',
+          alertIndicator: 'Transaction involving a location with terrorist incident',
+          guidance: 'Note:1)	Proactive monitoring to be conducted by banks in the wake of major terrorist incidents ("incidents") in locations where	they	operate. 2)	Banks to review all transaction monitoring alerts generated on transactions involving their branches in the specific location, especially alerts which were earlier closed as non- suspicious. This due diligence exercise should be undertaken for a period commencing one month immediately preceding the date of the incident, upto the date of Conducting such due diligence.'
+        },
+        //OPTION 2
+        'Bank accounts in which money is received from companies or firms, which are not linked to the account holder by way of business or other legitimate activity.': {
+          sourceOfAlert: 'TY 11.4',
+          alertIndicator: 'Reg North East Insurgency (for Nagaland, Assam & Manipur)',
+          guidance: 'Note: It is clarified that the bank accounts receiving credits are those maintained at branches in the specified states only.'
+        },
+        //TF END 
+        //TBML START 
+        //OPTION 1
+        'Advance for supply of goods or services is a major part/percentage of the total value of goods or services': {
+          sourceOfAlert: 'TY 10.31',
+          alertIndicator: 'Advance for supply of goods or services is a major part/percentage of the total value of goods or services',
+          guidance: 'Member banks to suitably build processes or scenarios to identify and mitigate the highlighted risk in the alert indicator'
+        },
+        //OPTION 2
+        'Consignment	size is unreasonable compared to customer profile/capacity/size	of business': {
+          sourceOfAlert: 'TY 10.8',
+          alertIndicator: 'Consignment size	is unreasonable compared to customer profile/capacity/size of business',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 3
+        'Underlying goods or services not in line with customers profile and declared business': {
+          sourceOfAlert: 'TY 10.10',
+          alertIndicator: 'Underlying goods or services not in line with customers profile anddeclared business',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 4
+        'Enhanced Due Diligence for high sea sales/ merchanting trades above value [X]': {
+          sourceOfAlert: 'TY 10.13',
+          alertIndicator: 'High proportion of high sea sales /merchanting trades',
+          guidance: 'While conducting EDD for merchanting trade transactions (MTT), bank should also take into consideration the extent of breach of MTT conditions/rules/limits as prescribed by RBI in its latest A.P. (DIR Series) Circular Note: Banks are permitted to formulate a risk-based approach for such transactions'
+        },
+        //OPTION 5
+        'Transactions involving third parties which may not be contract parties (consignee and remitter are different)': {
+          sourceOfAlert: 'TY 10.14',
+          alertIndicator: 'Transactions involving third parties which may not be contract parties (consignee and remitter are different)',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 6
+        'Description of goods or services provided is vague': {
+          sourceOfAlert: 'TY 10.16',
+          alertIndicator: 'Description of goods or services provided is vague',
+          guidance: 'Note: This RFI is related to examination of the Invoice by banks and should be read in conjunction with RFI TY 13.3 (List2)'
+        },
+        //OPTION 7
+        'Substantial discrepancies/inconsistenci es in the description of goods/services are noticed:(a)	between the trade instrument (L/C etc.) and the submitted trade documents;or(b)	within the trade documents(when compared with each other)and(c)	substantial discrepancies are seen in airway bills and bills of lading in particular.': {
+          sourceOfAlert: 'TY 10.17',
+          alertIndicator: 'Substantial inconsistencies between the information originally supplied and that contained in the documents',
+          guidance: 'Note: Trade documents will include the invoice, transport/shipping document, packing list and other submitted documents'
+        },
+        //OPTION 8
+        'Import payments being made against old bills after lapse of considerable period of time from import of goods, without appropriate justification and documentation': {
+          sourceOfAlert: 'TY 10.19',
+          alertIndicator: 'Import payments being made against old bills after lapse of considerable period of time from import of goods, without appropriate justification and documentation',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 9
+        'Receipt	of multiple payments via internet payment service provider like Paypal,etc.': {
+          sourceOfAlert: 'TY 10.21',
+          alertIndicator: 'Receipt	of multiple payments via	internet payment service provider like Paypal, etc',
+          guidance: 'Banks can implement this scenario as part of the transaction monitoring due diligence process.'
+        },
+        //OPTION 10
+        'Frequent	changes	in payment instructions at the last minute or the use of repeatedly amended or frequently extended letters of	credit	without reasonable justification or for reasons like changes of beneficiary or location': {
+          sourceOfAlert: 'TY 10.23',
+          alertIndicator: 'Frequent changes in payment instructions at the last minute or the use of repeatedly amended or frequently extended letters of	credit	without reasonable justification or for reasons like changes of beneficiary or location',
+          guidance: 'Member banks to suitably build processes or scenarios to identify and mitigate the highlighted risk in the alert indicator'
+        },
+        //OPTION 11
+        'Importer of goods or services not from same country from where wire (payment for import) originated': {
+          sourceOfAlert: 'TY 10.24',
+          alertIndicator: 'Importer of goods or services not from same country from where wire (payment for import)originated',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 12
+        'Routing of import payments above [X] value through India by a foreign based entity having operations and customer base outside India': {
+          sourceOfAlert: 'TY 10.25',
+          alertIndicator: 'Routing of import payments above [X] value through India by a foreign based entity having operations and customer base outside India',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 13
+        'High value remittances for frequent	ticket/tour packages booked by tour operators': {
+          sourceOfAlert: 'TY 10.26',
+          alertIndicator: 'Booking of ticket abroad and subsequent cancelling and payment made to third party.',
+          guidance: 'Note: Trigger relevant for the transactions by Tours and Travel operators. To be considered as part of the checklist during transaction monitoring due diligence.'
+        },
+        //OPTION 14
+        'A customer deviates significantly from its historical pattern of trade activity (i.e. in terms of markets, monetary value, frequency of transactions, volume, or merchandise type)': {
+          sourceOfAlert: 'TY 10.27',
+          alertIndicator: 'A customer deviates significantly from its historical pattern of trade activity (i.e. in terms of markets, monetary value, frequency of transactions, volume, or merchandise type)',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 15
+        'The LC contains non- standard clauses or phrases or	has	unusual characteristics': {
+          sourceOfAlert: 'TY 10.29',
+          alertIndicator: 'The LC contains non- standard clauses or phrases or	has	unusual characteristics',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 16
+        'Amount of advance is not in line	with	normal international trade for the kind of goods or services': {
+          sourceOfAlert: 'TY 10.7',
+          alertIndicator: 'Amount of advance is not in line	with	normal international trade for the kind of goods or services',
+          guidance: 'Guidance may be formulated by IBA on due diligence checks/approach for implementing this RFI.'
+        },
+        //OPTION 17
+        'Underlying goods or services involved in the trade transaction are of sensitive nature and/or the Value/Quantity of goods or services is not easily ascertainable': {
+          sourceOfAlert: 'TY 10.9',
+          alertIndicator: 'Underlying goods or services involved in the trade transaction are of sensitive nature and/or the Value/Quantity of goods or services is not easily ascertainable',
+          guidance: 'Self explanatory'
+        },
+        //OPTION  18
+        'Transactions not in-line with normal international trade for the given kind of goods & line of business of the parties involved': {
+          sourceOfAlert: 'TY 10.11',
+          alertIndicator: 'Transactions not in-line with normal international trade for the given kind of goods & line of business of the parties involved',
+          guidance: 'Guidance may be formulated by IBA on due diligence checks/approach for implementing this RFI.'
+        },
+        //OPTION 19
+        'Circuitous route of shipment/ shipment of goods inconsistent with normal geographic trade': {
+          sourceOfAlert: 'TY 10.20',
+          alertIndicator: 'Circuitous route of shipment/ shipment of goods inconsistent with normal geographic trade',
+          guidance: 'Guidance may be formulated by IBA on due diligence checks/approach for implementing this RFI'
+        },
+        //OPTION 20
+        'Import of goods from countries where underlying goods	are	not manufactured': {
+          sourceOfAlert: 'TY 10.30',
+          alertIndicator: 'Import of goods from countries where underlying goods	are	not manufactured',
+          guidance: 'Guidance may be formulated by IBA on due diligence checks/approach for implementing this RFI.'
+        },
+        //OPTION 21
+        'Inward remittance received from Exchange House for the purpose of trade settlements': {
+          sourceOfAlert: 'TY 10.15',
+          alertIndicator: 'Inward remittance received from Exchange House for the purpose of trade settlements',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 22
+        'Over/under	invoicing	of goods or services': {
+          sourceOfAlert: 'TY 10.18',
+          alertIndicator: 'Over/under	invoicing	of goods or services',
+          guidance: 'This RFI can be implemented either online or offline, as feasible and on a best effort basis.'
+        },
+        //OPTION 23
+        'Many proprietorship firms importing from same exporter from a foreign land': {
+          sourceOfAlert: 'TY 10.32',
+          alertIndicator: 'Many proprietorship firms importing from same exporter from a foreign land',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 24
+        'Advance waivers provided or	pre-accepted discrepancy (s) by the applicant and/or the applicant is over-keen to waive discrepancy': {
+          sourceOfAlert: 'TY 10.33',
+          alertIndicator: 'Advance waivers provided or	pre-accepted discrepancy (s) by the applicant and/ or the applicant is over-keen to waive discrepancy',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 25
+        'Re-presentation of third- party trade / official document immediately after a turn-down for discrepancy': {
+          sourceOfAlert: 'TY 10.34',
+          alertIndicator: 'Re-presentation of third- party trade / official document immediately after a turn-down for discrepancy',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 26
+        'Submission/	payment	of round figure bills': {
+          sourceOfAlert: 'TY 10.35',
+          alertIndicator: 'Submission/	payment of round figure bills',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 27
+        'Outward	foreign remittances to a single unrelated overseas party in amounts ranging between INR [X1] to [X2] greater than [N] times in [Y] days': {
+          sourceOfAlert: 'TY 10.36',
+          alertIndicator: 'Outward	remittance	to same overseas party',
+          guidance: 'Note: Banks can set internal thresholds for the number of days and number of transactions as per their analysis'
+        },
+        //TBML END
+
+        //TDD START 
+        //OPTION 1
+        'Transaction is unnecessarily complex	for	its	stated purpose': {
+          sourceOfAlert: 'EI 5.1',
+          alertIndicator: 'Transaction	is unnecessarily complex',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 2
+        'The amounts or frequency or the stated reason of the transaction does not make sense for the particular customer': {
+          sourceOfAlert: 'EI 5.2',
+          alertIndicator: 'Transaction	has	no economic rationale',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 3
+        'Transaction	involving movement of funds which is inconsistent with the customers business': {
+          sourceOfAlert: 'EI 5.3',
+          alertIndicator: 'Transaction	inconsistent with business',
+          guidance: 'Self explanatory'
+        },
+        //OPTION 4
+        'Conversion of financial assets - single or multiple of value more than INR 5 lakhs in a calendar month to a virtual currency/currencies': {
+          sourceOfAlert: 'RM 4.1',
+          alertIndicator: 'Conversion	of	financial assets to a virtual currency',
+          guidance: 'Member banks to suitably build processes or scenarios to identify and mitigate the highlighted risk in the alert indicator'
+        },
+        //OPTION 5
+        'Originator/beneficiary information missing in wire transfers received by a customer for more than [N] times in [Y] days': {
+          sourceOfAlert: 'TY 10.22 ',
+          alertIndicator: 'Originator/beneficiary information missing in wire transfers',
+          guidance: 'Member banks to suitably build processes or scenarios to identify and mitigate the highlighted risk in the alert indicator This RFI can be implemented either online or offline, as feasible'
+        },
+        //OPTION 6
+        'Transactions related to acquisition or sale of intangibles like specialised software, etc.': {
+          sourceOfAlert: 'TY 10.12 ',
+          alertIndicator: 'Transactions related to acquisition or sale of intangibles like specialised software, etc',
+          guidance: 'Guidance may be formulated by IBA on due diligence checks/approach for implementing this RFI.'
+        },
+        //TDD END
+
+        //FICN START
+        //OPTION 1
+        'FICNs attempted to be deposited in single/multiple accounts of3the customer, greater than [N] FICN notes in a month': {
+          sourceOfAlert: 'TM 11.1',
+          alertIndicator: 'Transaction(s) involving Fake Indian Currency Notes (FICN)',
+          guidance: 'In implementing this RFI, banks need to consider only the number of FICN notes which have been detected in a month for the same customer. Note: Details of FICN to be provided by banks in the transaction file of the STR.'
+        },
+        //OPTION 2
+        'FICNs attempted to be deposited in single/multiple accounts of the customer, aggregating to greater than INR [X] value in a month': {
+          sourceOfAlert: 'TM 11.2',
+          alertIndicator: 'Transaction(s) involving Fake Indian Currency Notes (FICN)',
+          guidance: 'Note: Details of Fake Indian Currency Notes (FICN) to be provided by banks in the transaction file of the STR.'
+        },
+
+        //FICN END
+
+        //MICN START
+        //OPTION 1
+        'Customer/non-account holder attempts to deposit, exchange	or	adjudicate mutilated Indian Currency Notes at a Bank’s branch or currency chest, aggregating to greater than INR [X] value in a month': {
+          sourceOfAlert: 'TM 11.3',
+          alertIndicator: 'Transaction(s) involving mutilated Indian Currency Notes',
+          guidance: 'As per RBI, a mutilated note is a note of which a portion is missing or which is composed of more than two pieces. Such notes may be presented at any of the bank branches and shall be accepted, exchanged and adjudicated in accordance with the Reserve Bank of India (Note Refund) Rules, 2009.'
+        },
+        //MICN END
+
+        //ODI START
+        //OPTION 1
+        'For Overseas Direct Investment(ODI)remittance(s) of value greater than USD [X] or equivalent where the remitting	Indian Party/customer has not submitted documentary evidence of the ODI to the A.D. Bank within the RBI stipulated timeline from the date of ODI remittance': {
+          sourceOfAlert: 'RM 5.5',
+          alertIndicator: 'Non-submission	of documentary evidence by the Indian Party under suspicious circumstances',
+          guidance: 'It is clarified that based on their risk perception of customers, banks may permit a suitable grace time period for the submission of ODI documentary evidence.Further, banks should undertake enhanced due diligence on such customers and report cases wherein despite follow ups/customer visits, no proper explanation is provided by the customer for non-submission and/or the customer is not traceable'
+        },
+
+        //ODI END           
+
+      };
+
+      // Update the alert indicator with the selected sentence
+      var optionData = sentenceMap[selectedValue] || {};
+      sourceOfAlertInput.value = optionData.sourceOfAlert || '';
+      alertIndicatorInput.value = optionData.alertIndicator || '';
+      guidanceInput.value = optionData.guidance || '';
+    }
+
+
+
+    let timeoutId;
+
+    function getUserInfo(field) {
+      let userId = document.getElementById("userId");
+      let accountNumber = document.getElementById("accountNumber");
+      let personname = document.getElementById("personname");
+      let AccountType = document.getElementById("AccountType");
+      let AccountStatus = document.getElementById("AccountStatus");
+      let DateofOpening = document.getElementById("DateofOpening");
+      let AccountHolderType = document.getElementById("AccountHolderType");
+      let holdername = document.getElementById("holdername");
+      let DebitCredit = document.getElementById("DebitCredit");
+      let Address = document.getElementById('Address');
+      let Pincode = document.getElementById('Pincode');
+      let City = document.getElementById('City');
+      let dob = document.getElementById('DOB');
+      let MobileNumber = document.getElementById('MobileNumber');
+      let pan = document.getElementById('PAN');
+      let TransactionAmount = document.getElementById('TransactionAmount')
+      let TransactionType = document.getElementById('TransactionTypeacc')
+      let TransactionCategoryacc = document.getElementById('TransactionCategory')
+      let TransactionCurrency = document.getElementById('TransactionCurrency')
+      let BankName = document.getElementById('BankName')
+      let BankState = document.getElementById('BankState')
+
+
+      let fieldValue;
+      let fieldName;
+
+      switch (field) {
+        case 'Account Number':
+          fieldValue = accountNumber.value;
+          fieldName = 'user';
+          break;
+        case 'TXNDATA':
+          fieldValue = userId.value;
+          fieldName = 'user';
+          break;
+
+        default:
+          return;
+      }
+
+      if (fieldValue.length === 0) {
+        return;
+      }
+
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(() => {
+        let finalField = { [fieldName]: fieldValue, "field": field };
+
+        console.log(finalField);
+
+        fetch('{{url_for("searchUserOffline")}}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(finalField)
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data["none"] === "no data") {
+              userId.value = "";
+              accountNumber.value = "";
+              personname.value = "";
+              AccountType.value = "";
+              AccountStatus.value = "";
+              DateofOpening.value = "";
+              AccountHolderType.value = "";
+              holdername.value = "";
+              DebitCredit.value = "";
+              Address.value = "";
+              Pincode.value = "";
+              City.value = "";
+              dob.value = "";
+              MobileNumber.value = "";
+              pan.value = "";
+              TransactionAmount.value = "";
+              TransactionTypeacc.value = "";
+              TransactionCategory.value = "";
+              TransactionCurrency.value = "";
+              BankName.value = "";
+              BankState.value = "";
+            }
+            else if (data["none"] === "exists") {
+              alert("User Password is already Created...")
+            }
+            else {
+              userId.value = data['custCode']
+              accountNumber.value = data['AccNo']
+              personname.value = data['personname']
+              AccountType.value = data['AccType'];
+              AccountStatus.value = data['AccStatus'];
+              DateofOpening.value = data['opingDate'];
+              AccountHolderType.value = data['holderType'];
+              holdername.value = data['holderName']
+              DebitCredit.value = data['debitCard'];
+              Address.value = data['Address'];
+              Pincode.value = data['Pincode'];
+              City.value = data['City'];
+              dob.value = data['DOB'];
+              MobileNumber.value = data['MobileNumber'];
+              pan.value = data['PAN'];
+              TransactionAmount.value = data['TransactionAmount'];
+              TransactionTypeacc.value = data['TransactionTypeacc'];
+              TransactionCategory.value = data['TransactionCategory'];
+              TransactionCurrency.value = data['TransactionCurrency'];
+              BankName.value = data['BankName'];
+              BankState.value = data['BankState'];
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }, 4000);
+    }
+
+
+  </script>
+
+  <!-- NUMBER ONLY 0 TO 9  -->
+
+  <script>
+    function restrictToDigits(elementId, errorMsgId, maxLength) {
+      const inputField = document.getElementById(elementId);
+      const errorMessage = document.getElementById(errorMsgId);
+
+      inputField.addEventListener("input", function (event) {
+        let inputValue = event.target.value;
+        let sanitizedValue = inputValue.replace(/[^0-9]/g, ""); // Restrict to numbers only
+
+        // Truncate to maxLength digits
+        sanitizedValue = sanitizedValue.substring(0, maxLength);
+
+        if (inputValue !== sanitizedValue) {
+          errorMessage.textContent = "Only numbers (0-9) are allowed and not more than 14 digit.";
+        } else if (sanitizedValue.length < 11 || sanitizedValue.length > 14) {
+          errorMessage.textContent = "Account number should be 11 to 14 digits long.";
+        } else {
+          errorMessage.textContent = "";
+        }
+
+        event.target.value = sanitizedValue; // Update input value
+      });
+    }
+
+    function restrictToDigitsNoLength(elementId, errorMsgId, maxLimit) {
+      const inputField = document.getElementById(elementId);
+      const errorMessage = document.getElementById(errorMsgId);
+
+      inputField.addEventListener("input", function (event) {
+        let inputValue = event.target.value;
+        let sanitizedValue = inputValue.replace(/[^0-9]/g, ""); // Restrict to numbers only
+
+        // Truncate to maxLimit digits
+        sanitizedValue = sanitizedValue.substring(0, maxLimit);
+
+        event.target.value = sanitizedValue;
+
+        if (inputValue !== sanitizedValue) {
+          errorMessage.textContent = "Only numbers (0-9) are allowed.";
+        } else {
+          errorMessage.textContent = "";
+        }
+      });
+    }
+
+    restrictToDigits("accountNumber", "errorMsgAccountNumber", 14);
+    restrictToDigitsNoLength("NoOfTransactionsToBeReported", "errorMsgNoOfTransactions", 10);
+  </script>
+
+
+  <script>
+    function restrictToLetters(elementId, errorMsgId, maxLength) {
+      const inputField = document.getElementById(elementId);
+      const errorMessage = document.getElementById(errorMsgId);
+
+      inputField.addEventListener("input", function (event) {
+        const inputValue = event.target.value;
+        const sanitizedValue = inputValue.replace(/[^a-zA-Z\s]/g, ""); // Restrict to letters only
+        const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+        event.target.value = trimmedValue;
+
+        if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+          errorMessage.textContent = `Only letters (a-z, A-Z) are allowed, up to ${maxLength} characters.`;
+        } else {
+          errorMessage.textContent = "";
+        }
+      });
+    }
+
+    restrictToLetters("BankName", "errorMsgtextbank", 30);
+    restrictToLetters("BankState", "errorMsgtextbankstate", 30);
+    restrictToLetters("RelatedInstitutionName", "errorMsginstname", 30);
+    restrictToLetters("DispositionOfFunds", "errorMsgdepositionfund", 30);
+    restrictToLetters("leadetails", "leadetailsError", 30)
+  </script>
+
+
+  <!-- RESTRICT TO ALPHA NUMERIC  -->
+
+  <script>
+    function subOffline(dec) {
+      var offlineDec = document.getElementById('offlineDec')
+      offlineDec.setAttribute('value', dec)
+      var finalSub = document.getElementById('finalSub');
+
+      finalSub.click()
+
+    }
+
+
+    function restrictToAlphanumeric(elementId, errorMsgId, maxLength) {
+      const inputField = document.getElementById(elementId);
+      const errorMessage = document.getElementById(errorMsgId);
+
+      inputField.addEventListener("input", function (event) {
+        const inputValue = event.target.value;
+        const sanitizedValue = inputValue.replace(/[^a-zA-Z0-9\s]/g, ""); // Restrict to letters and numbers only
+        const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+        event.target.value = trimmedValue;
+
+        if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+          errorMessage.textContent = `Field must contain only letters (a-z, A-Z) and numbers (0-9) and be up to ${maxLength} characters long.`;
+        } else {
+          errorMessage.textContent = "";
+        }
+      });
+    }
+
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+      const casenameValue = document.getElementById("casename").value;
+      const casenameError = document.getElementById("casenameError");
+      const userId = document.getElementById("userId").value;
+      const userIdError = document.getElementById("userIdError");
+      const mainSelect = document.getElementById("mainSelect").value;
+      const scenarioError = document.getElementById("scenarioError");
+      let alertDisplayed = false; // Flag to track if an alert has been displayed
+
+      // Checking for USER ID
+      if (userId.trim() === "") {
+        alert("USER ID can't be blank");
+        userIdError.textContent = "This USER ID field is required.";
+        alertDisplayed = true; // Set flag to true
+      } else {
+        userIdError.textContent = "";
+      }
+
+      // Checking for casename
+      if (casenameValue.trim() === "") {
+        if (!alertDisplayed) { // Display alert only if not already displayed
+          alert("Casename can't be blank");
+          casenameError.textContent = "This casename field is required.";
+          alertDisplayed = true; // Set flag to true
+        }
+      } else {
+        casenameError.textContent = "";
+      }
+
+      // Checking for scenario
+      if (mainSelect.trim() === "Scenario") {
+        if (!alertDisplayed) { // Display alert only if not already displayed
+          alert("Scenario can't be blank");
+          scenarioError.textContent = "This scenario field is required.";
+          alertDisplayed = true; // Set flag to true
+        }
+      } else {
+        scenarioError.textContent = "";
+      }
+
+      // Prevent form submission if any alert is displayed
+      if (alertDisplayed) {
+        event.preventDefault();
+      }
+    });
+
+    restrictToAlphanumeric("casename", "casenameError", 50);
+    restrictToAlphanumeric("userId", "userIdError", 15);
+    restrictToAlphanumeric("Remark", "errorMsgRemark", 30);
+    restrictToAlphanumeric("RelatedInstitutionRefNum", "errorMsgRefNum", 30);
+    restrictToAlphanumeric("unit", "errorMsgUnit", 20);
+    restrictToAlphanumeric("ProductIdentifiers", "errorMsgProductIdentifiers", 20);
+    restrictToAlphanumeric("TransactionsID", "errorMsgTransactionsID", 15);
+    restrictToAlphanumeric("TransactionCategory", "errorMsgtranscat", 10);
+
+
+  </script>
+
+  <!--  APLHABET ONLY IN FORM  -->
+
+  <script>
+    function restrictToAlphabets(elementId, errorMsgId, maxLength) {
+      const inputField = document.getElementById(elementId);
+      const errorMessage = document.getElementById(errorMsgId);
+
+      inputField.addEventListener("input", function (event) {
+        const inputValue = event.target.value;
+        const sanitizedValue = inputValue.replace(/[^a-zA-Z\s]/g, ""); // Restrict to letters only
+        const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+        event.target.value = trimmedValue;
+
+        if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+          errorMessage.textContent = `Name must contain only letters (a-z, A-Z) and be up to ${maxLength} characters long.`;
+        } else {
+          errorMessage.textContent = "";
+        }
+      });
+    }
+
+    restrictToAlphabets("personname", "personnameError", 30);
+    restrictToAlphabets("holdername", "holdernameError", 30);
+
+  </script>
+
+  <!-- NUMBER WITH ONLY DECIMAL  -->
+
+  <script>
+    function validateInput(input, errorMsgId) {
+      const errorMsg = document.getElementById(errorMsgId);
+      const inputValue = input.value;
+
+      if (!/^[0-9.]*$/.test(inputValue)) {
+        input.value = inputValue.replace(/[^0-9.]/g, ''); // Remove non-numeric and non-decimal characters
+        errorMsg.textContent = "Only numbers and decimal points are allowed.";
+      } else if (inputValue.length > 15) {
+        input.value = inputValue.slice(0, 15); // Truncate to maximum of 15 digits
+        errorMsg.textContent = "Input should not exceed 15 digits.";
+      }
+      else {
+        errorMsg.textContent = "";
+      }
+    }
+  </script>
+
+
+  <script>
+    function restrictToDigitsmsg(elementId) {
+      const inputField = document.getElementById(elementId);
+      inputField.addEventListener("input", function (event) {
+        let inputValue = event.target.value;
+        let sanitizedValue = inputValue.replace(/[^0-9]/g, "");
+
+        // Truncate to 14 digits
+        sanitizedValue = sanitizedValue.substring(0, 14);
+
+        if (inputValue !== sanitizedValue) {
+          document.getElementById("errorMsg").textContent = "Account number should be 11 to 14 digits only.";
+        } else if (sanitizedValue.length < 11) {
+          document.getElementById("errorMsg").textContent = "Account number should be at least 11 digits long.";
+        } else {
+          document.getElementById("errorMsg").textContent = "";
+        }
+
+        event.target.value = sanitizedValue;
+      });
+    }
+
+    restrictToDigitsmsg("RelatedAccountNumber");
+
+    // Add form submission validation
+    document.querySelector("form").addEventListener("submit", function (event) {
+      const inputValue = document.getElementById("RelatedAccountNumber").value;
+      const sanitizedValue = inputValue.replace(/[^0-9]/g, "");
+
+      if (sanitizedValue.length < 11 || sanitizedValue.length > 14) {
+        document.getElementById("errorMsg").textContent = "Account number should be between 11 and 14 digits long.";
+        event.preventDefault(); // Prevent form submission
+      }
+    });
+  </script>
+
+  <!--  RESTRICT TO APLHABET ONLY  A TO Z a to z  -->
+
+
+
+
+</body>
+
+</html>

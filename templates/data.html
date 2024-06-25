@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+
+  {% include 'metaData.html' %}
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  <style>
+    /* date picker start */
+
+    /* Style the input box */
+    .form-control {
+      width: 200px;
+      /* Set your desired width */
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: rgb(251, 255, 254);
+    }
+
+    /* Style the placeholder text */
+    ::placeholder {
+      color: #999;
+      /* Customize the placeholder color */
+    }
+
+    /* date picker ends*/
+
+    .text-primary {
+      color: #00579c !important;
+    }
+
+    .btn-primary {
+      background-color: #00579c !important;
+      border-color: #00579c !important;
+    }
+
+    .btn-danger {
+      background-color: #df2233 !important;
+    }
+
+    .page-item.active .page-link {
+      background-color: #00579c !important;
+    }
+
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+    .paths:hover {
+      text-decoration: underline;
+    }
+
+    #select-all {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .checkbox {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: #8080805b;
+      border-radius: 50%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .checkbox:checked {
+      border: 2px solid rgb(0, 119, 255);
+      background: url('../static/assets/img/tick-svgrepo-com.png');
+      background-size: 100% 100%;
+      /* Make sure the image covers the entire checkbox */
+    }
+
+    .checkbox:active {
+      border: 2px solid rgb(0, 119, 255);
+
+      background: url('../static/assets/img/tick-svgrepo-com.png');
+      /* Set the background image when the checkbox is clicked */
+      background-size: 100% 100%;
+      /* Make sure the image covers the entire checkbox */
+    }
+
+    tr {
+      transition: all 0.1s ease-in-out;
+    }
+
+    tr:not(:first-child):hover {
+      transform: scale(1.01);
+    }
+
+    th:first-child::after {
+      content: "" !important;
+    }
+
+    th:first-child::before {
+      content: "" !important;
+    }
+
+    td,
+    th {
+      padding: 15px !important;
+      border: none !important;
+      border-bottom: 2px solid #00000033 !important;
+      text-align: left !important;
+    }
+
+    /* .modal-content {} */
+  </style>
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="header-container fixed-top">
+    <header class="header navbar navbar-expand-sm">
+      <ul class="navbar-item theme-brand flex-row text-center">
+
+
+        <li class="nav-item theme-text">
+          <a href="{{ url_for('MLROdashboard') }}" class="nav-link">
+            Transaction Monitoring
+          </a>
+        </li>
+      </ul>
+      <ul class="navbar-item flex-row ml-md-auto">
+        <li class="nav-item dropdown notification-dropdown">
+          <a href="javascript:void(0);" class="nav-link dropdown-toggle" id="notificationDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-bell">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg><span class="badge badge-success"></span>
+          </a>
+          <div class="dropdown-menu position-absolute" aria-labelledby="notificationDropdown">
+            <div class="notification-scroll">
+
+              <div class="dropdown-item">
+                <div class="media">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-heart">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                    </path>
+                  </svg>
+                  <div class="media-body">
+                    <div class="notification-para"><span class="user-name">Shaun Park</span> likes your photo.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-item">
+                <div class="media">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-share-2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                  <div class="media-body">
+                    <div class="notification-para"><span class="user-name">Kelly Young</span> shared your post</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-item">
+                <div class="media">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-tag">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7" y2="7"></line>
+                  </svg>
+                  <div class="media-body">
+                    <div class="notification-para"><span class="user-name">Kelly Young</span> mentioned you in comment.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item dropdown user-profile-dropdown">
+          <a href="javascript:void(0);" class="nav-link dropdown-toggle user" id="userProfileDropdown"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <img src="../static/assets/img/90x90.jpg" alt="avatar" />
+          </a>
+          <div class="dropdown-menu position-absolute" aria-labelledby="userProfileDropdown">
+            <div class="">
+              <div class="dropdown-item">
+                <a class="" href="{{ url_for('profile') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="feather feather-user">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  My Profile</a>
+              </div>
+
+            </div>
+            <div class="dropdown-item">
+              <a class="" href="{{ url_for('logout') }}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="feather feather-log-out">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sign Out</a>
+            </div>
+          </div>
+  </div>
+  </li>
+  </ul>
+  </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-menu">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+              <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{ url_for('MLRONextLevel') }}"
+                      class="text-blue font-weight-bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>
+                    </a></li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="{{url_for('MLRONextLevel')}}" class="text-primary">/ <span class="paths ">Alerts</span></a>
+
+        </li>
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+
+
+  <!--  BEGIN CONTENT PART  -->
+  <!--  BEGIN MAIN CONTAINER  -->
+  <div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+    <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing">
+        <div class="alert alert-success position-relative " role="alert" style="right: 0; top: 1%;display: none;"
+          id="sucessAlert">
+          Successfully Submited...
+        </div>
+        <div class=" layout-top-spacing">
+
+
+
+
+
+          <!-- <div id="content" class="main-content">
+                                          <div class="layout-px-spacing"> -->
+
+          <div class="row layout-top-spacing layout-spacing">
+            <div class="col-lg-12 ">
+              <div class="statbox widget box box-shadow">
+
+                <div class="d-flex widget-content widget-content-area justify-content-center pb-0 pt-0">
+                  <div class="d-flex flex-column align-items-center p-4 col-lg-5"
+                    style="gap: 20px;border: 1px solid #8080803a;border-radius: 10px;">
+                    <div class="d-flex justify-content-evenly" style="width: -webkit-fill-available;">
+                      <div class="d-flex" style="gap: 10px;">
+                        <input type="checkbox" name="STR" value="STR" class="checkbox" id="STR">STR</input>
+                      </div>
+                      <div class="d-flex" style="gap: 10px;">
+                        <input type="checkbox" name="STR" value="NON-STR" class="checkbox" id="NONSTR">NON-STR
+                        (10%)</input>
+                      </div>
+                    </div>
+
+
+                    <div>
+                      <button id="submit-button" class="btn btn-primary" disabled>Submit</button>
+                    </div>
+
+                  </div>
+
+                </div>
+                <div class="form-group mb-0 widget-content widget-content-area pb-0 "
+                  style="display: flex;justify-content: end;align-items: center;gap: 10px;">
+                  <label style="font-size:20px;font-weight:500;color: #8e949d;text-wrap: nowrap;" class="mt-2">Date :
+                  </label>
+                  <input id="rangeCalendarFlatpickr" class="form-control flatpickr flatpickr-input active" type="text"
+                    style="background-color: transparent !important;" placeholder="Select Date Range.." />
+                </div>
+                <div class="widget-content widget-content-area">
+                  <div class="table-responsive mb-4 ">
+
+                    <section>
+
+                      <table id="example" class="display nowrap" style="width: 100%">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th><input type="checkbox" disabled id="select-all" class="checkbox" /></th>
+                            <th>STATUS</th>
+                            <th>ACTION</th>
+                            <th>Token Id</th>
+                            <!-- <th>Accoutn No</th> -->
+                            <!--<th>ACCOUNT NO.</th>
+                            <th>FIRST NAME</th>
+                            <th>LAST NAME</th>
+                            <th>EMAIL</th>
+                            <th>MOBILE NO.</th> -->
+                            <!-- <th>MLRO Officer Name</th>
+                            <th>MLRO Officer mail</th> -->
+
+                          </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                          {% for code, matched_objects in data.items() %}
+                {% for obj in matched_objects %}
+                          <tr>
+                            <td></td>
+                            <td><input type="checkbox" disabled class="checkbox" /></td>
+                            <td>
+                              <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-flag-filled"
+                                  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="red" fill="red"
+                                  stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                  <path
+                                    d="M4 5a1 1 0 0 1 .3 -.714a6 6 0 0 1 8.213 -.176l.351 .328a4 4 0 0 0 5.272 0l.249 -.227c.61 -.483 1.527 -.097 1.61 .676l.005 .113v9a1 1 0 0 1 -.300 .714a6 6 0 0 1 -8.213 .176l-.351 -.328a4 4 0 0 0 -5.136 -.114v6.552a1 1 0 0 1 -1.993 .117l-.007 -.117v-16z"
+                                    stroke-width="0" fill="red"></path>
+                                </svg>
+                                Close STR
+                              </span>
+                            </td>
+                            <td>
+                              <button id="view" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                class="btn btn-info" style="width: 30px; height: 30px; padding: 0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" fill="currentColor"
+                                  class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                  <path
+                                    d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                              </button>
+                              <button id="edit" type="button" data-bs-toggle="modal" data-bs-target="#exampleeditModal"
+                                class="btn btn-primary" style="width: 30px; height: 30px; padding: 0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" fill="currentColor"
+                                  class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                  <path
+                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                  <path fill-rule="evenodd"
+                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                </svg>
+                              </button>
+
+                              <button class="btn btn-danger" id="delete" style="width: 30px; height: 30px; padding: 0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                  stroke-linejoin="round" class="feather feather-trash-2">
+                                  <polyline points="3 6 5 6 21 6"></polyline>
+                                  <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                  </path>
+                                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                              </button>
+                            </td>
+                            <td class="token">{{ obj.ticket_id }}</td>
+                           
+                          </tr>
+                          {% endfor %}
+                          {% endfor %}
+
+
+                          <!-- Add more rows with your own data as needed -->
+                        </tbody>
+
+                      </table>
+
+                    </section>
+
+                    <!-- modal  -->
+
+                    <!-- Button trigger modal -->
+
+
+                    <!-- Modal  view-->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                      aria-hidden="true">
+                      <div class="modal-dialog align-items-center">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Account Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div id="modalContent">
+                              <!-- Data from the selected row will be displayed here -->
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- modal view  -->
+
+                    <!-- modal edit  -->
+
+                    <div class="modal fade" id="exampleeditModal" tabindex="-1" aria-labelledby="exampleeditModalLabel"
+                      aria-hidden="true">
+                      <div class="modal-dialog ">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Account Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div id="modaleditContent">
+                              <!-- Data from the selected row will be displayed here -->
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="convertToSTR"
+                              data-bs-dismiss="modal">Accept as STR</button>
+                            <button type="button" class="btn btn-danger" id="convertToNONSTR" data-bs-dismiss="modal">
+                              Close as NON-STR
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- modal edit  -->
+
+                    <!--  END CONTENT AREA  -->
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-wrapper justify-content-center">
+        <div class="footer-section f-section-1">
+          <p class="">Copyright © 2023 <a target="_blank" href="">Transaction Monitoring</a>,
+            All rights reserved.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- END MAIN CONTAINER -->
+
+
+
+  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+  <script src="../static/bootstrap/js/popper.min.js"></script>
+  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="../static/assets/js/app.js"></script>
+
+  <!-- viwe JS start -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
+
+
+  <!-- viwe JS ends -->
+
+
+  <script type="text/javascript" language="javascript"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+  <script>
+
+    $(document).ready(function () {
+      App.init();
+    });
+
+
+  </script>
+  <script src="../static/assets/js/custom.js"></script>
+  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+  <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+  <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+  <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js">
+    </script>
+
+  <script>
+
+
+    $(document).ready(function () {
+      let table = $("#example").DataTable({
+        rowReorder: {
+          selector: "td:nth-child(2)",
+        },
+        responsive: true,
+      });
+
+      $(document).ready(function () {
+        $("#STR, #NONSTR").on("change", function () {
+          let STRCheck = $("#STR").is(":checked");
+          let NONSTRCheck = $("#NONSTR").is(":checked");
+
+          if (STRCheck && NONSTRCheck) {
+            $("#submit-button").prop("disabled", false);
+          } else {
+            $("#submit-button").prop("disabled", true);
+          }
+        });
+      });
+
+      $("#STR").on("change", () => {
+        let STRcheck = document.getElementById("STR").checked
+        if (STRcheck) {
+          let selectedData = [];
+          table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            let row = this.node();
+            let data = this.data();
+            let statusElement = $("td:eq(2) span", row);
+            let statusText = statusElement.text().trim();
+            if (statusText === 'STR') {
+              let checkbox = $("td:eq(1) input[type='checkbox']", row);
+              checkbox.prop('checked', true);
+
+            }
+          })
+        }
+        else {
+          table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            let row = this.node();
+
+            let checkbox = $("td:eq(1) input[type='checkbox']", row);
+            let statusElement = $("td:eq(2) span", row);
+            let statusText = statusElement.text().trim();
+            if (statusText === "STR") {
+              checkbox.prop('checked', false);
+            }
+          });
+        }
+      })
+
+
+      $("#NONSTR").on("change", () => {
+        let approvedRows = [];
+
+        let NONSTRcheck = document.getElementById('NONSTR').checked
+        if (NONSTRcheck) {
+          // Collect all the "Approved" rows
+          table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            let row = this.node();
+            let statusElement = $("td:eq(2) span", row);
+            let statusText = statusElement.text().trim();
+            if (statusText === 'Close STR') {
+              approvedRows.push(row);
+            }
+          });
+
+          // Calculate the number of rows to select (10% of the "Approved" rows)
+          let selectedCount = Math.ceil(approvedRows.length * 0.1);
+
+
+
+          // Randomly select 10% of "Approved" rows
+          for (let i = 0; i < selectedCount; i++) {
+            let randomIndex = Math.floor(Math.random() * approvedRows.length);
+            let selectedRow = approvedRows.splice(randomIndex, 1)[0];
+            let checkbox = $("td:eq(1) input[type='checkbox']", selectedRow);
+            checkbox.prop('checked', true);
+          }
+        }
+        else {
+          // Reset all checkboxes
+          table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+            let row = this.node();
+
+            let checkbox = $("td:eq(1) input[type='checkbox']", row);
+            let statusElement = $("td:eq(2) span", row);
+            let statusText = statusElement.text().trim();
+            if (statusText === "Close STR") {
+              checkbox.prop('checked', false);
+            }
+          });
+        }
+      });
+
+      // Add a click event to the "Select All" checkbox
+      $("#select-all").on("click", function () {
+        let rows = table.rows({ page: "all" }).nodes();
+        let allChecked = this.checked;
+        $(".checkbox", rows).prop("checked", allChecked);
+        table.rows({ page: "all" }).select();
+
+
+      });
+
+      // Add a click event to the submit button
+      $("#select-all").on("click", function () {
+        let allChecked = this.checked;
+        // Check or uncheck individual checkboxes based on the "Select All" checkbox
+        $(".checkbox").prop("checked", allChecked);
+
+      });
+
+      // Add a click event to the submit button
+      $("#submit-button").on("click", function () {
+        let selectedData = [];
+        table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+          let row = this.node();
+          if ($("input.checkbox", row).prop("checked")) {
+            let data = this.data();
+            let statusElement = $("td:eq(1) span", row);
+            let statusText = statusElement.text().trim();
+            selectedData.push({
+              Id: data[3],
+              Date: data[4],
+              ITOfficerName: data[5],
+              ITOfficerMail: data[6],
+              lastname: data[7],
+              email: data[8],
+              mobile: data[9],
+              status: statusText,
+
+            });
+          }
+        });
+        console.log(selectedData);
+
+        document.getElementById('tableBody').style.display = 'none';
+        document.getElementById('sucessAlert').style.display = 'flex';
+
+        let url = '{{ url_for("MLRONextLevelSubmit") }}?dividedData=' + encodeURIComponent(JSON.stringify(selectedData));
+
+        // window.location.href = url
+
+        setTimeout(() => {
+          document.getElementById('sucessAlert').style.display = 'none'
+        }, 2000)
+
+
+      });
+    });
+
+
+    // modal view js
+    let viewButton = document.querySelectorAll("#view");
+
+
+    for (let i = 0; i < viewButton.length; i++) {
+      viewButton[i].addEventListener("click", () => {
+        let modalContent = document.getElementById("modalContent");
+        let rowData = document.querySelectorAll("tr td span");
+        let token = document.querySelectorAll('.token');
+        console.log("class",token);
+     
+    // let status = rowData[i].innerText;
+
+
+        var data = {{ data | tojson | safe}};
+        data = data["TY.1.1"]
+        console.log(data);
+        
+    // Iterate over the array and access properties of each object
+    for (var j = 0; j < data.length; j++) {
+      // console.log("inner token",token[i].innerText);
+      // console.log("back token",typeof(data[j].ticket_id));
+    if (data[j].ticket_id == token[i].innerText) {
+      console.log("hello");
+
+        let tableHtml = `<table style="width:100%">
+          <tr>
+                    <th>STATUS</th>
+                    <th>:</th>
+                    <td>${status}</td>
+                </tr>
+          `;
+
+        for (const key in data[j]) {
+            if (data[j].hasOwnProperty(key)) {
+                const value = data[j][key];
+                tableHtml += `
+                    <tr>
+                        <th>${key}</th>
+                        <th>:</th>
+                        <td>${value}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        tableHtml += '</table>';
+        modalContent.innerHTML = tableHtml;
+    }
+}
+       
+      });
+    }
+    // modal edit js
+
+    let editButton = document.querySelectorAll("#edit");
+
+    for (let i = 0; i < editButton.length; i++) {
+      // let roweditDataTD;
+      editButton[i].addEventListener("click", (event) => {
+        let modaleditContent = document.getElementById("modaleditContent");
+        let roweditData = document.querySelectorAll("tr td span");
+        let token = document.querySelectorAll('.token');
+
+
+        // Extract the specific data you want to display
+        let status = roweditData[i].innerText;
+        var data = {{ data | tojson | safe}};
+
+    // Iterate over the array and access properties of each object
+    for (var j = 0; j < data.length; j++) {
+    if (data[j].Token == token[i].innerText) {
+
+        let tableHtml = `<table style="width:100%">
+          <tr>
+                    <th>STATUS</th>
+                    <th>:</th>
+                    <td>${status}</td>
+                </tr>
+          `;
+
+        for (const key in data[j]) {
+            if (data[j].hasOwnProperty(key)) {
+                const value = data[j][key];
+                tableHtml += `
+                    <tr>
+                        <th>${key}</th>
+                        <th>:</th>
+                        <td>${value}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        tableHtml += '</table>';
+        modaleditContent.innerHTML = tableHtml;
+    }
+}
+
+        const roweditDataTD = editButton[i].parentElement.previousElementSibling;
+
+        let count = 0;
+        let convertToSTR = document.getElementById('convertToSTR');
+        let countLogged = false;
+        convertToSTR.addEventListener('click', () => {
+          if (!countLogged) { // Check if count has not been logged
+            count++; // Increment the count
+            countLogged = true; // Set the flag to true
+            roweditDataTD.innerHTML = `
+                             <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-flag-filled"
+                                  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="green"
+                                  fill="green" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                  <path
+                                    d="M4 5a1 1 0 0 1 .3 -.714a6 6 0 0 1 8.213 -.176l.351 .328a4 4 0 0 0 5.272 0l.249 -.227c.61 -.483 1.527 -.097 1.61 .676l.005 .113v9a1 1 0 0 1 -.300 .714a6 6 0 0 1 -8.213 .176l-.351 -.328a4 4 0 0 0 -5.136 -.114v6.552a1 1 0 0 1 -1.993 .117l-.007 -.117v-16z"
+                                    stroke-width="0" fill="green"></path>
+                                </svg>
+                                STR
+                              </span>
+                               `;
+          }
+
+
+        })
+
+        let convertToNONSTR = document.getElementById('convertToNONSTR');
+
+        convertToNONSTR.addEventListener('click', () => {
+
+          if (!countLogged) { // Check if count has not been logged
+            count++; // Increment the count
+            countLogged = true; // Set the flag to true
+            roweditDataTD.innerHTML = `
+                             <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-flag-filled"
+                                  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="red"
+                                  fill="green" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                  <path
+                                    d="M4 5a1 1 0 0 1 .3 -.714a6 6 0 0 1 8.213 -.176l.351 .328a4 4 0 0 0 5.272 0l.249 -.227c.61 -.483 1.527 -.097 1.61 .676l.005 .113v9a1 1 0 0 1 -.300 .714a6 6 0 0 1 -8.213 .176l-.351 -.328a4 4 0 0 0 -5.136 -.114v6.552a1 1 0 0 1 -1.993 .117l-.007 -.117v-16z"
+                                    stroke-width="0" fill="red"></path>
+                                </svg>
+                                Close STR
+                              </span>
+                           `;
+          }
+
+        })
+      });
+    }
+
+    let deleteButton = document.querySelectorAll("#delete");
+
+    for (let i = 0; i < deleteButton.length; i++) {
+      deleteButton[i].addEventListener("click", () => {
+        let roweditData = document.querySelectorAll("tr");
+        roweditData[i + 1].style.display = "none"
+
+      })
+
+    }
+
+    // date picker Starts
+
+    document.addEventListener("DOMContentLoaded", function () {
+      var f3 = flatpickr(document.getElementById("rangeCalendarFlatpickr"), {
+        mode: "range",
+        onClose: function (selectedDates, dateStr, instance) {
+          if (selectedDates.length === 2) {
+            instance.close();
+          }
+        },
+      });
+    });
+
+    // date picker ENds
+
+
+
+  </script>
+
+</body>
+
+</html>

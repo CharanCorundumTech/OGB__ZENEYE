@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<div class="success-message">
+    {{ success_message }}
+</div>
+
+<head>
+    
+    {% include 'metaData.html' %}
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+        
+        .card {
+            width: 80vw;
+        }
+
+        .text-primary {
+            color: #00579c !important;
+        }
+
+        #tb_1 {
+            cursor: default;
+            background-color: #00579c !important;
+            border-color: #00579c !important;
+        }
+        .form-control-sm {
+    width: 200px;
+    font-size: 14px;
+    border: 1px solid #ccc !important;
+    border-radius: 4px;
+    background-color: rgb(251, 255, 254);
+}
+
+.form-control-sm:hover{
+    width: 200px;
+    font-size: 14px;
+    border: 1px solid #ccc !important;
+    border-radius: 4px;
+    background-color: rgb(251, 255, 254);
+}
+
+
+
+        .layout-px-spacing {
+            min-height: calc(100vh - 166px) !important;
+        }
+
+        #profileMLRO {
+            justify-content: center !important;
+            gap: 30px;
+            cursor: pointer;
+            transition: all 0.5s ease-in-out;
+            border-bottom: 1.5px solid rgba(128, 128, 128, 0.114);
+            padding-bottom: 10px;
+        }
+
+        #profileMLRO:hover {
+            background-color: #b0b0b024;
+            border-radius: 5px;
+        }
+
+        .paths:hover {
+            text-decoration: underline;
+        }
+
+        .profileName {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: #00579c !important;
+        }
+
+        .mb-3 {
+            font-size: 15px !important;
+            font-weight: normal !important;
+            color: #80808088 !important;
+        }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+
+    {% if msg %}
+    <script>
+        alert('{{ msg }}')
+    </script>
+    {% endif %}
+
+</head>
+
+<body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+        <div class="loader">
+            <div class="loader-content">
+                <div class="spinner-grow align-self-center"></div>
+            </div>
+        </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+        <header class="header navbar navbar-expand-sm">
+            <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-menu">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </a>
+
+            <ul class="navbar-nav flex-row" style="gap: 10px;">
+                <li>
+                    <div class="page-header">
+                        <div class="page-title">
+                            <nav class="breadcrumb-one" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ url_for('ITdashboard') }}"
+                                            class="text-blue font-weight-bold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-home">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                            </svg>
+                                        </a></li>
+                                    <!-- <li class="breadcrumb-item"><a href="javascript:void(0);">Components</a></li> -->
+                                    <!-- <li class="breadcrumb-item active" aria-current="page">Transaction Monitoring</li> -->
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{url_for('FINnetReports')}}" class="text-primary">/ <span class="paths ">FINnet Reports</span></a>
+
+                </li>
+                <li>
+                    <a href="{{url_for('online_STR_download_page')}}" class="text-primary">/ <span class="paths ">Online Cases Download</span></a>
+
+                </li>
+            </ul>
+        </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    
+        <!--  BEGIN MAIN CONTAINER  -->
+        <div class="main-container" id="container">
+
+            <div class="overlay"></div>
+            <div class="search-overlay"></div>
+
+            <!--  BEGIN SIDEBAR  -->
+            {% include 'sidebar.html' %}
+
+            <!--  END SIDEBAR  -->
+
+            <!--  BEGIN CONTENT AREA  -->
+            <div id="content" class="main-content">
+                <div class="layout-px-spacing">
+
+                    <div class="row layout-top-spacing">
+
+                        <div class="col-12">
+                            <div class="card p-3">
+                               
+                                <div class="border rounded  shadow-sm mb-5">
+                                    <div class="row m-1 justify-content-evenly align-items-center">
+                                   
+                                      <div class="col-lg-4 mt-4">
+                                         <div class="btn-group  submitter-group ">
+                                          <div class="input-group-prepend ">
+                                            <div class="input-group-text btn-sm btn-blue">Account Number</div>
+                                          </div>
+                                          <input type="text" class="filter-checkbox form-control-sm" id="AccountNumber" placeholder="Enter Account Number..."/>
+                                         
+                                        </div>
+                                      </div>
+                                    
+                                      <div class="col-lg-4 mt-3">
+                                           <div class="btn-group   submitter-group ">
+                                          <div class="input-group-prepend">
+                                            <div class="input-group-text btn-sm btn-blue">Date</div>
+                                          </div>
+                                          <input id="rangeCalendarFlatpickr" class="form-control-sm flatpickr flatpickr-input active" type="text" style="background-color: transparent !important;"
+                                            placeholder="Select Date Range.." />
+                                        </div>
+                                      </div>
+                                     
+                  
+                                   </div>
+                                   <div class="col-12 text-center mt-3 mb-2 justify-content-center align-items-center">
+                                    <button id="filter-button" class="btn btn-sm btn-blue mt-3">Apply Filters</button>
+                                   </div>
+                                </div>
+
+                                <table id="example" class="display">
+                                    <thead>
+                                        <tr>
+                                            <th>Account Number</th>
+                                            <th class="d-none">Date</th>
+                                            <th>Date</th>
+                                            <!-- <th>PDF</th>
+                                            <th>CSV</th> -->
+                                            <th>ZIP</th>
+                                           
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                       {% for doc in data %}
+                                       <tr>
+                                        <td>{{doc["AccountNumber"]}}</td>
+                                        <td class="d-none">{{doc["Date"]}}</td>
+                                        <td >{{ doc["Date"] }}</td>
+                                        
+                                        <td>
+                                            <form action="{{ url_for('download_pdf_strr')}}" method="post">
+                                                <input type="text" class="d-none" name="accNumber" value="{{doc['AccountNumber']}}">
+                                                <input type="text" class="d-none" name="date" value="{{doc['Date']}}">
+                                                <input type="text" class="d-none" name="TicketId" value="{{doc['TicketId']}}">
+                                                <input type="text" class="d-none" name="TXDATE" value="{{doc['TXDATE']}}">
+                                                <input type="text" class="d-none" name="TXTYPE" value="{{doc['TXTYPE']}}">
+                                                <input type="text" class="d-none" name="TRNFLOWTYPE" value="{{doc['TRNFLOWTYPE']}}">
+                                                <input type="text" class="d-none" name="CUSTCD" value="{{doc['CUSTCD']}}">
+                                                <input type="text" class="d-none" name="scenario_code" value="{{doc['scenario_code']}}">
+
+                                                <button  name="download" class="btn btn-sm btn-blue btn-outline-blue">Download</button>
+                                            </form>
+                                        </td>
+                                       </tr>
+
+                                       {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% include 'footer.html' %}
+
+
+
+
+
+            <!-- END MAIN CONTAINER -->
+
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+            <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+            <script src="../static/bootstrap/js/popper.min.js"></script>
+            <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+            <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+            <script src="../static/assets/js/app.js"></script>
+
+            <!-- viwe JS start -->
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                crossorigin="anonymous"></script>
+        
+
+            <!-- viwe JS ends -->
+
+
+            <script type="text/javascript" language="javascript"
+                src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+            <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+            <script>
+
+                $(document).ready(function () {
+                    App.init();
+                });
+
+
+            </script>
+            <script src="../static/assets/js/custom.js"></script>
+            <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+            <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+            <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+            <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+            <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+            <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js">
+                </script>
+            <script>
+                $(document).ready(function () {
+                    $('#usersTab').click(function () {
+                        $('#addUserTab, #allUsersTab').toggle();
+                    });
+                });
+            </script>
+
+            <script>
+               
+document.addEventListener("DOMContentLoaded", function () {
+  var isDateFiltering = false;
+  var dataTable;
+  var dateArr = []
+
+
+  // Initialize DataTable
+  $(document).ready(function () {
+    dataTable = $("#example").DataTable({
+      rowReorder: {
+          selector: "td:nth-child(2)",
+        },
+        responsive: true,
+//          paging: false, // Disable initial pagination
+//   scrollY: "300px", // Set the height of the scrollable area
+//   scrollCollapse: true, // Enable the scrollbar to collapse
+//   scrollInfinite: true, // Enable infinite scrolling
+//   info: true,
+ 
+      
+      // "columnDefs": [
+       
+      //   {
+      //     "targets": [8],
+      //     "visible": false
+      //   }
+      // ]
+    });
+
+ function datePicker() {
+  // Get a reference to the input element
+  var dateRangeInput = document.getElementById('rangeCalendarFlatpickr');
+  // Initialize flatpickr with date range configuration and the onChange event
+  return flatpickr(dateRangeInput, {
+    mode: "range" // This enables date range selection
+  });
+}
+function filterTableByDateRange(startDate, endDate) {
+  var amou = false;
+  var table = document.getElementById("tableBody");
+  var rows = table.getElementsByTagName("tr");
+  // Show all rows when the date range is empty
+  if (!startDate || !endDate) {
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].style.display = "";
+    }
+    return; // Exit the function when the date range is empty
+  }
+  for (var i = 0; i < rows.length; i++) {
+    var row = rows[i];
+    var dateCell_undef = row.getElementsByTagName("td")[1]; // Assuming the date is in the 5th index
+    var dateCell = dateCell_undef.textContent;
+    if (dateCell) {
+        console.log("dateCell : ",dateCell);
+    var dateTimeParts = dateCell.split(' ');
+    var dateParts = dateTimeParts[0].split('-');
+    var timeParts = dateTimeParts[1].split(':');
+    var day = parseInt(dateParts[2], 10);
+    var month = parseInt(dateParts[1], 10) - 1; // Months are zero-based
+    var year = parseInt(dateParts[0], 10);
+    var hours = parseInt(timeParts[0], 10);
+    var minutes = parseInt(timeParts[1], 10);
+    var seconds = parseInt(timeParts[2], 10);
+    var rowDate = new Date(year, month, day, hours, minutes, seconds);
+      if (rowDate >= startDate && rowDate <= endDate) {
+        row.style.display = "";
+        amou = true;
+        console.log(" IN RANGE DATES");
+      } else {
+        row.style.display = "none";
+        amou = false;
+        console.log("NOT IN RANGE DATES");
+      }
+    }
+  }
+  return amou;
+}
+// Example usage:
+var flatpickrInstance = datePicker();
+// Bind applyFilters function to button click
+$('#filter-button').on('click', function () {
+  applyFilters()
+
+  // Get the selected dates from the flatpickr instance
+  var selectedDates = flatpickrInstance.selectedDates;
+  // If a date range is selected, filter the table
+  if (selectedDates.length === 2 ) {
+    var startDate = selectedDates[0];
+    var endDate = selectedDates[1];
+    var dece = filterTableByDateRange(startDate, endDate);
+  } 
+ 
+  else {
+
+    
+    // Handle the case where the date range is not selected
+    
+    console.log("Please select a date range");
+    var table = document.getElementById("tableBody");
+  var rows = table.getElementsByTagName("tr");
+  // Show all rows when the date range is empty
+    for (var i = 0; i < rows.length; i++) {
+      rows[i].style.display = "";
+    }
+    return; // Exit the function when the date range is empty
+  
+  }
+
+
+
+
+
+});
+
+  });
+
+  // Apply filters function
+  function applyFilters() {
+
+   
+    var accountNumber = $('#AccountNumber').val();
+    
+   
+// Clear existing search
+dataTable.columns().search('');
+
+// Apply filters
+dataTable
+    .columns(0).search(accountNumber)
+    
+
+     // Filter based on dateArr
+     dataTable.column(2).search('').draw();
+    
+    dateArr.forEach(function(date) {
+        dataTable.column(2).search(date).draw();
+    });
+  
+  }
+});
+
+
+
+            </script>
+
+</body>
+
+</html>

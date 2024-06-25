@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  {% include 'metaData.html' %}
+
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  <style>
+    .text-primary {
+      color: #00579c !important;
+    }
+
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+
+
+    .btn-primary {
+      background-color: #00579c !important;
+      border-color: #00579c !important;
+    }
+  </style>
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  {% include 'header.html' %}
+
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-menu">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+              <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="#" class="text-blue font-weight-bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>
+                    </a></li>
+                  <!-- <li class="breadcrumb-item"><a href="javascript:void(0);">Components</a></li> -->
+                  <!-- <li class="breadcrumb-item active" aria-current="page">Transaction Monitoring</li> -->
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="{{ url_for('update_threshold_values') }}" class="text-primary">/ <span class="paths ">Updated
+              threshold </span></a>
+
+        </li>
+        <li>
+          <a href="#" class="text-primary">/ <span class="paths ">DV_Page </span></a>
+
+        </li>
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+
+  <!--  BEGIN MAIN CONTAINER  -->
+  <div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+    <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="row layout-px-spacing">
+        <div class="layout-top-spacing">
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing ">
+              <div class="list-group">
+                <h6 class="list-group-item bg-blue mb-0 list-group-item-action active" aria-current="true">Transaction
+                  Monitoring</h6>
+                <a type="button" class="list-group-item list-group-item-action  mr-2" style="width:80vw;">
+                  <b>{{tm_sub_heading}}</b>
+                  <br> {{tm_heading}}
+                </a>
+                <!-- Button trigger modal -->
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                  aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{{tm_sub_heading}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="list-group-item list-group-item-action border-0">
+                          <form action="{{ url_for('update_threshold') }}" method="POST">
+                            <input type="text" name="route_code" value="{{ tm_sub_heading }}" style="display: none;" />
+                            {% for key, value in current_values.items() %}
+                            <div class="mb-3">
+                              <label for="{{ key }}" class="form-label">{{ key }}</label>
+                              <input type="number" name="{{ key }}" id="{{ key }}" class="form-control rounded-0"
+                                value="{{ value }}" required>
+                            </div>
+                            {% endfor %}
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-danger" data-dismiss="modal">
+                          <i class="flaticon-cancel-12 text-blue"></i> Close
+                        </button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- current values start -->
+                <div class="widget-content widget-content-area mt-4">
+                  <div class="table-responsive">
+                    <table id="zero-config" class="table table-hover">
+                      <thead>
+                        <h6 class="text-white p-3" style="background-color:#00579C;">Current values </h6>
+                      </thead>
+                      <tbody>
+                        {% for key, value in current_values.items() %}
+                        {% if loop.index0 % 3 == 0 %}
+                        <tr>
+                          {% endif %}
+                          <th style="color:#1b55e2; text-transform: uppercase;font-size: 13px;">{{ key }}</th>
+                          <td>{{ value }}</td>
+                          {% if loop.index0 % 3 == 2 or loop.last %}
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        {% if current_values|length % 3 != 0 %}
+                        <!-- If the number of keys is not divisible by 3, close the last row -->
+                        {% for _ in range(3 - (current_values|length % 3)) %}
+                        <th></th>
+                        <td></td>
+                        {% endfor %}
+                        </tr>
+                        {% endif %}
+                      </tbody>
+                    </table>
+                    <div class="text-center">
+                      <a type="button" class="btn btn-blue" data-toggle="modal" data-target="#exampleModal">Update</a>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                <!-- current value end -->
+
+                <!-- previous start -->
+                <div class="widget-content widget-content-area mt-4">
+                  <h6 class="text-white p-3" style="background-color:#00579C; width:100%;">Previous values</h6>
+
+                  <div class="" style="overflow-x: auto;">
+
+                    <table id="zero-config" class="table table-hover">
+                      <thead>
+                        {% if previous_values %}
+                        <tr>
+                          <th>Updated on</th>
+                          {% for key, value in previous_values[0].items() if key != 'timestamp' %}
+                          <th>{{ key }}</th>
+                          {% endfor %}
+                        </tr>
+                        {% endif %}
+                      </thead>
+                      <tbody>
+                        {% for entry in previous_values %}
+                        <tr>
+                          <td>{{ entry['timestamp'] }}</td>
+                          {% for key, value in entry.items() if key != 'timestamp' %}
+                          <td>{{ value }}</td>
+                          {% endfor %}
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- previous values end -->
+
+
+
+
+
+    <!--  END CONTENT AREA  -->
+
+    <!-- previous end -->
+
+
+    {% include 'footer.html' %}
+
+  </div>
+
+  <!-- END MAIN CONTAINER -->
+
+
+
+
+  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+  <script src="../static/bootstrap/js/popper.min.js"></script>
+  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="../static/assets/js/app.js"></script>
+
+
+  <!-- viwe JS start -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.5.0/dist/js/bootstrap.min.js"></script>
+
+
+  <!-- viwe JS ends -->
+
+
+
+  <script type="text/javascript" language="javascript"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('#usersTab').click(function () {
+        $('#VerifyUserTab').toggle();
+      });
+    });
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      App.init();
+    });
+
+
+  </script>
+  <script src="../static/assets/js/custom.js"></script>
+  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+  <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+
+  <!-- retrive data tbody through JS -->
+
+  <!-- <script src="../static/assets/js/tables/tableCheckBox.js"></script> -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+  <script src="../static/plugins/table/datatable/datatables.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+
+  <script>
+
+    $(document).ready(function () {
+      let table = $("#example").DataTable({
+        rowReorder: {
+          selector: "td:nth-child(2)",
+        },
+        responsive: true,
+      });
+
+    });
+
+  </script>
+</body>
+
+</html>

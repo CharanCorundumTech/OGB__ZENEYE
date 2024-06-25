@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- <div class="success-message">
+    {{ success_message }}
+</div> -->
+
+<head>
+    
+    {% include 'metaData.html' %}
+
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+        .card {
+            width: 80vw;
+        }
+
+        .text-primary {
+            color: #00579c !important;
+        }
+
+        #tb_1 {
+            cursor: default;
+            background-color: #00579c !important;
+            border-color: #00579c !important;
+        }
+
+
+        .layout-px-spacing {
+            min-height: calc(100vh - 166px) !important;
+        }
+
+        #profileMLRO {
+            justify-content: center !important;
+            gap: 30px;
+            cursor: pointer;
+            transition: all 0.5s ease-in-out;
+            border-bottom: 1.5px solid rgba(128, 128, 128, 0.114);
+            padding-bottom: 10px;
+        }
+
+        #profileMLRO:hover {
+            background-color: #b0b0b024;
+            border-radius: 5px;
+        }
+
+        .paths:hover {
+            text-decoration: underline;
+        }
+
+        .profileName {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: #00579c !important;
+        }
+
+        .mb-3 {
+            font-size: 15px !important;
+            font-weight: normal !important;
+            color: #80808088 !important;
+        }
+        .error-input {
+        border: 2px solid red;
+    }
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1051; /* Increase z-index to be higher than modal backdrop */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-backdrop {
+    z-index: 1050; /* Set a lower z-index for the modal backdrop */
+}
+
+.modal.fade-bg {
+    position: absolute;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+.bigger-modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+        padding-top: 60px; /* Center modal vertically */
+    }
+
+    .bigger-modal-content {
+        background-color: #fff; /* White background for the modal content */
+        margin: auto;
+        padding: 29px;
+        border: 1px solid #888;
+        width: 86%;
+        height: 85%; /* Adjust width as needed */
+        font-size: 25px; /* Adjust font size as needed */
+        position: fixed;
+        margin-top:46px;
+        margin-left: 214px; /* Ensure positioning context for close button */
+         /* Add vertical scrollbar if content exceeds viewport height */
+        max-height: 100%; /* Limit max height to 80% of viewport height */
+    }
+
+    .label {
+        font-weight: bold;
+    }
+
+
+    /* Close button style */
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }    /* Close button style */
+    /* .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    } */
+
+
+    /* Close button styles */
+    
+    /* Close button hover effect */
+    .close:hover {
+        color: #000;
+    }
+    .color {
+    /* Define your styles here */
+    color: rgb(241, 239, 247); /* Example color */
+    background-color: rgb(88, 165, 210); /* Example background color */
+    /* Add any other styles you want */
+}
+
+
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+
+    {% if msg %}
+    <script>
+        alert('{{ msg }}')
+    </script>
+    {% endif %}
+
+</head>
+
+<body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+        <div class="loader">
+            <div class="loader-content">
+                <div class="spinner-grow align-self-center"></div>
+            </div>
+        </div>
+    </div>
+    
+   
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+        <header class="header navbar navbar-expand-sm">
+            <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-menu">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </a>
+
+            <ul class="navbar-nav flex-row" style="gap: 10px;">
+                <li>
+                    <div class="page-header">
+                        <div class="page-title">
+                            <nav class="breadcrumb-one" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ url_for('AdminAllUsers') }}"
+                                            class="text-blue font-weight-bold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-home">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                            </svg>
+                                        </a></li>
+                                    
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{url_for('AdminAllUsers')}}" class="text-primary">/ <span class="paths ">All Users</span></a>
+
+                </li>
+            </ul>
+        </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+        <!--  BEGIN MAIN CONTAINER  -->
+        <div class="main-container" id="container">
+
+            <div class="overlay"></div>
+            <div class="search-overlay"></div>
+
+            <!--  BEGIN SIDEBAR  -->
+            {% include 'sidebar.html' %}
+
+            <!--  END SIDEBAR  -->
+
+            <!--  BEGIN CONTENT AREA  -->
+            <div id="content" class="main-content">
+                <div class="layout-px-spacing">
+
+                    <div class="row layout-top-spacing">
+
+                        <div class="col-12">
+                            <div class="card p-3">
+                              
+                              
+
+                                <table id="dtExample" class="display">
+                                    <thead>
+                                        <tr>
+                                           
+            <th>id</th>
+            <th>EmpId</th>
+            <th>UserName</th>
+            <th>EmailId</th>
+            <th>MobileNo</th>
+            
+            <!-- <th>Address</th> -->
+            <th>Role</th>
+            <th>Leave</th>
+            <th>Status</th>
+
+            <th>Delete</th> 
+            <th>Revive</th>
+            <th>View</th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                {% for value in data %}
+                                <tr>
+                                    <td>{{value['id']}}</td>
+                                    <td>{{value['EmpId']}}</td>
+                                    <td>{{value['UserName']}}</td>
+                                    <td>{{value['EmailId']}}</td>
+                                    <td>{{value['MobileNo']}}</td>
+                                    <td>{{value['Role']}}</td>
+                                    <td>{{value['LeaveStatus']}}</td>
+                                    <td>{{value['Status']}}</td>
+                               
+                                    <td>
+                                        <form action="{{ url_for('userLeaveStatus') }}" method="POST" class="deleteForm">
+                                            <input type="text" class="d-none" name="emailid" value="{{ value['EmailId'] }}" />
+                                            <button type="submit" class="btn btn-sm btn-danger deleteButton" data-emailid="{{ value['EmailId'] }}">
+                                                <svg viewBox="0 0 24 24" fill="none" width="70%" height="70%" xmlns="http://www.w3.org/2000/svg">
+                                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                    <g id="SVGRepo_iconCarrier">
+                                                        <path d="M4 7H20" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        <path d="M6 10L7.70141 19.3578C7.87432 20.3088 8.70258 21 9.66915 21H14.3308C15.2974 21 16.1257 20.3087 16.2986 19.3578L18 10" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                        <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    </g>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="{{ url_for('userWorkingStatus') }}"  method="POST" class="reviveForm">
+                                            <input type="text" class="d-none" name="emailid" value="{{ value['EmailId'] }}" />
+                                            <button type="submit" class="btn btn-sm btn-success viewButton" data-emailid="{{ value['EmailId'] }}" disabled>
+                                                <svg viewBox="0 0 16 16" width="70%" height="70%" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+                                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                    <g id="SVGRepo_iconCarrier">
+                                                        <g fill="#ffffff">
+                                                            <path d="m 5 12 v 1 h 0.007812 c -0.003906 0.265625 0.101563 0.519531 0.285157 0.707031 l 2 2 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 l 2 -2 c 0.183594 -0.1875 0.289063 -0.441406 0.289063 -0.707031 h 0.003906 v -1 z m 0 0"></path>
+                                                            <path d="m 8 -0.0078125 l -5 3.1406245 v 4.714844 l 5 3.144532 l 5 -3.144532 v -4.714844 z m 0 6.0000005 l -3.644531 -2.175782 l 3.644531 -2.292968 l 3.644531 2.292968 z m 0 0"></path>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    
+
+
+<td>
+    <button class="btn btn-sm btn-info " onclick="openModal({{ loop.index0 }})">
+        <svg viewBox="0 0 576 512" width="43" height="30" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <g fill="#ffffff">
+                    <path d="m 5 12 v 1 h 0.007812 c -0.003906 0.265625 0.101563 0.519531 0.285157 0.707031 l 2 2 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 l 2 -2 c 0.183594 -0.1875 0.289063 -0.441406 0.289063 -0.707031 h 0.003906 v -1 z m 0 0"></path>
+                    <path d="m 8 -0.0078125 l -5 3.1406245 v 4.714844 l 5 3.144532 l 5 -3.144532 v -4.714844 z m 0 6.0000005 l -3.644531 -2.175782 l 3.644531 -2.292968 l 3.644531 2.292968 z m 0 0"></path>
+                    
+                    <path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/>
+                </g>
+            </g>
+        </svg>
+    </button>
+    
+</td>
+
+                        
+
+
+                                
+
+                                
+
+                                    
+
+                                </tr>
+
+                                <!-- The View Modal -->
+                                <div class="modal fade-bg" id="myModal{{value._id}}" data-backdrop="false">
+                                    <div class="modal-dialog -lg">
+                                        <div class="modal-content">
+
+                                            <!-- Modal Header -->
+
+                                            <div class="modal-header">
+                                                <p class="modal-title"> <b>{{ value.role }} : </b>{{ value.name }}
+                                                </p>
+                                                <button type="button" class="close"
+                                                    data-dismiss="modal">&times;</button>
+                                            </div>
+
+                                            <!-- Modal body -->
+                                            <form action="" method="POST">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="modal-body">
+
+                                                            <div class="row p-3">
+                                                                <div class="col-6 mb-3">
+                                                                    <label for="name"
+                                                                        class="form-label">Username</label>
+
+                                                                    <input type="text"
+                                                                        class="form-control userName"
+                                                                        name="name" placeholder="Username"
+                                                                        aria-label="Username"
+                                                                        value="{{ value.name }}">
+                                                                </div>
+                                                                <div class="col-6 mb-3">
+                                                                    <label for="emailid"
+                                                                        class="form-label">Email</label>
+                                                                    <input type="text"
+                                                                        class="form-control emailId"
+                                                                        name="emailid" placeholder="Email"
+                                                                        aria-label="Email"
+                                                                        value="{{ value.emailid }}">
+                                                                </div>
+
+                                                                <div class="col-6 mb-3">
+                                                                    <label for="role"
+                                                                        class="form-label">Designation</label>
+
+                                                                    <select name="role"
+                                                                        class="form-control inputState roleSelect">
+
+                                                                        <option disabled selected>Designation
+                                                                        </option>
+                                                                        <!-- <option value="IT Officer">IT Officer</option> -->
+                                                                        <option value="MLRO">MLRO</option>
+                                                                        <option value="CM/SM">CM/SM</option>
+                                                                        <option value="AGM">AGM</option>
+                                                                        <option value="BranchMakers">BranchMakers</option>
+                                                                        <option value="ROS">ROS</option>
+                                                                        <option value="SDN/USER">SDN</option>
+
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-6 mb-3">
+                                                                    <label for="mobileno"
+                                                                        class="form-label">Mobile No</label>
+                                                                    <input type="number"
+                                                                        class="form-control mobileNo"
+                                                                        name="mobileno" placeholder="Mobile No"
+                                                                        aria-label="Mobile No"
+                                                                        value="{{ value.mobileno }}" min="0">
+                                                                </div>
+                                                                <div class="col-6 mb-3">
+                                                                    <label for="address"
+                                                                        class="form-label">Address</label>
+                                                                    <textarea name="address" cols="20" rows="5"
+                                                                        class="form-control address"
+                                                                        placeholder="Address..."
+                                                                        aria-label="Password">{{ value.address }}</textarea>
+                                                                </div>
+
+                                                                <div class="col-6 mb-3">
+                                                                    <label for="role" class="form-label">Leave
+                                                                        Status</label>
+
+                                                                    <select name="leave"
+                                                                        class="form-control leaveSelect">
+
+                                                                        <option disabled selected>Leave Status
+                                                                        </option>
+                                                                        <!-- <option value="IT Officer">IT Officer</option> -->
+                                                                        <option value="Working">Working
+                                                                        </option>
+                                                                        <option value="On Leave">On Leave
+                                                                        </option>
+                                                                        <!-- <option value="DGM/PO">DGM/PO</option>  -->
+
+                                                                    </select>
+                                                                </div>
+                                                                
+                                                                
+                                                                
+
+
+                                                            </div>
+                                                            <!-- <div class="d-flex justify-content-center mb-4">
+                                                <button class="btn btn-blue">Submit</button>
+                                            </div> -->
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Modal footer -->
+                                                <div class="modal-footer">
+                                                    <button type="submit"
+                                                        class="btn btn-primary">Submit</button>
+                                                    <button type="button" class="btn btn-danger"
+                                                        data-dismiss="modal">Close</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="myModall" class="bigger-modal modal-fullscreen">
+                                    <div class="bigger-modal-content"> <!-- Use the new class here -->
+                                        <span class="close" onclick="closeModal()">&times;</span>
+                                        <ul id="detailsList">
+                                            <p><span class="label">Address:</span> <span id="address"></span></p>
+                                            <p><span class="label">Password:</span> <span id="password"></span></p>
+                                            <p><span class="label">Image:</span> <span id="image"></span></p>
+                                            <p><span class="label">File:</span> <span id="file"></span></p>
+                                            <p><span class="label">Alerts generated:</span> <span id="alerts_generated"></span></p>
+                                            <p><span class="label">Perday Data:</span> <span id="perday_data"></span></p>
+                                            <p><span class="label">MLROs assigned:</span> <span id="mlros_assigned"></span></p>
+                                            <p><span class="label">Assigned to:</span> <span id="assigned_to"></span></p>
+                                            <p><span class="label">Branch Code:</span> <span id="branch_code"></span></p>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- <div id="myModall" class="bigger-modal">
+                                    <div class="bigger-modal-content"> 
+                                        <span class="close" onclick="closeModal()">&times;</span>
+                                        <ul id="detailsList">
+                                        Details will be populated here -->
+                                        <!-- Details from 'data' field -->
+                                        <!-- <p>Address: {{ value['Address'] }}</p>
+                                        <p>Password: {{ value['Password'] }}</p>
+                                        <p>Image: {{ value['Image'] }}</p>
+                                        <p>File: {{ value['File'] }}</p>
+                                        <p>Alerts_generated: {{ value['Alerts_generated'] }}</p>
+                                        <p>PerdayData: {{ value['PerdayData'] }}</p>
+                                        <p>MLROs_assigned: {{ value['MLROs_assigned'] }}</p>
+                                        <p>Assigned_to: {{ value['Assigned_to'] }}</p>
+                                        <p>BranchCode: {{ value['BranchCode'] }}</p> -->
+                                            <!-- <p>Address: <span id="address"></span></p>
+                                            <p>Password: <span id="password"></span></p>
+                                            <p>Image: <span id="image"></span></p>
+                                            <p>File: <span id="file"></span></p>
+                                            <p>Alerts generated: <span id="alerts_generated"></span></p>
+                                            <p>Perday Data: <span id="perday_data"></span></p>
+                                            <p>MLROs assigned: <span id="mlros_assigned"></span></p>
+                                            <p>Assigned to: <span id="assigned_to"></span></p>
+                                            <p>Branch Code: <span id="branch_code"></span></p>
+                                        </ul>
+                                    </div> -->
+                                    <!-- </div> --> 
+
+                                <!-- END Model -->
+                                {% endfor %}
+                            </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+            {% include 'footer.html' %}
+
+
+
+
+
+            <!-- END MAIN CONTAINER -->
+
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+            <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+            <script src="../static/bootstrap/js/popper.min.js"></script>
+            <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+            <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+            <script src="../static/assets/js/app.js"></script>
+
+            <!-- viwe JS start -->
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                crossorigin="anonymous"></script>
+        
+
+            <!-- viwe JS ends -->
+
+
+            <script type="text/javascript" language="javascript"
+                src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+            <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+            <script>
+
+                $(document).ready(function () {
+                    App.init();
+                });
+
+
+            </script>
+            <script src="../static/assets/js/custom.js"></script>
+            <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+            <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+            <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+            <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+            <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+            <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js">
+                </script>
+            <script>
+                $(document).ready(function () {
+                    $('#usersTab').click(function () {
+                        $('#addUserTab, #allUsersTab').toggle();
+                    });
+                });
+            </script>
+
+            <script>
+                // $(document).ready(function () {
+                //     $('#dtExample').DataTable({
+                //             rowReorder: {
+                //                 selector: "td:nth-child(2)",
+                //             },
+                //             responsive: true
+                //         });
+                // });
+
+                function roleInfo(roleInfo, leaveStatus) {
+                    var user = {
+                        role: roleInfo,
+                        leave: leaveStatus
+                    };
+
+                    var roleElements = document.getElementsByClassName("roleSelect");
+                    var leaveSelect = document.getElementsByClassName("leaveSelect");
+                    for (var i = 0; i < roleElements.length; i++) {
+                        roleElements[i].value = user.role;
+                        leaveSelect[i].value = user.leave;
+                    }
+                }
+
+                var dataTable;
+                document.addEventListener("DOMContentLoaded", function () {
+
+
+
+                    // Initialize DataTable
+                    $(document).ready(function () {
+                        dataTable = $("#dtExample").DataTable({
+                            rowReorder: {
+                                selector: "td:nth-child(2)",
+                                
+                            },
+                            responsive: true
+                            
+
+                        })
+                    })
+                })
+
+
+                function codeFilter() {
+                    let role = document.getElementById('role').value;
+                    let status = document.getElementById('status').value;
+                    let leave = document.getElementById('leave').value;
+
+
+
+
+                    if (dataTable) {
+                        if ((role.length != 0 && status.length != 0 && leave.length != 0) && (role != "Select Designation" && status != "Select Status" && leave != "Select Leave Status")) {
+
+                            dataTable.columns().search('');
+
+                            dataTable.columns(3).search(role);
+                            dataTable.columns(5).search(status);
+                            dataTable.columns(6).search(leave);
+                        }
+                        else if ((role.length != 0 && status.length != 0) && (role != "Select Designation" && status != "Select Status")) {
+                            dataTable.columns().search('');
+
+                            dataTable.columns(3).search(role);
+                            dataTable.columns(5).search(status);
+                        }
+                        else if ((role.length != 0 && leave.length != 0) && (role != "Select Designation" && leave != "Select Leave Status")) {
+                            dataTable.columns().search('');
+
+                            dataTable.columns(3).search(role);
+                            dataTable.columns(6).search(leave);
+                        }
+                        else if ((leave.length != 0 && status.length != 0) && (leave != "Select Leave Status" && status != "Select Status")) {
+                            dataTable.columns().search('');
+
+                            dataTable.columns(5).search(status);
+                            dataTable.columns(6).search(leave);
+                        }
+                        else if (role.length != 0 && role != "Select Designation") {
+                            dataTable.columns().search('');
+                            dataTable.columns(3).search(role);
+                        }
+                        else if (status.length != 0 && status != "Select Status") {
+                            dataTable.columns().search('');
+                            dataTable.columns(5).search(status);
+                        }
+                        else if (leave.length != 0 && leave != "Select Leave Status") {
+                            dataTable.columns().search('');
+                            dataTable.columns(6).search(leave);
+                        }
+                        else {
+                            // If code is not provided, clear the search, clear the table, and draw
+                            dataTable.search('').columns().search('').draw();
+                            return; // exit the function to prevent further processing
+                        }
+
+                        // Redraw the table to apply the filter
+                        dataTable.draw();
+                    } else {
+                        console.error("DataTable is not defined.");
+                    }
+
+
+                }
+
+
+                function multiUserUpload(){
+                    let multUsers = document.getElementById('multUsers');
+                    multUsers.click()
+
+                }
+
+                function subFileFunction(){
+                    let uploadFile = document.getElementById('uploadFile');
+                    let multUsers = document.getElementById('multUsers');
+
+                    if(multUsers.files.length > 0){
+                        uploadFile.submit();
+                    }
+                }
+
+                setInterval(()=>{
+                    subFileFunction()
+                },5000)
+
+
+            </script>
+
+<!-- MOBILE NO FORMAT -->
+
+<script>
+    function formatMobileNumber(input) {
+        if (input.value.trim() !== '') {
+            let sanitizedValue = input.value.replace(/[^+0-9]/g, '');
+            
+            // Prevent input of more than 10 digits
+            if (sanitizedValue.length > 10) {
+                sanitizedValue = sanitizedValue.slice(0, 10);
+                document.getElementById('mobilenomsgError').innerText = 'Mobile number must be only 10 digits long';
+            } else if (sanitizedValue.length < 10) {
+                document.getElementById('mobilenomsgError').innerText = 'Mobile number must be only 10 digits long';
+            } else {
+                document.getElementById('mobilenomsgError').innerText = '';
+            }
+
+            if (sanitizedValue.startsWith('+')) {
+                sanitizedValue = '+' + sanitizedValue.slice(1).replace(/\+/g, '');
+                
+                if (sanitizedValue.length > 3) {
+                    sanitizedValue = sanitizedValue.slice(0, 3) + ' ' + sanitizedValue.slice(3);
+                }
+            } else {
+                sanitizedValue = sanitizedValue.replace(/\D/g, '');
+            }
+            
+            input.value = sanitizedValue;
+        }
+    }
+
+    // Add form submission validation
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+        const inputValue = document.getElementById("mobileno").value;
+        const sanitizedValue = inputValue.replace(/[^0-9]/g, "");
+
+        if (sanitizedValue.length < 10 || sanitizedValue.length > 10) {
+            document.getElementById("mobilenomsgError").textContent = 'Mobile number must be only 10 digits long.';
+            document.getElementById("mobileno").classList.add('error-input');
+            event.preventDefault(); // Prevent form submission
+        } else {
+            document.getElementById("mobilenomsgError").textContent = '';
+            document.getElementById("mobileno").classList.remove('error-input');
+        }
+    });
+</script>
+
+<script>
+    function restrictToAlphanumericWithSpaces(elementId, errorMsgId, maxLength) {
+        const inputField = document.getElementById(elementId);
+        const errorMessage = document.getElementById(errorMsgId);
+        inputField.addEventListener("input", function(event) {
+            const inputValue = event.target.value;
+            const sanitizedValue = inputValue.replace(/[^a-zA-Z0-9\s]/g, ""); // Restrict to letters, numbers, and spaces only
+            const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+            event.target.value = trimmedValue;
+            if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+                errorMessage.textContent = `Field must contain only letters (a-z, A-Z), numbers (0-9), and spaces, and be up to ${maxLength} characters long.`;
+            } else {
+                errorMessage.textContent = "";
+            }
+        });
+    }
+    function restrictToAlphanumeric(elementId, errorMsgId, maxLength) {
+        const inputField = document.getElementById(elementId);
+        const errorMessage = document.getElementById(errorMsgId);
+        inputField.addEventListener("input", function(event) {
+            const inputValue = event.target.value;
+            const sanitizedValue = inputValue.replace(/[^a-zA-Z0-9]/g, ""); // Restrict to letters and numbers only
+            const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+            event.target.value = trimmedValue;
+            if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+                errorMessage.textContent = `Field must contain only letters (a-z, A-Z) and numbers (0-9) and be up to ${maxLength} characters long.`;
+            } else {
+                errorMessage.textContent = "";
+            }
+        });
+    }
+    restrictToAlphanumericWithSpaces("username", "errorMsgusername", 20);
+    restrictToAlphanumeric("empid", "errorMsgempid", 10);
+</script>
+
+
+  <script>
+    function validateEmail(input) {
+        const errorMsg = document.getElementById("errorMsgEmail");
+        const inputValue = input.value;
+  
+        // Regular expression to match email-like characters
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  
+        if (!emailRegex.test(inputValue)) {
+            errorMsg.textContent = "Enter a valid email address.";
+        } else {
+            errorMsg.textContent = "";
+        }
+    }
+  </script>
+<script>
+    function validateForm() {
+        var roleSelect = document.getElementById("role");
+        var errorMsgRole = document.getElementById("errorMsgRole");
+        var username = document.getElementById("username");
+        var errorMsgUsername = document.getElementById("errorMsgusername");
+        var empid = document.getElementById("empid");
+        var errorMsgEmpid = document.getElementById("errorMsgempid");
+        var address = document.getElementById("address");
+        var addressmsgError = document.getElementById("addressmsgError");
+        
+        if (roleSelect.value === 'Designation') {
+            errorMsgRole.textContent = "Please select a designation.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgRole.textContent = "";
+        }
+
+        if (username.value.trim() === '') {
+            errorMsgUsername.textContent = "Username is required.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgUsername.textContent = "";
+        }
+
+        if (empid.value.trim() === '') {
+            errorMsgEmpid.textContent = "EMP ID is required.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgEmpid.textContent = "";
+        }
+
+        if (address.value.trim() === '') {
+            addressmsgError.textContent = "address  is required.";
+            return false; // Prevent form submission
+        } else {
+            addressmsgError.textContent = "";
+        }
+        
+        if (email.value.trim() === '') {
+            errorMsgEmail.textContent = "Email is required.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgEmail.textContent = "";
+        }
+
+       
+
+        // If all required fields are filled, allow form submission
+        return true;
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+    <!-- for the below script whole details are coming in a single view button -->
+    <!-- <script>
+        var userData = {{ data | tojson }};
+        // JavaScript
+        function openModal() {
+            var modal = document.getElementById("myModall");
+            modal.style.display = "block";
+            
+            // Get the details list
+            var detailsList = document.getElementById("detailsList");
+            
+            // Clear previous details
+            detailsList.innerHTML = "";
+    
+            // Populate the details list
+            for (var i = 0; i < userData.length; i++) {
+                var currentItem = userData[i];
+                for (var key in currentItem) {
+                    var li = document.createElement("li");
+                    li.textContent = key + ": " + currentItem[key];
+                    detailsList.appendChild(li);
+                }
+            }
+        }
+    
+        function closeModal() {
+            var modal = document.getElementById("myModall");
+            modal.style.display = "none";
+        }
+    </script> -->
+    <script>
+        var userData = {{ data | tojson }};  
+    
+        // JavaScript function to open the modal and display user details
+        function openModal(index) {
+            var modal = document.getElementById("myModall");
+            modal.style.display = "block";
+    
+            // Get the user data based on the index
+            var currentUser = userData[index];
+    
+            // Populate user details
+            document.getElementById("address").innerText = currentUser.Address;
+            document.getElementById("password").innerText = currentUser.Password;
+            document.getElementById("image").innerText = currentUser.Image;
+            document.getElementById("file").innerText = currentUser.File;
+            document.getElementById("alerts_generated").innerText = currentUser.Alerts_generated;
+            document.getElementById("perday_data").innerText = currentUser.PerdayData;
+            document.getElementById("mlros_assigned").innerText = currentUser.MLROs_assigned;
+            document.getElementById("assigned_to").innerText = currentUser.Assigned_to;
+            document.getElementById("branch_code").innerText = currentUser.BranchCode;
+        }
+    
+        // JavaScript function to close the modal   
+        function closeModal() {
+            var modal = document.getElementById("myModall");
+            modal.style.display = "none";
+        }
+    </script>
+    <!-- <script>
+        var userData = {{ data | tojson }}; 
+    
+        // JavaScript function to open the modal and display user details
+        function openModal(index) {
+            var modal = document.getElementById("myModall");
+            modal.style.display = "block";
+    
+            // Get the details list
+            // var detailsList = document.getElementById("detailsList");
+            // detailsList.innerHTML = ""; // Clear previous details
+    
+            // Get the user data based on the index
+            var currentUser = userData[index];
+            
+    
+            // Define the fields to display
+            var fields = ['Address', 'Password', 'Image', 'File', 'Alerts_generated', 'PerdayData', 'MLROs_assigned', 'Assigned_to', 'BranchCode'];
+    
+            // Populate the details list with the specified fields of the current user
+            fields.forEach(function(field) {
+                var li = document.createElement("li");
+                li.textContent = field + ": " + currentUser[field];
+                detailsList.appendChild(li);
+            });
+        }
+    
+        // JavaScript function to close the modal
+        function closeModal() {
+            var modal = document.getElementById("myModall");
+            modal.style.display = "none";
+        }
+    </script> -->
+
+
+
+    
+    
+    
+    
+    
+    
+
+
+
+
+ <!-- <script id="user-data" type="application/json">
+    {{ data | tojson | safe }}
+</script>
+
+
+ <script>
+    $(document).ready(function() {
+        const userDataScript = $('#user-data');
+        const userData = JSON.parse(userDataScript.text());
+
+        const table = $('#userTable').DataTable({
+            data: userData,
+            columns: [
+                { data: 'EmailId' },
+                { 
+                    data: null,
+                    render: function(data, type, row) {
+                        return `<form action="#" method="post">
+                                    <input type="hidden" name="emailid" value="${data.EmailId}">
+                                    <button class="deleteButton" data-emailid="${data.EmailId}">Delete</button>
+                                    <button class="viewButton" data-emailid="${data.EmailId}">View</button>
+                                </form>`;
+                    }
+                }
+            ]
+        });
+
+        // Function to toggle buttons
+        function toggleButtons(enableBtn, disableBtn) {
+            if (enableBtn && disableBtn) {
+                enableBtn.removeAttr('disabled');
+                disableBtn.attr('disabled', 'disabled');
+            }
+        }
+
+        // Function to apply stored button states
+        function applyStoredButtonStates() {
+            const disabledButtons = JSON.parse(localStorage.getItem('disabledButtons')) || {};
+            Object.entries(disabledButtons).forEach(([emailId, buttonType]) => {
+                const buttonSelector = `.${buttonType}[data-emailid="${emailId}"]`;
+                const disableBtn = $(buttonSelector);
+                const enableBtn = $(`.${buttonType}:not(${buttonSelector})`);
+                if (disableBtn.length > 0 && enableBtn.length > 0) {
+                    disableBtn.attr('disabled', 'disabled'); // Ensure disabled state persists on page load
+                }
+            });
+        }
+
+        // Apply stored button states on page load
+        applyStoredButtonStates();
+
+        // Event delegation for all Delete and View buttons
+        $(document).on('click', '.deleteButton, .viewButton', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const emailId = $(this).closest('form').find('input[name="emailid"]').val();
+            userData.forEach(value => {
+                if (value.EmailId === emailId) {
+                    const siblingButton = $(this).hasClass('deleteButton') ?
+                        $(`.viewButton[data-emailid="${value.EmailId}"]`) :
+                        $(`.deleteButton[data-emailid="${value.EmailId}"]`);
+
+                    toggleButtons($(this), siblingButton);
+
+                    // Update localStorage immediately after button click
+                    const disabledButtons = JSON.parse(localStorage.getItem('disabledButtons')) || {};
+                    disabledButtons[value.EmailId] = $(this).hasClass('deleteButton') ? 'deleteButton' : 'viewButton';
+                    localStorage.setItem('disabledButtons', JSON.stringify(disabledButtons));
+                }
+            });
+
+            // Submit the form programmatically
+            const form = $(this).closest('form')[0];
+            setTimeout(() => {
+                form.submit();
+            }, 0);
+        });
+    });
+</script>  -->
+
+<script id="user-data" type="application/json">
+    {{ data | tojson | safe }}
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        const userDataScript = $('#user-data');
+        const userData = JSON.parse(userDataScript.text());
+
+        const table = $('#userTable').DataTable({
+            data: userData,
+            columns: [
+                { data: 'EmailId' },
+                { 
+                    data: null,
+                    render: function(data, type, row) {
+                        return `<form action="#" method="post">
+                                    <input type="hidden" name="emailid" value="${data.EmailId}">
+                                    <button class="deleteButton" data-emailid="${data.EmailId}">Delete</button>
+                                    <button class="viewButton" data-emailid="${data.EmailId}">View</button>
+                                </form>`;
+                    }
+                }
+            ]
+        });
+
+        // Function to toggle buttons
+        function toggleButtons(enableBtn, disableBtn) {
+            if (enableBtn && disableBtn) {
+                enableBtn.removeAttr('disabled');
+                disableBtn.attr('disabled', 'disabled');
+            }
+        }
+
+        // Function to apply stored button states
+        function applyStoredButtonStates() {
+            const disabledButtons = JSON.parse(localStorage.getItem('disabledButtons')) || {}; 
+            Object.entries(disabledButtons).forEach(([emailId, buttonType]) => {
+                const disableBtn = $(`.${buttonType}[data-emailid="${emailId}"]`); 
+                const enableBtn = $(`.${buttonType === 'deleteButton' ? 'viewButton' : 'deleteButton'}[data-emailid="${emailId}"]`);
+                toggleButtons(enableBtn, disableBtn);
+            });
+        }
+
+        // Apply stored button states on page load
+        applyStoredButtonStates();
+
+        // Event delegation for all Delete and View buttons
+        $(document).on('click', '.deleteButton, .viewButton', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const emailId = $(this).closest('form').find('input[name="emailid"]').val();
+            const clickedButton = $(this);
+            const siblingButton = clickedButton.hasClass('deleteButton') ?
+                $(`.viewButton[data-emailid="${emailId}"]`) :
+                $(`.deleteButton[data-emailid="${emailId}"]`);
+
+            // Toggle button states
+            toggleButtons(clickedButton, siblingButton);
+
+            // Update localStorage immediately after button click
+            const disabledButtons = JSON.parse(localStorage.getItem('disabledButtons')) || {};
+            disabledButtons[emailId] = clickedButton.hasClass('deleteButton') ? 'deleteButton' : 'viewButton';
+            localStorage.setItem('disabledButtons', JSON.stringify(disabledButtons));
+
+            // Submit the form programmatically
+            const form = clickedButton.closest('form')[0];
+            setTimeout(() => {
+                form.submit();
+            }, 0);
+        });
+    });
+
+</script>
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+</body>
+
+</html>

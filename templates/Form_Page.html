@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Check if a success message is provided and display it as a popup
+    var successMessage = "{{ success_message }}";
+    if (successMessage && successMessage !== 'None') {
+      alert(successMessage);  // You can use a more sophisticated popup library here if needed
+    }
+  </script>
+  
+  {% include 'metaData.html' %}
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  <style>
+    /* form styling start */
+
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+    .radio-spacing {
+      margin-left: 150px;
+    }
+
+    .selectpicker {
+      background-color: white;
+      border: 1px solid gray;
+    }
+
+    .centered-content {
+      display: flex;
+      align-items: center;
+    }
+    .form-control{
+      border:1px solid #ced4da!important;
+    }
+    .form-control:hover{
+      border:1px solid #ced4da!important;
+    }
+    .form-group label, label {
+    font-size: 16px;
+    color: #3a4046;
+    letter-spacing: 1px;
+}
+    
+
+
+    /* hr {
+      border-top: 2px solid rgba(128, 128, 128, 0.486);
+    } */
+
+
+    /* table CSS */
+    
+    tr {
+      transition: all 0.1s ease-in-out;
+    }
+
+    tr:not(:first-child):hover {
+      transform: scale(1.01);
+    }
+
+    th:first-child::after {
+      content: "" !important;
+    }
+
+    th:first-child::before {
+      content: "" !important;
+    }
+
+    td,
+    th {
+      padding: 15px !important;
+      border: none !important;
+      border-bottom: 2px solid #00000033 !important;
+      text-align: left !important;
+    }
+    .page-item.active .page-link {
+      background-color: #00579c !important;
+    }
+    .wrap { white-space: pre-wrap; }
+
+  </style>
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  {% include 'header.html' %}
+
+    
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-menu">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+              <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{ url_for('MLROdashboard') }}"
+                      class="text-blue font-weight-bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>
+                    </a></li>
+                    <li class="breadcrumb-item">
+                      <a href="{{url_for('MLRONextLevel')}}" class="text-primary">Pending Cases</a>
+            
+                    </li>
+                    <li class="breadcrumb-item active text-blue font-weight-bold">
+                      <a href="#" class="text-primary">Create Case Form</a>
+            
+                    </li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </li>
+        
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+
+
+  <!--  BEGIN CONTENT PART  -->
+  <div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+    <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing">
+        <div class="row layout-top-spacing">
+          <div class="container-fluid border rounded" style="background-color: white">
+
+            <!--=============== modal to add related Account in Related Accounts================-->
+
+
+            <div class="modal fade" id="addAccount" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog align-items-center">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <p class="modal-title">Add Related Account</p>
+                    <button type="button" class="close" data-dismiss="modal">X</button>
+                  </div>
+
+                  <div class="modal-body">
+                    <div
+                      class="d-flex flex-column align-items-center widget-content widget-content-area justify-content-center pb-0 pt-0 modal"
+                      id="myModalFilter" data-backdrop="false">
+
+                      <div class="d-flex flex-column align-items-center p-4 col-lg-12"
+                        style="gap: 20px;border: 1px solid #8080803a;">
+                          <div class=" d-flex flex-column flex-wrap col-lg-11">
+                        <form action="#" >
+                            <label for=" AccountNumber">Account Number :</label>
+                          <input required type="number" name="" id="AccountNumber">
+                          <hr>
+                          <label for="AccountHolder">Account Holder :</label>
+                          <input required type="text" name="" id="AccountHolder">
+                          <hr>
+                          <label for="Relation">Relation :</label>
+                          <input required type="text" name="" id="Relation">
+
+
+                        </form>
+
+                      </div>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button id="addAcc-button" class="btn btn-primary" type="button" onclick="addRelationAccount();"
+                        data-dismiss="modal">Submit</button>
+
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+
+
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- ================================================================================ -->
+
+
+          <div class="header text-center  my-4">
+            <h3 class="text-blue font-weight-bold">CREATE CASE</h3>
+          </div>
+
+          <form class="p-5" method="POST" action="{{'submetCaseForm'}}" enctype="multipart/form-data" id="myForm">
+
+            <section class="row mt-2">
+              <div class="col-md-6">
+                <label class="mr-5 font-weight-bold" for="customerNo">Customer No</label>
+                {{CustomerId}}
+              </div>
+              <div class="col-md-6">
+                <label class="mr-5 font-weight-bold" for="customerName">Customer Name</label>
+                {{CustomerName}}
+              </div>
+              
+            </section>
+            <input type="text" name="finalReport" value="" class="d-none">
+            <hr>
+
+            <section class="row">
+              <div class="col-md-6">
+                <div class="form-group d-flex">
+                  <label for="ticket_id" class="mr-4 font-weight-bold" >Account Number  </label>
+                  <p id="ticket_id">{{accNum}}</p>
+                  <input required type="text" name="ticket_id" id="" value="{{ticket_id}}" class="d-none">
+                </div>
+              </div>
+
+              
+            </section>
+            <hr>
+
+            <section class=" row">
+              <div class="col-6">
+                <label class="mr-4 font-weight-bold" for="classification">Classification</label>
+                <select class="form-control py-0" name="caseAllocation" id="classification" required>
+                  <option >Select Name</option>
+                  <option value="NameMatches">Name Matches</option>
+                  <option value="STR">STR</option>
+                </select>
+              </div>
+              <div class="col-6 d-flex">
+                <label for="sendTo" class="mr-4 font-weight-bold" >Send To  </label>
+                <p id="sendTo">{{allocatedCM}}</p>
+                <input required type="text" name="sentTo" id="" value="{{allocatedCM}}" class="d-none">
+
+              </div>
+            </section>
+            <hr>
+
+
+            <section>
+              <label class="font-weight-bold">Suspicious Due to Proceeds Of Crime</label> <br />
+              <input required type="radio"   id="suspeciousCrime" name="crime" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"   id="suspeciousCrime" name="crime" value="No" class="radio-spacing">
+              <label>No</label>
+            </section>
+            <hr>
+
+            <section>
+              <label class="font-weight-bold">Suspicious Due to Complex Transaction</label> <br />
+              <input required type="radio"  id="suspeciousComplex" name="SuspeciousDuo" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"  id="suspeciousComplex" name="SuspeciousDuo" value="No" class="radio-spacing">
+              <label>No</label>
+            </section>
+            <hr>
+
+            <section>
+              <label class="font-weight-bold">Suspicious Due to no eco Rational</label> <br />
+              <input required type="radio"  id="suspeciousNoEco" name="SuspeciousDuoeco" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"   id="suspeciousNoEco" name="SuspeciousDuoeco" value="No" class="radio-spacing">
+              <label>No</label>
+            </section>
+            <hr />
+            <section>
+              <label class="font-weight-bold">Suspicious Due to Financing Terrorism</label> <br />
+              <input required type="radio"  id="suspeciousTerrorism" name="SuspeciousDuofinancing" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"  id="suspeciousTerrorism" name="SuspeciousDuofinancing" value="No"
+                class="radio-spacing">
+              <label>No</label>
+            </section>
+            <hr>
+            <section>
+              <label class="font-weight-bold">Details of Investigation</label> <br />
+              <textarea required rows="2" cols="50" class="form-control" id="Investigation" name="Investigation"></textarea>
+
+            </section>
+            <hr>
+            <section>
+              <label class="font-weight-bold">LEA Informed </label> <br />
+              <input required type="radio"  id="LEAinfo" name="LEAinformed" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"  id="LEAinfo" name="LEAinformed" value="No" class="radio-spacing">
+              <label>No</label>
+            </section>
+            <hr>
+            <section>
+              <label class="font-weight-bold">LEA Details</label> 
+              <textarea required rows="2" cols="50" class="form-control" id="LEADetails" name="LEADetails"></textarea>
+              <textarea required class="d-none" name="comments" id="commentText"></textarea>
+              <input required class="d-none" type="text" name="prefilled" id="prefilledcomm">
+
+            </section>
+            <hr>
+
+            <section>
+              <label class="font-weight-bold">Report Covers</label> 
+              <select class="form-control py-0" required name="reportCase" id="reportCase">
+                <option >Select </option>
+                <option value="Yes">Yes</option>
+                <option value="NO">No</option>
+              </select>
+            </section>
+            <hr>
+            <section>
+              <label class="font-weight-bold">Additional Due Sent</label> <br />
+              <input required type="radio"  id="Additional" name="additionalInfo" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"  id="Additional" name="additionalInfo" value="No" class="radio-spacing">
+              <label>No</label>
+            </section>
+            <hr>
+            <section>
+              <label class="font-weight-bold">Priority Rating</label> <br />
+              <select required name="priorityRAG" id="priorityRAG" class="form-control py-0" >
+                <option >Select Priority</option>
+                <option value="VeryHigh">Very High</option>
+                <option value="High">High</option>
+                <option value="Normal">Normal</option>
+              </select>
+            </section>
+            <hr>
+            <section>
+              <label for="cumulativeCrtTurnover" class="font-weight-bold">Cumulative CRT Turnover</label> <br />
+              <input required type="text" class="form-control" name="cumulativeCrtTurnover" id="cumulativeCrtTurnover"  value="{{creditTurnOverOver}}">
+              <div id="errorMsgdec" style="color: red;"></div>
+            </section>
+            <hr>
+            <section>
+              <label for="cumulativeDTTurnover" class="font-weight-bold">Cumulative DT Turnover</label> <br />
+              <input required type="text" class="form-control" name="cumulativeDTTurnover" id="cumulativeDTTurnover" value="{{debitTurnOverOver}}">
+              <div id="errorMsgcumulativedt" style="color: red;"></div>
+            </section>
+            <hr>
+            <section>
+              <label for="cumulativeDepositTurnover" class="font-weight-bold">Cumulative Cash Deposit Turnover</label> <br />
+              <input required type="text" class="form-control" name="cumulativeDepositTurnover" id="cumulativeDepositTurnover" value="{{cash_deposits}}">
+              <div id="errorMsgcumulativedeposit" style="color: red;"></div>
+            </section>
+            <hr>
+            <section>
+              <label for="cumulativeWithdrawalTurnover" class="font-weight-bold">Cumulative Cash Withdrawal Turnover</label> <br />
+              <input required type="text" class="form-control" name="cumulativeWithdrawalTurnover" id="cumulativeWithdrawalTurnover" value="{{cash_withdrawals}}">
+              <div id="errorMsgcumulativewithdraw" style="color: red;"></div>
+            </section>
+            <hr>
+            <section>
+              <label for="NumTransactionReport" class="font-weight-bold">Transaction To Be Reported</label> <br />
+              <input required type="radio"  name="NumTransactionReport" value="Yes">
+              <label>Yes</label>
+              <input required type="radio"  name="NumTransactionReport" value="No"
+                class="radio-spacing">
+              <label>No</label>
+
+            </section>
+            <hr>
+            <section>
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <label class="font-weight-bold"  for="remark">Reason for Suspicion (Remarks)</label>
+                     <textarea required rows="2" cols="30" class="form-control" id="remark" name="remark"></textarea>
+                </div>
+               
+                <div class="col-md-6">
+                  <label class="font-weight-bold">Upload Attachment</label>
+                  <input required class="ml-5 form-control" type="file" name="file" accept=".pdf, .xls, .xlsx, .csv">
+                </div>
+              </div>
+            </section>
+
+            <div class="table-responsive mb-4 ">
+            <section>
+              
+              <table id="" class="display nowrap" style="width: 100%">
+                <thead>
+                  <tr class="text-dark">
+                    <!-- <th><input required type="checkbox" disabled id="select-all" class="checkbox" /></th> -->
+                    <th>Account<br>Number</th>
+                    <th class="">Customer No</th>
+                    <th class="d-none">Branch</th>
+                    <th class="d-none">Allocated Date</th>
+                    <th class="">Account Type</th>
+                    <th>Overall Risk Rating</th>
+                    <th>Scenarios violated</th>
+                    <th>Violation Amount</th>
+                    <th class="d-none">Ticket ID</th>
+                   
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                   {% for value in data %}
+                  <tr>
+                    <!-- <th><input required type="checkbox" class="checkbox" /></th> -->
+                    {% if 'ACCTNO' in value.keys() %}
+                    <td>{{value['ACCTNO']}}</td>
+                    {% else %}
+                    <td>-</td>
+                    {% endif %}
+
+                    {% if 'CUSTCD' in value.keys() %}
+                    
+                    <td class="">
+                      {{value['CUSTCD']}}
+                    </td>
+                    {% else %}
+                   
+                    <td>
+                      ----
+                    </td>
+                    
+                    {% endif %}
+
+                    {% if 'Branch' in value.keys() %}
+                    <td class="d-none">{{value['Branch']}}</td>
+                    {% else %}
+                    <td class="d-none">Kukatpali</td>
+                    {% endif %}
+
+                     {% if 'alert_allocated_on' in value.keys() %}
+                    <td class="d-none">{{value['alert_allocated_on']}}</td>
+                    {% endif %}
+
+                     {% if 'CUST_TYPE_CODE' in value.keys() %}
+                    <td class="">{{value['CUST_TYPE_CODE']}}</td>
+                    {% else %}
+                    <td class="">----</td>
+                    {% endif %}
+
+                    {% if 'RIP' in value.keys() %}
+                    <td>{{value['RIP']}}</td>
+                    {% else %}
+                    <td>Medium</td>
+                    {% endif %}
+
+                    {% if 'scenario_code' in value.keys() %}
+                    <td>{{value['scenario_code']}}</td>
+                    {% else %}
+                    <td>1</td>
+                    {% endif %}
+
+
+                    {% if 'TXAMT' in value.keys() %}
+                    <td>{{value['TXAMT']}}</td>
+                    {% else %}
+                    <td>-</td>
+                    {% endif %}
+
+                    {% if 'ticketid' in value.keys() %}
+                    <td class="d-none">{{value['ticketid']}}</td>
+                    {% endif %}
+                    
+                   
+                    
+                  </tr>
+
+
+                   {% endfor %}
+                  
+                  <!-- Add more rows with your own data as needed -->
+                </tbody>
+
+              </table>
+
+            </section>
+            </div>
+
+            <hr>
+            <!-- <section>
+              <h6 class="text-dark font-weight-bold">Related Personal Details</h6> 
+              <table class="table" id="relationAccount">
+                <tr>
+                  <th>Account No</th>
+                  <th>Account Holder</th>
+                  <th>Relation Code </th>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>Maria Anders</td>
+                  <td>brother</td>
+                </tr>
+
+              </table>
+            </section> -->
+            <hr>
+            <section>
+              <label for="accountNoSearch" class="font-weight-bold">Account No</label>
+              <input type="text" class="form-control mb-3" name="accountNoSearch" id="accountNoSearch" required>
+              <div id="errorMsg" style="color: red;"></div>
+              <!-- <button class="btn btn-sm btn-gradient mr-2 ml-4" type="button">Search</button>
+              <button class="btn btn-sm btn-gradient ml-2 mr-2" type="button" data-toggle="modal"
+                data-target="#addAccount">Add</button>
+              <button class="btn btn-sm btn-gradient ml-2" type="button">View Account</button> -->
+            </section>
+            <hr>
+
+            
+                  <div class="py-4">
+                    <section>
+             <label class="font-weight-bold text-black">Select STR (or) NON-STR </label> <br />
+             <select required name="strraising" id="strrising" class="form-control py-0" onchange="updatePrefilledComments()">
+               <option >Select Category</option>
+               <option value="STR">STR</option>
+               <option value="NON-STR">NON STR</option>
+             </select>
+           </section>
+                 </div>
+
+
+            <div class="mt-4 mb-3">
+              <button class="btn btn-sm btn-blue ml-2 mr-2" type="button" data-toggle="modal" data-target="#myModal{{ticket_id}}" onclick="investi()">Submit</button>
+              <a href="{{url_for('MLRONextLevel')}}"><button class="btn btn-sm btn-red ml-2" type="button">Cancel</button></a>
+            </div>
+
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% include 'footer.html' %}
+
+  </div>
+  
+  
+  <!-- END MAIN CONTAINER -->
+
+  <!--START COMMENT MODAL -->
+
+  <div class="modal fade-bg" id="myModal{{ticket_id}}" data-backdrop="false">
+    <div class="modal-dialog -lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+
+         <div class="modal-header">
+            <p class="modal-title"> <b>Add Comment to this Account </b></p>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+        
+        <!-- Modal body -->
+        <div class="row">
+          <div class="col-md-12">
+                <div class="modal-body">
+                  <div>
+                    <label class="text-black font-weight-bold">Investigation Details</label>
+                    <p id="InvestigationDis"></p>
+                  </div>
+
+
+                  <div>
+                    <label class="text-black font-weight-bold">Prefilled Comments</label>
+                          <select class="form-select form-select-sm mb-3 word-wrap-select" id="prefilled" aria-label="Large select example" style="display: none;">
+                        <option selected >Select the NON-STR prefilled Comments</option>
+                        <option value="Transaction Appears To Be In Line With The Activity And Profile Of The Customer,hance Closed As Normal Transaction" class="wrap">1.Transaction Appears To Be In Line With The Activity And Profile Of The Customer,hance Closed <br/>As Normal Transaction.</option>
+                        <option value="Transaction Appears To Be Normal/Routine Business Transaction In Regular/Normal Course hance no Suspicion Observed And Closed as False Positive">2.Transaction Appears To Be Normal/Routine Business Transaction In Regular/Normal Course hance no Suspicion Observed And Closed as False Positive.</option>
+                        <option value="On Primary Investigation,Nothing Adverse Observed In The Transaction/Account hance Closed as Normal Transaction">3.On Primary Investigation,Nothing Adverse Observed In The Transaction/Account hance Closed as Normal Transaction.</option>
+                        <option value="Transactions Appears To Be Normal In Regular Course hance Closed as false Positive">4.Transactions Appears To Be Normal In Regular Course hance Closed as false Positive.</option>
+                        <option value="Transaction appears to be normal inward/outward RTGS/NEFT transactions in Customer's/ Bank office account hence closed as false positive">5.Transaction appears to be normal inward/outward RTGS/NEFT transactions in Customer's/ Bank office account hence closed as false positive.</option>
+                        <option value="RTGS/NEFT credits in the account are in line with the activity and profile of the customer hence closed as normal transactions">6.RTGS/NEFT credits in the account are in line with the activity and profile of the customer hence closed as normal transactions.</option>
+                        <option value="Transactions are related to RTGS/NEFT return transactions, hence closed as normal transaction">7.Transactions are related to RTGS/NEFT return transactions, hence closed as normal transaction.</option>
+                        <option value="It appears to be normal transaction in educational institution account hence closed as false positive">8.It appears to be normal transaction in educational institution account hence closed as false positive.</option>
+                        <option value="It appears to be normal loan disbursement credit transaction in the account hence closed as false positive">9.It appears to be normal loan disbursement credit transaction in the account hence closed as false positive.</option>
+                        <option value="High value transactions observed for business purpose in regular course hence closed as false positive">10.High value transactions observed for business purpose in regular course hence closed as false positive.</option>
+                        <option value="Transactions are related to collection account and amounts are transferring to escrow business account. Hence closed as normal business transactions">11.Transactions are related to collection account and amounts are transferring to escrow business account. Hence closed as normal business transactions.</option>
+                        <option value="It appears to be normal/regular business transactions in Cash Credit/Overdraft/Term loans account hence closed as normal transaction">12.It appears to be normal/regular business transactions in Cash Credit/Overdraft/Term loans account hence closed as normal transaction.</option>
+                        <option value="It appears to be loan recovery/Adjustment transaction hence closed as normal transaction">13.It appears to be loan recovery/Adjustment transaction hence closed as normal transaction.</option>
+                        <option value="It appears that transaction pertaining to sale proceeds of the property, hence closed as normal transactions">14.It appears that transaction pertaining to sale proceeds of the property, hence closed as normal transactions.</option>
+                        <option value="It appears to be normal/valid transactions in Government/Public Sector Unit account hence closed as normal transactions">15.It appears to be normal/valid transactions in Government/Public Sector Unit account hence closed as normal transactions.</option>
+                        <option value="It appears the triggered transactions pertaining to closure of Fixed Deposit proceeds hence closed as normal transaction">16.It appears the triggered transactions pertaining to closure of Fixed Deposit proceeds hence closed as normal transaction.</option>
+                        <option value="It appears normal interbank/inter-sol transaction and no suspicion observed hence closed as normal transactions">17.It appears normal interbank/inter-sol transaction and no suspicion observed hence closed as normal transactions.</option>
+                        <option value="It appears to be normal transaction in ATM cash provider's account hence closed as normal transactions">18.It appears to be normal transaction in ATM cash provider's account hence closed as normal transactions.</option>
+                        <option value="It appears to be normal transactions in Bank Mitra's/Business Correspondent's account hence closed as false positive">19.It appears to be normal transactions in Bank Mitra's/Business Correspondent's account hence closed as false positive.</option>
+                        <option value="It appears to be normal transactions in Self help groups account hence closed as false positive">20.It appears to be normal transactions in Self help groups account hence closed as false positive.</option>
+                        <option value="It pertains to sweep transfer transactions in the account hence closed as normal transactions">21.It pertains to sweep transfer transactions in the account hence closed as normal transactions.</option>
+                        <option value="It appears that transactions pertaining to normal credit card payment hence closed as false positive">22.It appears that transactions pertaining to normal credit card payment hence closed as false positive.</option>
+                        <option value="It appears to be normal office account transaction hence closed as false positive">23.It appears to be normal office account transaction hence closed as false positive.</option>
+                        <option value="It appears that transaction pertains to Terminal Benefit credit from employer hence closed as normal transactions">24.It appears that transaction pertains to Terminal Benefit credit from employer hence closed as normal transactions.</option>
+                        <option value="It appears that transaction pertains to salary credits from employer hence closed as normal transactions">25.It appears that transaction pertains to salary credits from employer hence closed as normal transactions.</option>
+                        <option value="It appears that transaction pertains to pension credits from employer hence closed as normal transactions">26.It appears that transaction pertains to pension credits from employer hence closed as normal transactions.</option>
+                        <option value="It appears that transaction pertains to claim settlement amount hence closed as false positive">27.It appears that transaction pertains to claim settlement amount hence closed as false positive.</option>
+                        <option value="Transaction pertains to BANK/ATM/SMS/LEDGER FOLIO/CHEQUE RETURN charges hence closed as false positive">28.Transaction pertains to BANK/ATM/SMS/LEDGER FOLIO/CHEQUE RETURN charges hence closed as false positive.</option>
+                      </select>
+                      <select class="form-select form-select-sm mb-3 word-wrap-select" id="STRprefilledcomm" aria-label="Large select example" style="display: none;">
+                        <option selected >Select the STR prefilled Comments</option>
+                        <option value="Match of customer details with known criminals or persons with suspicious background" class="wrap">1.Match of customer details with known criminals or persons with suspicious background.</option>
+                        <option value="Customer has been the subject of a law enforcement inquiry">2.Customer has been the subject of a law enforcement inquiry.</option>
+                        <option value="Customer who conducts transactions in a pattern consistent with criminal proceeds, e.g. in amounts consistent with a lottery scam, illegal immigration">3.Customer who conducts transactions in a pattern consistent with criminal proceeds, e.g. in amounts consistent with a lottery scam, illegal immigration.</option>
+                        <option value="Transaction involving a jurisdiction/area considered to be high risk from the money laundering or drug trafficking perspective">4.Transaction involving a jurisdiction/area considered to be high risk from the money laundering or drug trafficking perspective.</option>
+                        <option value="Transaction is unnecessarily complex for its stated purpose">5.Transaction is unnecessarily complex for its stated purpose.</option>
+                        <option value="Unusual single or aggregate transfers in single/multiple days">6.Unusual single or aggregate transfers in single/multiple days.</option>
+                        <option value="Transaction is inconsistent with financial standing or occupation, or is outside the normal course of business for the customer ">7.Transaction is inconsistent with financial standing or occupation, or is outside the normal course of business for the customer</option>
+                        <option value="Routing of transfer through multiple locations">8.Routing of transfer through multiple locations.</option>
+                        <option value="Multiple related transactions which are split to just below maximum cash limit or reporting requirements">9.Multiple related transactions which are split to just below maximum cash limit or reporting requirements.</option>
+                        <option value="The amounts or frequency or the stated reason of the transaction does not make sense for the particular customer">10.The amounts or frequency or the stated reason of the transaction does not make sense for the particular customer.</option>
+                        <option value="Unrelated sender/receiver">11.Unrelated sender/receiver.</option>
+                        <option value="Unexplained electronic funds transfers by client on an in-and out basis">12.Unexplained electronic funds transfers by client on an in-and out basis</option>
+                        <option value="Migrant remittances made outside the usual remittance corridors">13.Migrant remittances made outside the usual remittance corridors.</option>
+                        <option value="Personal funds sent at a time not associated with salary payments">14.Personal funds sent at a time not associated with salary payments.</option>
+                        <option value="Large number of transfers received at once or over a certain period of time which are much greater than what would be expected for such a receiver">15.Large number of transfers received at once or over a certain period of time which are much greater than what would be expected for such a receiver.</option>
+                        <option value="The volume or frequency of transactions have no economic rationale or lawful purpose">16.The volume or frequency of transactions have no economic rationale or lawful purpose.</option>
+                        <option value="Customer who travels unexplained distances to conduct transactions">17.Customer who travels unexplained distances to conduct transactions.</option>
+                        <option value="Customer who offers false identification, whether evident from the document alone, from the document’s lack of connection to the customer, or from the document’s context with other documents (e.g., use of identification cards issued by different countries)">18.Customer who offers false identification, whether evident from the document alone, from the document’s lack of connection to the customer, or from the document’s context with other documents (e.g., use of identification cards issued by different countries).</option>
+                        <option value="Common Unique IDs used by multiple customers">19.Common Unique IDs used by multiple customers.</option>
+                        <option value="Common address/telephone used by multiple unrelated receivers">20.Common address/telephone used by multiple unrelated receivers.</option>
+                        <option value="Customer conducts multiple cash transactions in a single day">21.Customer conducts multiple cash transactions in a single day.</option>
+                        <option value="Customer is hurried, nervous or evasive">22.Customer is hurried, nervous or evasive.</option>
+                        <option value="Customer has vague knowledge about amount of money involved in the transaction">23.Customer has vague knowledge about amount of money involved in the transaction.</option>
+                        <option value="Customer is accompanied by unrelated individuals">24.Customer is accompanied by unrelated individuals.</option>
+                        <option value="Multiple customers entered together, then ignore each other">25.Multiple customers entered together, then ignore each other.</option>
+                        <option value="Suspicion that the customer is acting on behalf of a third party but not disclosing that information">26.Suspicion that the customer is acting on behalf of a third party but not disclosing that information.</option>
+                        <option value="Customer provides information that seems minimal, possibly false or inconsistent">27.Customer provides information that seems minimal, possibly false or inconsistent.</option>
+                        <option value="Customer changes the information provided after more detailed information is requested">28.Customer changes the information provided after more detailed information is requested.</option>
+                        <option value="Customer is reluctant to go forward with a transaction after being informed that identification information will be required">29.Customer is reluctant to go forward with a transaction after being informed that identification information will be required.</option>
+                        <option value="Customer is reluctant to provide original ID">30.Customer is reluctant to provide original ID.</option>
+                        <option value="Customer makes inquiries or tries to convince staff to avoid reporting">31.Customer makes inquiries or tries to convince staff to avoid reporting.</option>
+                        <option value="Customer who offers different identifications or different identifiers (such as phone or address) on different occasions with an apparent attempt to avoid linkage of multiple transactions">32.Customer who offers different identifications or different identifiers (such as phone or address) on different occasions with an apparent attempt to avoid linkage of multiple transactions.</option>
+                        <option value="Customer orders wire transfers in small amounts in an apparent effort to avoid triggering identification or reporting requirements">33.Customer orders wire transfers in small amounts in an apparent effort to avoid triggering identification or reporting requirements.</option>
+                        <option value="Customer requests payment in cash immediately upon receipt of a large funds transfer">34.Customer requests payment in cash immediately upon receipt of a large funds transfer.</option>
+                        <option value="Customer knows little or is reluctant to disclose details about the remitter/beneficiary (address/contact info, etc)">35.Customer knows little or is reluctant to disclose details about the remitter/beneficiary (address/contact info, etc).</option>
+                        <option value="Customer is reluctant to give an explanation for the remittance">36.Customer is reluctant to give an explanation for the remittance.</option>
+                        <option value="Customer requests transfers to a large number of recipients who do not appear to be family members">37.Customer requests transfers to a large number of recipients who do not appear to be family members.</option>
+                        <option value="Transfer from multiple persons to one person with no apparent business or lawful purpose.">38.Transfer from multiple persons to one person with no apparent business or lawful purpose.</option>
+                        <option value="Transfer from one persons to multiple persons with no apparent business or lawful purpose.">39.Transfer from one persons to multiple persons with no apparent business or lawful purpose.</option>
+                        <option value="Two or more individuals, who appear to be acting together, receive separate cash transactions">40.Two or more individuals, who appear to be acting together, receive separate cash transactions</option>
+                        <option value="Same customer collecting money from multiple locations across cities">41.Same customer collecting money from multiple locations across cities.</option>
+                        <option value="Different customers request transfers that are all paid for by the same customer">42.Different customers request transfers that are all paid for by the same customer.</option>
+                        <option value="A customer sends or receives multiple transfers to or from the same individual">43.A customer sends or receives multiple transfers to or from the same individual.</option>
+                        <option value="Several different customers send transfers that are similar in amounts, sender names, test questions, free message text and destination country">44.Several different customers send transfers that are similar in amounts, sender names, test questions, free message text and destination country.</option>
+                        <option value="Customer receives funds transfers and immediately purchases monetary instruments prepared for payment to a third party which is inconsistent with or outside the normal course of business for the customer">45.Customer receives funds transfers and immediately purchases monetary instruments prepared for payment to a third party which is inconsistent with or outside the normal course of business for the customer.</option>
+                        <option value="Immediately after transferred funds have cleared, the customer moves the funds to another account or to another individual or entity">46.Immediately after transferred funds have cleared, the customer moves the funds to another account or to another individual or entity.</option>
+                        <option value="Stated occupation of the customer or the customer’s financial standing is not in keeping with the level or type of activity (for example a student or an unemployed individual who receives or sends large numbers of wire transfers)">47.Stated occupation of the customer or the customer’s financial standing is not in keeping with the level or type of activity (for example a student or an unemployed individual who receives or sends large numbers of wire transfers).</option>
+                        <option value="Rising volume of remittances exceeds what was expected from the customer when the relationship was established">48.Rising volume of remittances exceeds what was expected from the customer when the relationship was established.</option>
+                        <option value="Match of customer details with known terrorists or persons linked with terrorist organizations">49.Match of customer details with known terrorists or persons linked with terrorist organizations.</option>
+                        <option value="Customer who receives transactions in a pattern consistent with financing of terrorism">50.Customer who receives transactions in a pattern consistent with financing of terrorism.</option>
+                        <option value="Transaction involving a jurisdiction/area considered to be high risk from the terrorist financing perspective">51.Transaction involving a jurisdiction/area considered to be high risk from the terrorist financing perspective.</option>
+                    </select>
+                  </div>
+
+                  
+
+
+        
+              <label class="text-black font-weight-bold">Add Your Comments</label>
+              <textarea class="form-control col-md-12" name="comments" id="exampleFormControlTextarea1" rows="3" cols="8"></textarea>
+        </div>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="caseCreation()" >Submit</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!--END COMMENT MODAL -->
+
+
+  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+  <script src="../static/bootstrap/js/popper.min.js"></script>
+  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="../static/assets/js/app.js"></script>
+  <!-- form dropdown  Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+  <!-- TABLE JS LINKS -->
+
+  <script type="text/javascript" language="javascript"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+   <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js">
+  </script>
+
+
+  <!--form dropdown Bootstrap Select JS -->
+
+  <script>
+    function updatePrefilledComments() {
+        const selectedValue = document.getElementById("strrising").value;
+        document.getElementById("prefilled").style.display = selectedValue === "NON-STR" ? "block" : "none";
+        document.getElementById("STRprefilledcomm").style.display = selectedValue === "STR" ? "block" : "none";
+    }
+
+    function investi() {
+        updatePrefilledComments();
+        $('#myModal{{ticket_id}}').modal('show');
+    }
+</script>
+
+  <script>
+    $(document).ready(function () {
+      App.init();
+      let table = $("#example").DataTable({
+        rowReorder: {
+          selector: "td:nth-child(2)",
+        },
+        responsive: true,
+         paging: true,         // Enable pagination
+         pageLength: 20,
+      });
+    });
+
+   
+  </script>
+  <script src="../static/assets/js/custom.js"></script>
+  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <!--form dropdown Bootstrap Select JS -->
+  <script>
+    $(document).ready(function () {
+      $('.selectpicker').selectpicker();
+    });
+
+
+
+    function caseCreation() {
+      
+      let exampleFormControlTextarea1 = document.getElementById("exampleFormControlTextarea1").value;
+      let commentText = document.getElementById('commentText');
+      commentText.value = exampleFormControlTextarea1
+
+      let prefilled = document.getElementById("prefilled").value;
+      let STRprefilledcomm= document.getElementById("STRprefilledcomm").value
+      let prefilledcomm = document.getElementById("prefilledcomm");
+      
+      prefilledcomm.value = prefilled;
+      prefilledcomm.value=STRprefilledcomm
+
+
+
+      if (validateForm('myForm')) {
+      myForm.submit()
+
+            } else {
+                alert('Please fill in all required fields.');
+            }
+
+
+    }
+
+
+    function validateForm(formId) {
+    var form = document.getElementById(formId);
+    var elements = form.elements;
+    var valid = true;
+
+    for (var i = 0; i < elements.length; i++) {
+        if (elements[i].hasAttribute('required') && elements[i].value.trim() === '') {
+            valid = false;
+            break;
+        }
+    }
+
+    // Account number validation
+    var accountNoField = document.getElementById('accountNoSearch');
+    var accountNoValue = accountNoField.value.replace(/[^0-9]/g, '');
+    if (accountNoValue.length < 11 || accountNoValue.length > 16) {
+        valid = false;
+    }
+
+    return valid;
+}
+
+        
+    function addRelationAccount() {
+      let AccountNumber = document.getElementById("AccountNumber").value
+      let AccountHolder = document.getElementById("AccountHolder").value
+      let Relation = document.getElementById("Relation").value
+
+      let relationAccount = document.getElementById("relationAccount");
+
+      let data = `
+      <tr>
+                            <td>${AccountNumber}</td>
+                            <td>${AccountHolder}</td>
+                            <td>${Relation}</td>
+                          </tr>
+      `
+
+      relationAccount.innerHTML += data;
+
+      // Clear the input required fields after adding the data
+      document.getElementById("AccountNumber").value = "";
+      document.getElementById("AccountHolder").value = "";
+      document.getElementById("Relation").value = "";
+
+
+
+    }
+    function investi(){
+      let Investigation = document.getElementById("Investigation").value;
+      let InvestigationDis = document.getElementById("InvestigationDis");
+      InvestigationDis.innerText = Investigation;
+     
+    }
+  </script>
+
+
+<script>
+  function restrictToDigitsmsg(elementId) {
+      const inputField = document.getElementById(elementId);
+      inputField.addEventListener("input", function(event) {
+          let inputValue = event.target.value;
+          let sanitizedValue = inputValue.replace(/[^0-9]/g, "");
+
+          // Truncate to 14 digits
+          sanitizedValue = sanitizedValue.substring(0, 15);
+
+          if (inputValue !== sanitizedValue) {
+              document.getElementById("errorMsg").textContent = "Account number should be 11 to 15 digits only.";
+          } else if (sanitizedValue.length < 11) {
+              document.getElementById("errorMsg").textContent = "Account number should be at least 11 digits long.";
+          } else {
+              document.getElementById("errorMsg").textContent = "";
+          }
+
+          event.target.value = sanitizedValue;
+      });
+  }
+
+  restrictToDigitsmsg("accountNoSearch");
+
+</script>
+
+
+
+ 
+<script>
+  function validateInput(input, errorMsgId) {
+      const errorMsg = document.getElementById(errorMsgId);
+      const inputValue = input.value;
+
+      if (!/^[0-9.]*$/.test(inputValue)) {
+          input.value = inputValue.replace(/[^0-9.]/g, ''); // Remove non-numeric and non-decimal characters
+          errorMsg.textContent = "Only numbers and decimal points are allowed.";
+      } else {
+          errorMsg.textContent = "";
+      }
+  }
+</script>
+  
+  
+  
+</body>
+
+
+</html>

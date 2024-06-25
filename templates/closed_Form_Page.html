@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>
+    // Check if a success message is provided and display it as a popup
+    var successMessage = "{{ success_message }}";
+    if (successMessage && successMessage !== 'None') {
+      alert(successMessage);  // You can use a more sophisticated popup library here if needed
+    }
+  </script>
+  
+
+  {% include 'metaData.html' %}
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+  <style>
+    /* form styling start */
+
+    .layout-px-spacing {
+      min-height: calc(100vh - 166px) !important;
+    }
+
+    .radio-spacing {
+      margin-left: 150px;
+    }
+
+    .selectpicker {
+      background-color: white;
+      border: 1px solid gray;
+    }
+
+    .centered-content {
+      display: flex;
+      align-items: center;
+    }
+    .form-control{
+      border:1px solid #ced4da!important;
+    }
+    .form-control:hover{
+      border:1px solid #ced4da!important;
+    }
+    .form-group label, label {
+    font-size: 16px;
+    color: #3a4046;
+    letter-spacing: 1px;
+}
+    
+
+
+    /* hr {
+      border-top: 2px solid rgba(128, 128, 128, 0.486);
+    } */
+
+
+    /* table CSS */
+    
+    tr {
+      transition: all 0.1s ease-in-out;
+    }
+
+    tr:not(:first-child):hover {
+      transform: scale(1.01);
+    }
+
+    th:first-child::after {
+      content: "" !important;
+    }
+
+    th:first-child::before {
+      content: "" !important;
+    }
+
+    td,
+    th {
+      padding: 15px !important;
+      border: none !important;
+      border-bottom: 2px solid #00000033 !important;
+      text-align: left !important;
+    }
+    .page-item.active .page-link {
+      background-color: #00579c !important;
+    }
+
+  </style>
+
+  <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+</head>
+
+<body>
+  <!-- BEGIN LOADER -->
+  <div id="load_screen">
+    <div class="loader">
+      <div class="loader-content">
+        <div class="spinner-grow align-self-center"></div>
+      </div>
+    </div>
+  </div>
+  <!--  END LOADER -->
+
+  <!--  BEGIN NAVBAR  -->
+  {% include 'header.html' %}
+
+    
+  <!--  END NAVBAR  -->
+
+  <!--  BEGIN NAVBAR  -->
+  <div class="sub-header-container">
+    <header class="header navbar navbar-expand-sm">
+      <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-menu">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </a>
+
+      <ul class="navbar-nav flex-row" style="gap: 10px;">
+        <li>
+          <div class="page-header">
+            <div class="page-title">
+              <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="{{ url_for('MLRONextLevel') }}"
+                      class="text-blue font-weight-bold">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-home">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                      </svg>
+                    </a></li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a href="{{url_for('return_Mlro_Alerts')}}" class="text-blue">/ <span class="paths ">Returned Closed Cases</span></a>
+
+        </li>
+        <li>
+          <a href="#" class="text-primary">/ <span class="paths text-blue">Closed Case Form</span></a>
+
+        </li>
+      </ul>
+    </header>
+  </div>
+  <!--  END NAVBAR  -->
+
+
+
+  <!--  BEGIN CONTENT PART  -->
+  <div class="main-container" id="container">
+
+    <div class="overlay"></div>
+    <div class="search-overlay"></div>
+
+    <!--  BEGIN SIDEBAR  -->
+    {% include 'sidebar.html' %}
+
+    <!--  END SIDEBAR  -->
+
+    <!--  BEGIN CONTENT AREA  -->
+    <div id="content" class="main-content">
+      <div class="layout-px-spacing">
+        <div class="row layout-top-spacing">
+          <div class="container-fluid border rounded" style="background-color: white">
+
+            <!--=============== modal to add related Account in Related Accounts================-->
+
+
+            <div class="modal fade" id="addAccount" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog align-items-center">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <p class="modal-title">Add Related Account</p>
+                    <button type="button" class="close" data-dismiss="modal">X</button>
+                  </div>
+
+                  <div class="modal-body">
+                    <div
+                      class="d-flex flex-column align-items-center widget-content widget-content-area justify-content-center pb-0 pt-0 modal"
+                      id="myModalFilter" data-backdrop="false">
+
+                      <div class="d-flex flex-column align-items-center p-4 col-lg-12"
+                        style="gap: 20px;border: 1px solid #8080803a;">
+                          <div class=" d-flex flex-column flex-wrap col-lg-11">
+                            {% for values in data %}
+                            <form action="#">
+                                <label for=" AccountNumber">Account Number :</label>
+                                <input required type="number" name="" id="AccountNumber">
+                                <hr>
+                                <label for="AccountHolder">Account Holder :</label>
+                                <input required type="text" name="" id="AccountHolder">
+                                <hr>
+                                <label for="Relation">Relation :</label>
+                                <input required type="text" name="" id="Relation">
+
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button id="addAcc-button" class="btn btn-primary" type="button"
+                            onclick="addRelationAccount();" data-dismiss="modal">Submit</button>
+
+                        <button type="button" class="btn btn-danger"
+                            data-dismiss="modal">Close</button>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+          <!-- ================================================================================ -->
+
+
+          <div class="header text-center  my-4">
+            <h3 class="text-blue font-weight-bold">CREATE CASE</h3>
+          </div>
+
+          <form class="p-5" method="POST" action="{{'submetCaseForm'}}" enctype="multipart/form-data" id="myForm">
+            <input type="text" name="typeee" value="return_Mlro_Alerts" class="d-none">
+
+
+                        <section class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="mr-5" for="customerNo">Customer No</label>
+                                {{CustomerId}}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="mr-5" for="customerName">Customer Name</label>
+                                {{CustomerName}}
+                            </div>
+                        </section>
+
+                        <hr>
+
+                        <section class="row">
+                          <div class="col-md-6">
+                            <div class="form-group d-flex">
+                                <label for="ticket_id" class="mr-4 font-weight-bold">Account Number </label>
+                                <p id="ticket_id">{{accNum}}</p>
+                                <input required type="text" name="ticket_id" id="" value="{{ticket_id}}"
+                                    class="d-none">
+                            </div>
+                        </div>
+
+                     
+                        </section>
+                        <hr>
+
+                          <section class=" row">
+                            <div class="col-6">
+
+                                <label class="mr-4 font-weight-bold" for="classification">Classification</label>
+
+                                <select class="form-control py-0 " name="caseAllocation" id="classification" required>
+                                  
+                                  <option>Select Name</option>
+                                    {% for row in data %}
+                                        <option value="{{ row.Classification }}" {% if row.Classification == 'NameMatches' %} selected {% endif %}>
+                                            NameMatches
+                                        </option>
+                                  <option value="{{ row.Classification }}" {% if row.Classification =="STR" %} selected
+                                      {% endif %}>STR</option>
+                                      {% endfor %}
+                              </select>
+                            </div>
+                            <div class="col-6 d-flex">
+                                <label for="sendTo" class="mr-4 font-weight-bold">Send To  </label>
+                                <p id="sendTo">{{allocatedCM}}</p>
+                                <input required type="text" name="sentTo" id="" value="{{allocatedCM}}" class="d-none">
+
+                            </div>
+                        </section>
+                        <hr>
+
+                        
+                        <section>
+                            <label class="font-weight-bold">Suspecious Duo Proceed Of Crime</label> <br />
+                            {% for row in data %}
+                            {% if row.SuspeciousDuoCrime == 'Yes' %} 
+                            <input required type="radio" id="suspeciousCrime" name="crime" value="Yes" checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousCrime" name="crime" value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.SuspeciousDuoCrime == "No" %}
+                            <input required type="radio" id="suspeciousCrime" name="crime" value="No"
+                                class="radio-spacing" checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousCrime" name="crime" value="No"
+                                class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr>
+
+                        <section>
+                            <label class="font-weight-bold">Suspecious Duo Complex Transaction</label> <br />
+                            {% for row in data %}
+                            {% if row.SuspeciousDuoComplexTr == "Yes" %}
+                            <input required type="radio" id="suspeciousComplex" name="SuspeciousDuo" value="Yes"
+                                checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousComplex" name="SuspeciousDuo" value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.SuspeciousDuoComplexTr == "No" %}
+                            <input required type="radio" id="suspeciousComplex" name="SuspeciousDuo" value="No" checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousComplex" name="SuspeciousDuo" value="No"
+                                class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr>
+
+                        <section>
+                            <label class="font-weight-bold">Suspecious Duo No eco Rational</label> <br />
+                            {% for row in data %}
+                            {% if row.SuspeciousDuoNoeco == "Yes" %}
+                            <input required type="radio" id="suspeciousNoEco" name="SuspeciousDuoeco" value="Yes"
+                                checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousNoEco" name="SuspeciousDuoeco" value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.SuspeciousDuoNoeco == "No" %}
+                            <input required type="radio" id="suspeciousNoEco" name="SuspeciousDuoeco" value="No"
+                                class="radio-spacing" checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousNoEco" name="SuspeciousDuoeco" value="No"
+                                class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr />
+                        <section>
+                            <label class="font-weight-bold">Suspecious Duo financing terrorism</label> <br />
+                            {% for row in data %}
+                            {% if row.terrorisumFunding == "Yes" %}
+                            <input required type="radio" id="suspeciousTerrorism" name="SuspeciousDuofinancing"
+                                value="Yes" checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousTerrorism" name="SuspeciousDuofinancing"
+                                value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.terrorisumFunding == "No" %}
+                            <input required type="radio" id="suspeciousTerrorism" name="SuspeciousDuofinancing"
+                                value="No" class="radio-spacing" checked>
+                            {% else %}
+                            <input required type="radio" id="suspeciousTerrorism" name="SuspeciousDuofinancing"
+                                value="No" class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                          <label class="font-weight-bold">Details of Investigation</label> <br />
+                          {% for row in data %}
+                          <textarea required rows="2" cols="50" class="form-control" id="Investigation" name="Investigation">{{ row.Investigation }}</textarea>
+                          {% endfor %}
+                      </section>
+                      
+                        <hr>
+                        <section>
+                            <label class="font-weight-bold">LEA informed </label> <br />
+                            {% for row in data %}
+                            {% if row.LEAinformed == "Yes" %}
+                            <input required type="radio" id="LEAinfo" name="LEAinformed" value="Yes" checked>
+                            {% else %}
+                            <input required type="radio" id="LEAinfo" name="LEAinformed" value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.LEAinformed == "No" %}
+                            <input required type="radio" id="LEAinfo" name="LEAinformed" value="No"
+                                class="radio-spacing" checked>
+                            {% else %}
+                            <input required type="radio" id="LEAinfo" name="LEAinformed" value="No"
+                                class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label class="font-weight-bold">LEA Details</label>
+                            {% for row in data %}
+                            <textarea required rows="2" cols="50" class="form-control" id="LEADetails"
+                                name="LEADetails">{{ row.LEADetails }}</textarea>
+                            <textarea required class="d-none" name="comments" id="commentText"></textarea>
+              <input required class="d-none" type="text" name="prefilled" id="prefilledcomm">
+
+
+                            {% endfor %}
+                        </section>
+                        <hr>
+
+                        <section>
+                            <label class="font-weight-bold">Report Covers</label>
+                            <select class="form-control py-0" required name="reportCase" id="reportCase">
+
+
+                                <option>Select Category</option>
+                                  {% for row in data %}
+                                <option value="{{ row.reportCase }}" {% if row.reportCase == "YES" %}
+                                    selected {% endif %}>YES</option>
+                                <option value="{{ row.reportCase }}" {% if row.reportCase == "NO" %}
+                                    selected {% endif %}>NO</option>
+                            </select>
+                            {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label class="font-weight-bold">Additional Do Sent</label> <br />
+                            {% for row in data %}
+                            {% if row.additionalInfo == "Yes" %}
+                            <input required type="radio" id="Additional" name="additionalInfo" value="Yes" checked>
+                            {% else %}
+                            <input required type="radio" id="Additional" name="additionalInfo" value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.additionalInfo == "No" %}
+                            <input required type="radio" id="Additional" name="additionalInfo" value="No"
+                                class="radio-spacing" checked>
+                            {% else %}
+                            <input required type="radio" id="Additional" name="additionalInfo" value="No"
+                                class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label class="font-weight-bold">PRIORITY RA'G</label> <br />
+                            <select required name="priorityRAG" id="priorityRAG" class="form-control py-0">
+
+                                {% for row in data %}   
+                                <option>Select Category</option>
+                                <option value="{{ row.priorityRAG }}" {% if row.priorityRAG =="High" %}
+                                    selected {% endif %}>High</option>
+                                <option value="{{ row.priorityRAG }}" {% if row.priorityRAG =="VeryHigh" %}
+                                    selected {% endif %}>VeryHigh</option>
+                                <option value="{{ row.priorityRAG }}" {% if row.priorityRAG == "Normal" %}
+                                    selected {% endif %}>Normal</option>
+                            </select>
+                            {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label for="cumulativeCrtTurnover" class="font-weight-bold">Cumulative CRT Turnover</label> <br />
+                            {% for row in data %} 
+                            <input required type="number" class="form-control" name="cumulativeCrtTurnover"
+                                id="cumulativeCrtTurnover" value='{{row.cumulativeCrtTurnover }}'>
+                                {% endfor %} 
+                        </section>
+                        <hr>
+                        <section>
+                            <label for="cumulativeDTTurnover">Cumulative DT Turnover</label> <br />
+                            {% for row in data %}
+                            <input required type="number" class="form-control" name="cumulativeDTTurnover"
+                                id="cumulativeDTTurnover" value='{{row.cumulativeDTTurnover}}'>
+                                {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label for="cumulativeDepositTurnover" class="font-weight-bold">Cumulative Deposit Turnover</label> <br />
+                            {% for row in data %}
+                            <input required type="number" class="form-control" name="cumulativeDepositTurnover"
+                                id="cumulativeDepositTurnover"
+                                value='{{row.cumulativeDepositTurnover}}'>
+                                {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label for="cumulativeWithdrawalTurnover" class="font-weight-bold">Cumulative Withdrawal Turnover</label> <br />
+                            {% for row in data %}
+                            <input required type="number" class="form-control" name="cumulativeWithdrawalTurnover"
+                                id="cumulativeWithdrawalTurnover"
+                                value='{{row.cumulativeWithdrawalTurnover}}'>
+                                {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <label for="NumTransactionReport" class="font-weight-bold">No Of Transaction To Be Reported</label> <br />
+                            {% for row in data %}
+                            {% if row.NumTransactionReport == "Yes" %}
+                            <input required type="radio" name="NumTransactionReport" value="Yes" checked>
+                            {% else %}
+                            <input required type="radio" name="NumTransactionReport" value="Yes">
+                            {% endif %}
+                            <label>Yes</label>
+                            {% if row.NumTransactionReport == "No" %}
+                            <input required type="radio" name="NumTransactionReport" value="No" class="radio-spacing"
+                                checked>
+                            {% else %}
+                            <input required type="radio" name="NumTransactionReport" value="No" class="radio-spacing">
+                            {% endif %}
+                            <label>No</label>
+                            {% endfor %}
+                        </section>
+                        <hr>
+                        <section>
+                            <div class="row align-items-center">
+                                <div class="col-md-6 text-center">
+                                    <label class="font-weight-bold " for="remark" >Region for Sucion (Remarks)</label>
+                                    {% for row in data %}
+                                    <textarea required rows="2" cols="30" class="form-control" id="remark"
+                                        name="remark">{{ row.remark }}</textarea>
+                                        {% endfor %}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="font-weight-bold">Upload Attachment</label>
+                                    <input  class="ml-5 form-control" type="file" name="file">
+                                </div>
+                            </div>
+                        </section>
+                        <hr>
+                        <section>
+                            <div class="row  py-4">
+                            {% for value in data %}
+
+                              {% if "MLROcomment" in value %}
+                                <div class="col-md-4">
+
+                                    <h6 class="font-weight-bold text-red mb-3">MLRO Comments</h6>
+                                    <p><span class="font-weight-bold text-black">Comments</span> &nbsp;&nbsp; {{
+                                        value["MLROcomment"] }}</p>
+                                    <p><span class="font-weight-bold text-black">Pre-filled Comments</span> &nbsp;&nbsp;
+                                        {{ value["MLROprefilled"] }}</p>
+                                    <p><span class="font-weight-bold text-black">Suspicious Due Proceed Of Crime </span>
+                                        &nbsp;&nbsp; {{ value["SuspeciousDuoCrime"] }}</p>
+                                    <p> <span class="font-weight-bold text-black">Suspicious Due Complex Transaction
+                                        </span> &nbsp;&nbsp; {{ value["SuspeciousDuoComplexTr"] }}</p>
+                                    <p> <span class="font-weight-bold text-black">Suspicious Due no eco Rational </span>
+                                        &nbsp;&nbsp; {{ value["SuspeciousDuoNoeco"] }}</p>
+                                    <p> <span class="font-weight-bold text-black">Suspicious Due to Financing Terrorism
+                                        </span> &nbsp;&nbsp; {{ value["terrorisumFunding"] }}</p>
+                                </div>
+                                {% endif %}
+                                
+                            </div>
+                            <div class="row  py-4">
+                              <div class="col-md-4">
+                              {% if "cm_sm_sentBack_closed_comment" in value %}
+
+                                <h6 class="font-weight-bold text-red mb-3">Resone To Sent Back the NON-STR Alert :</h6>
+                                <p><strong>{{ value['cm_sm_sentBack_closed_comment'] }}</strong></p>
+                                {% endif %}
+
+
+                              </div>
+                              {% endfor %}
+                            </div>
+                        </section>
+                        <hr>
+                        <div class=" table-responsive mb-4 ">
+                            <section>
+
+                                <table id="" class=" border rounded text-dark display nowrap" style="width: 100%">
+                                    <thead>
+                                        <tr class="text-dark">
+                                            <!-- <th><input required type="checkbox" disabled id="select-all" class="checkbox" /></th> -->
+                                            <th>Account<br>Number</th>
+                                            <th class="">Customer No</th>
+                                            <th class="d-none">Branch</th>
+                                            <th class="d-none">Allocated Date</th>
+                                            <th class="">Account Type</th>
+                                            <th>Overall Risk Rating</th>
+                                            <th>Scenarios violated</th>
+                                            <th>Violation Amount</th>
+                                            <th class="d-none">Ticket ID</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+
+                                        <tr>
+                                            <!-- <th><input required type="checkbox" class="checkbox" /></th> -->
+                                            {% for value in data %}
+                                            {% if 'ACCTNO' in value.keys() %}
+                                            <td>{{value['ACCTNO']}}</td>
+                                            {% else %}
+                                            <td>-</td>
+                                            {% endif %}
+
+                                            {% if 'CUSTCD' in value.keys() %}
+
+                                            <td class="">
+                                                {{value['CUSTCD']}}
+                                            </td>
+                                            {% else %}
+
+                                            <td>
+                                                ----
+                                            </td>
+
+                                            {% endif %}
+
+                                            {% if 'BranchCode' in value.keys() %}
+                                            <td class="d-none">{{value['BranchCode']}}</td>
+                                            {% else %}
+                                            <td class="d-none">Kukatpali</td>
+                                            {% endif %}
+
+                                            {% if 'alert_allocated_on' in value.keys() %}
+                                            <td class="d-none">{{value['alert_allocated_on']}}</td>
+                                            {% endif %}
+
+                                            {% if 'CUST_TYPE_CODE' in value.keys() %}
+                                            <td class="">{{value['CUST_TYPE_CODE']}}</td>
+                                            {% else %}
+                                            <td class="">----</td>
+                                            {% endif %}
+
+                                            {% if 'RIP' in value.keys() %}
+                                            <td>{{value['RIP']}}</td>
+                                            {% else %}
+                                            <td>Medium</td>
+                                            {% endif %}
+
+                                            {% if 'scenario_code' in value.keys() %}
+                                            <td>{{value['scenario_code']}}</td>
+                                            {% else %}
+                                            <td>1</td>
+                                            {% endif %}
+
+                                        
+
+                                            {% if 'TXAMT' in value.keys() %}
+                                            <td>{{value['TXAMT']}}</td>
+                                            {% else %}
+                                            <td>-</td>
+                                            {% endif %}
+
+                                            {% if 'ticketid' in value.keys() %}
+                                            <td class="d-none">{{value['ticketid']}}</td>
+                                            {% endif %}
+
+                                            
+
+                                        </tr>
+
+
+
+
+                                        {% endfor %}
+                                        {% endfor %}
+
+                                        <!-- Add more rows with your own data as needed -->
+                                    </tbody>
+
+                                </table>
+
+                            </section>
+                        </div>
+
+                        <hr>
+                        <section>
+                            <h6 class="text-dark  font-weight-bold">Related Personal Details</h6>
+                            <table class="table  border rounded" id="relationAccount">
+                                <tr>
+                                    <th>Account No</th>
+                                    <th>Account Holder</th>
+                                    <th>Relation Code </th>
+                                </tr>
+                                <tr>
+                                    <td>5852741963</td>
+                                    <td>Maria Anders</td>
+                                    <td>brother</td>
+                                </tr>
+
+                            </table>
+                        </section>
+                        <hr>
+                        <section>
+                            <label for="accountNoSearch" class="font-weight-bold">Account No</label>
+                            <input type="number" class="form-control mb-3" name="accountNoSearch">
+                            <button class="btn btn-sm btn-blue mr-2 ml-4" type="button">Search</button>
+                            <button class="btn btn-sm btn-blue ml-2 mr-2" type="button" data-toggle="modal"
+                                data-target="#addAccount">Add</button>
+                            <button class="btn btn-sm btn-blue ml-2" type="button">View Account</button>
+                        </section>
+                        <hr>
+
+                         <div class="py-4">
+                                <section>
+                        <label class="font-weight-bold text-black">Select STR (or) NON-STR</label> <br />
+                        <select required name="strraising" id="strrising" class="form-control py-0" >
+                            <option >Select Category</option>
+                            <option value="STR">STR</option>
+                            <option value="NON-STR">NON STR</option>
+                        </select>
+                        </section>
+                            </div>
+
+
+                        <div class="mt-4 mb-3">
+              <button class="btn btn-sm btn-blue ml-2 mr-2" type="button" data-toggle="modal" data-target="#myModal{{ticket_id}}" onclick="investi()">Submit</button>
+
+                            <button class="btn btn-sm btn-blue ml-2" type="button">Cancel</button>
+                        </div>
+
+          </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% include 'footer.html' %}
+  </div>
+  
+  
+  <!-- END MAIN CONTAINER -->
+
+  <!--START COMMENT MODAL -->
+  <div class="modal fade-bg" id="myModal{{ticket_id}}" data-backdrop="false">
+    <div class="modal-dialog -lg">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+
+         <div class="modal-header">
+            <p class="modal-title"> <b>Add Comment to this Account </b></p>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+        
+        <!-- Modal body -->
+        <div class="row">
+            
+        
+          <div class="col-md-12">
+                <div class="modal-body">
+                  <div>
+                    <label class="text-black font-weight-bold">Investigation Details</label>
+                    <p id="InvestigationDis"></p>
+                  </div>
+                  <div>
+                    <label class="text-black font-weight-bold">Prefilled Comments</label>
+                    <select class="form-select form-select-sm mb-3 word-wrap-select" id="prefilled" aria-label="Large select example">
+                      <option selected disabled>Select a prefilled Comments</option>
+                      <option value="Transaction Appears To Be In Line With The Activity And Profile Of The Customer,hance Closed As Normal Transaction" class="wrap">1.Transaction Appears To Be In Line With The Activity And Profile Of The Customer,hance Closed <br/>As Normal Transaction.</option>
+                      <option value="Transaction Appears To Be Normal/Routine Business Transaction In Regular/Normal Course hance no Suspicion Observed And Closed as False Positive">2.Transaction Appears To Be Normal/Routine Business Transaction In Regular/Normal Course hance no Suspicion Observed And Closed as False Positive.</option>
+                      <option value="On Primary Investigation,Nothing Adverse Observed In The Transaction/Account hance Closed as Normal Transaction">3.On Primary Investigation,Nothing Adverse Observed In The Transaction/Account hance Closed as Normal Transaction.</option>
+                      <option value="Transactions Appears To Be Normal In Regular Course hance Closed as false Positive">4.Transactions Appears To Be Normal In Regular Course hance Closed as false Positive.</option>
+                      <option value="Transaction appears to be normal inward/outward RTGS/NEFT transactions in Customer's/ Bank office account hence closed as false positive">5.Transaction appears to be normal inward/outward RTGS/NEFT transactions in Customer's/ Bank office account hence closed as false positive.</option>
+                      <option value="RTGS/NEFT credits in the account are in line with the activity and profile of the customer hence closed as normal transactions">6.RTGS/NEFT credits in the account are in line with the activity and profile of the customer hence closed as normal transactions.</option>
+                      <option value="Transactions are related to RTGS/NEFT return transactions, hence closed as normal transaction">7.Transactions are related to RTGS/NEFT return transactions, hence closed as normal transaction.</option>
+                      <option value="It appears to be normal transaction in educational institution account hence closed as false positive">8.It appears to be normal transaction in educational institution account hence closed as false positive.</option>
+                      <option value="It appears to be normal loan disbursement credit transaction in the account hence closed as false positive">9.It appears to be normal loan disbursement credit transaction in the account hence closed as false positive.</option>
+                      <option value="High value transactions observed for business purpose in regular course hence closed as false positive">10.High value transactions observed for business purpose in regular course hence closed as false positive.</option>
+                      <option value="Transactions are related to collection account and amounts are transferring to escrow business account. Hence closed as normal business transactions">11.Transactions are related to collection account and amounts are transferring to escrow business account. Hence closed as normal business transactions.</option>
+                      <option value="It appears to be normal/regular business transactions in Cash Credit/Overdraft/Term loans account hence closed as normal transaction">12.It appears to be normal/regular business transactions in Cash Credit/Overdraft/Term loans account hence closed as normal transaction.</option>
+                      <option value="It appears to be loan recovery/Adjustment transaction hence closed as normal transaction">13.It appears to be loan recovery/Adjustment transaction hence closed as normal transaction.</option>
+                      <option value="It appears that transaction pertaining to sale proceeds of the property, hence closed as normal transactions">14.It appears that transaction pertaining to sale proceeds of the property, hence closed as normal transactions.</option>
+                      <option value="It appears to be normal/valid transactions in Government/Public Sector Unit account hence closed as normal transactions">15.It appears to be normal/valid transactions in Government/Public Sector Unit account hence closed as normal transactions.</option>
+                      <option value="It appears the triggered transactions pertaining to closure of Fixed Deposit proceeds hence closed as normal transaction">16.It appears the triggered transactions pertaining to closure of Fixed Deposit proceeds hence closed as normal transaction.</option>
+                      <option value="It appears normal interbank/inter-sol transaction and no suspicion observed hence closed as normal transactions">17.It appears normal interbank/inter-sol transaction and no suspicion observed hence closed as normal transactions.</option>
+                      <option value="It appears to be normal transaction in ATM cash provider's account hence closed as normal transactions">18.It appears to be normal transaction in ATM cash provider's account hence closed as normal transactions.</option>
+                      <option value="It appears to be normal transactions in Bank Mitra's/Business Correspondent's account hence closed as false positive">19.It appears to be normal transactions in Bank Mitra's/Business Correspondent's account hence closed as false positive.</option>
+                      <option value="It appears to be normal transactions in Self help groups account hence closed as false positive">20.It appears to be normal transactions in Self help groups account hence closed as false positive.</option>
+                      <option value="It pertains to sweep transfer transactions in the account hence closed as normal transactions">21.It pertains to sweep transfer transactions in the account hence closed as normal transactions.</option>
+                      <option value="It appears that transactions pertaining to normal credit card payment hence closed as false positive">22.It appears that transactions pertaining to normal credit card payment hence closed as false positive.</option>
+                      <option value="It appears to be normal office account transaction hence closed as false positive">23.It appears to be normal office account transaction hence closed as false positive.</option>
+                      <option value="It appears that transaction pertains to Terminal Benefit credit from employer hence closed as normal transactions">24.It appears that transaction pertains to Terminal Benefit credit from employer hence closed as normal transactions.</option>
+                      <option value="It appears that transaction pertains to salary credits from employer hence closed as normal transactions">25.It appears that transaction pertains to salary credits from employer hence closed as normal transactions.</option>
+                      <option value="It appears that transaction pertains to pension credits from employer hence closed as normal transactions">26.It appears that transaction pertains to pension credits from employer hence closed as normal transactions.</option>
+                      <option value="It appears that transaction pertains to claim settlement amount hence closed as false positive">27.It appears that transaction pertains to claim settlement amount hence closed as false positive.</option>
+                      <option value="Transaction pertains to BANK/ATM/SMS/LEDGER FOLIO/CHEQUE RETURN charges hence closed as false positive">28.Transaction pertains to BANK/ATM/SMS/LEDGER FOLIO/CHEQUE RETURN charges hence closed as false positive.</option>
+                      <option value="">29.Others</option>
+                    </select>
+                  </div>
+
+        
+        
+              <label class="text-black font-weight-bold">Add Your Comments</label>
+              <textarea class="form-control col-md-12" name="comments" id="exampleFormControlTextarea1" rows="3" cols="8"></textarea>
+        </div>
+          </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <!-- {% if role != "DGM/PO" %} -->
+          <button type="button" class="btn btn-primary" onclick="caseCreation('submit')">Submit</button>        
+             <!-- {% else %} -->
+          <!-- <button type="button" class="btn btn-primary" onclick="caseCreation('Approve')">Approve</button>
+          <button type="button" class="btn btn-primary" onclick="caseCreation('Reject')">Reject</button>
+          {% endif %} -->
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+      
+
+        
+      </div>
+    </div>
+  </div>
+  
+ 
+
+
+  <!--END COMMENT MODAL -->
+
+
+  <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+  <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+  <script src="../static/bootstrap/js/popper.min.js"></script>
+  <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="../static/assets/js/app.js"></script>
+  <!-- form dropdown  Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+  <!-- TABLE JS LINKS -->
+
+  <script type="text/javascript" language="javascript"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+   <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+  <script type="text/javascript" language="javascript"
+    src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js">
+  </script>
+
+
+  <!--form dropdown Bootstrap Select JS -->
+
+  <script>
+    $(document).ready(function () {
+      App.init();
+      let table = $("#example").DataTable({
+        rowReorder: {
+          selector: "td:nth-child(2)",
+        },
+        responsive: true,
+         paging: true,         // Enable pagination
+         pageLength: 20,
+      });
+    });
+
+ 
+  </script>
+  <script src="../static/assets/js/custom.js"></script>
+  <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  <!--form dropdown Bootstrap Select JS -->
+  <script>
+    $(document).ready(function () {
+      $('.selectpicker').selectpicker();
+    });
+
+
+
+   
+    function validateForm(formId) {
+            var form = document.getElementById(formId);
+            var elements = form.elements;
+
+            for (var i = 0; i < elements.length; i++) {
+                if (elements[i].hasAttribute('required') && elements[i].value.trim() === '') {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        
+    function addRelationAccount() {
+      let AccountNumber = document.getElementById("AccountNumber").value
+      let AccountHolder = document.getElementById("AccountHolder").value
+      let Relation = document.getElementById("Relation").value
+
+      let relationAccount = document.getElementById("relationAccount");
+
+      let data = `
+      <tr>
+                            <td>${AccountNumber}</td>
+                            <td>${AccountHolder}</td>
+                            <td>${Relation}</td>
+                          </tr>
+      `
+
+      relationAccount.innerHTML += data;
+
+      // Clear the input required fields after adding the data
+      document.getElementById("AccountNumber").value = "";
+      document.getElementById("AccountHolder").value = "";
+      document.getElementById("Relation").value = "";
+
+
+
+    }
+    function investi(){
+      let Investigation = document.getElementById("Investigation").value;
+      let InvestigationDis = document.getElementById("InvestigationDis");
+      InvestigationDis.innerText = Investigation;
+    }
+
+    function caseCreation(roleDecide) {
+
+let exampleFormControlTextarea1 = document.getElementById("exampleFormControlTextarea1").value;
+let commentText = document.getElementById('commentText');
+commentText.value = exampleFormControlTextarea1
+
+
+let prefilled = document.getElementById("prefilled").value;
+      let prefilledcomm = document.getElementById("prefilledcomm");
+      prefilledcomm.value = prefilled;
+
+
+
+if (roleDecide == 'submit') {
+    let formPage = document.getElementById('myForm');
+    let approveInput = document.createElement("input")
+    approveInput.setAttribute("type", "text");
+    approveInput.setAttribute("name", "finalReport");
+    approveInput.setAttribute("value", "submit");
+    approveInput.setAttribute("class", "");
+    formPage.append(approveInput)
+    if (validateForm('myForm')) {
+        myForm.submit()
+
+    } else {
+        alert('Please fill in all required fields.');
+    }
+}
+else if (roleDecide == 'Approve') {
+
+    let formPage = document.getElementById('myForm');
+
+    let approveInput = document.createElement("input")
+
+    approveInput.setAttribute("type", "text");
+    approveInput.setAttribute("name", "finalReport");
+    approveInput.setAttribute("value", "Approved");
+    approveInput.setAttribute("class", "");
+
+    formPage.append(approveInput)
+
+
+        if (validateForm('myForm')) {
+
+        myForm.submit()
+
+    } else {
+        alert('Please fill in all required fields.');
+    }
+}
+else if (roleDecide == 'Reject') {
+
+    let formPage = document.getElementById('myForm');
+
+
+    let approveInput = document.createElement("input")
+
+    approveInput.setAttribute("type", "text");
+    approveInput.setAttribute("name", "finalReport");
+    approveInput.setAttribute("value", "Rejected");
+    approveInput.setAttribute("class", "");
+
+
+    formPage.append(approveInput)
+
+
+        if (validateForm('myForm')) {
+        myForm.submit()
+
+    } else {
+        alert('Please fill in all required fields.');
+    }
+}
+
+
+
+}
+
+
+  </script>
+
+</body>
+
+</html>

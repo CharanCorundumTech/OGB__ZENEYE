@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% include 'metaData.html' %}
+
+    
+    <style>
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+     <!--  BEGIN NAVBAR  -->
+     {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+               <nav class="breadcrumb-one" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashbord') }}">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('reports') }}">Reports</a></li>
+                    <li class="breadcrumb-item active text-blue font-weight-bold" aria-current="page">{{reports_list_heading}}</li>
+                </ol>
+            </nav>
+            </div>
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'alldashboardSidebar.html' %}
+
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT PART  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div class="row layout-top-spacing mt-3">
+          
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12 layout-spacing">
+              <div class="list-group">
+                <p class="list-group-item bg-blue mb-0 list-group-item-action active" aria-current="true"> {{ reports_list_heading }}  </p>
+                <!-- <a type="button"
+                        class="list-group-item list-group-item-action  mr-2"
+                        data-toggle="modal"
+                        data-target="#exampleModal">
+                  <b>Account Details</b>
+                  
+                 </a> -->
+               {% for item in reports_list_data %}
+           
+        
+                <a type="button"
+                        class="list-group-item list-group-item-action  mr-2"
+                        data-toggle="modal"
+                        data-target="#exampleModal_1_3">
+                  <b>{{ item }}</b>
+                  <!-- <br> ( )  -->
+                </a>
+                {% endfor %}
+                
+
+                
+                
+              
+              </div>
+            </div>
+
+          
+            
+
+           
+            
+         
+          </div>
+          
+        </div>
+        {% include 'footer.html' %}
+
+      </div>
+      <!--  END CONTENT PART  -->
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/plugins/highlight/highlight.pack.js"></script>
+    <script src="../static/assets/js/custom.js"></script>
+     <!--  BEGIN CUSTOM SCRIPT FILE  -->
+    <script src="assets/js/scrollspyNav.js"></script>
+    <script>
+      $("#yt-video-link").click(function () {
+        var src = "https://www.youtube.com/embed/YE7VzlLtp-4";
+        $("#videoMedia1").modal("show");
+        $("<iframe>")
+          .attr({
+            src: src,
+            width: "560",
+            height: "315",
+            allow: "encrypted-media",
+          })
+          .css("border", "0")
+          .appendTo("#videoMedia1 .video-container");
+      });
+      $("#vimeo-video-link").click(function () {
+        var src = "https://player.vimeo.com/video/1084537";
+        $("#videoMedia2").modal("show");
+        $("<iframe>")
+          .attr({
+            src: src,
+            width: "560",
+            height: "315",
+            allow: "encrypted-media",
+          })
+          .css("border", "0")
+          .appendTo("#videoMedia2 .video-container");
+      });
+      $("#videoMedia1 button, #videoMedia2 button").click(function () {
+        $("#videoMedia1 iframe, #videoMedia2 iframe").removeAttr("src");
+      });
+    </script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+  </body>
+</html>

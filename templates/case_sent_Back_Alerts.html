@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      // Check if a success message is provided and display it as a popup
+      var successMessage = "{{ success_message }}";
+      if (successMessage && successMessage !== "None") {
+        alert(successMessage); // You can use a more sophisticated popup library here if needed
+      }
+    </script>
+
+    {% include 'metaData.html' %}
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+      /* date picker start */
+
+      /* Style the input box */
+      .form-control-sm {
+        width: 200px;
+        /* Set your desired width */
+
+        font-size: 14px;
+        border: 1px solid #ccc !important;
+        border-radius: 4px;
+        background-color: rgb(251, 255, 254);
+      }
+
+      .form-control {
+        border: 1px solid #ccc !important;
+      }
+
+      .form-control:hover {
+        border: 1px solid #ccc !important;
+      }
+
+      tr:not(:first-child):hover {
+        transform: none !important;
+      }
+
+      .input-group-text {
+        padding: 0px 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      /* Style the placeholder text */
+      ::placeholder {
+        color: #999;
+        /* Customize the placeholder color */
+      }
+
+      /* date picker ends*/
+
+      .text-primary {
+        color: #00579c !important;
+      }
+
+      .form-control-sm:hover {
+        border: 1px solid #ced4da !important;
+      }
+
+      .btn-primary {
+        background-color: #00579c !important;
+        border-color: #00579c !important;
+      }
+
+      .btn-danger {
+        background-color: #df2233 !important;
+      }
+
+      .page-item.active .page-link {
+        background-color: #00579c !important;
+      }
+
+      .layout-px-spacing {
+        min-height: calc(100vh - 166px) !important;
+      }
+
+      .paths:hover {
+        text-decoration: underline;
+      }
+
+      #select-all {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #8080805b;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .checkbox:checked {
+        border: 2px solid rgb(0, 119, 255);
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      .checkbox:active {
+        border: 2px solid rgb(0, 119, 255);
+
+        background: url("../static/assets/img/tick-svgrepo-com.png");
+        /* Set the background image when the checkbox is clicked */
+        background-size: 100% 100%;
+        /* Make sure the image covers the entire checkbox */
+      }
+
+      tr {
+        transition: all 0.1s ease-in-out;
+      }
+
+      tr:not(:first-child):hover {
+        transform: scale(1.01);
+      }
+
+      th:first-child::after {
+        content: "" !important;
+      }
+
+      th:first-child::before {
+        content: "" !important;
+      }
+
+      td,
+      th {
+        padding: 8px 15px !important;
+        border: none !important;
+        border-bottom: 2px solid #00000033 !important;
+        text-align: left !important;
+      }
+
+      /* .modal-content {} */
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+  </head>
+
+  <body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+      <div class="loader">
+        <div class="loader-content">
+          <div class="spinner-grow align-self-center"></div>
+        </div>
+      </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+      <header class="header navbar navbar-expand-sm">
+        <a
+          href="javascript:void(0);"
+          class="sidebarCollapse"
+          data-placement="bottom"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="feather feather-menu"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </a>
+
+        <ul class="navbar-nav flex-row" style="gap: 10px">
+          <li>
+            <div class="page-header">
+              <div class="page-title">
+                <nav class="breadcrumb-one" aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a
+                        href="{% if role == 'CM/SM' %}{{ url_for('CM_SM_dashboard') }}{% elif role == 'DGM/PO' %}{{ url_for('DGMdashboard') }}{% elif role == 'MLRO' %}{{ url_for('MLROdashboard') }}{% endif %}"
+                        class="text-blue font-weight-bold"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          class="feather feather-home"
+                        >
+                          <path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                          ></path>
+                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                      </a>
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a
+              href="{{url_for('display_Sent_Back_Alerts')}}"
+              class="text-primary"
+              >/ <span class="paths">Reallocated Cases</span></a
+            >
+          </li>
+        </ul>
+      </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN CONTENT PART  -->
+    <!--  BEGIN MAIN CONTAINER  -->
+
+    <!--  BEGIN CONTENT PART  -->
+    <!--  BEGIN MAIN CONTAINER  -->
+    <div class="main-container" id="container">
+      <div class="overlay"></div>
+      <div class="search-overlay"></div>
+
+      <!--  BEGIN SIDEBAR  -->
+      {% include 'sidebar.html' %}
+
+      <!--  END SIDEBAR  -->
+
+      <!--  BEGIN CONTENT AREA  -->
+      <div id="content" class="main-content">
+        <div class="layout-px-spacing">
+          <div
+            class="alert alert-success position-relative"
+            role="alert"
+            style="right: 0; top: 1%; display: none"
+            id="sucessAlert"
+          >
+            Successfully Submited...
+          </div>
+          <div class="layout-top-spacing">
+            <!-- <div id="content" class="main-content">
+                                          <div class="layout-px-spacing"> -->
+
+            <div class="row layout-top-spacing layout-spacing">
+              <div class="col-lg-12">
+                <div class="statbox widget box box-shadow">
+                  <div class="border rounded shadow-sm">
+                    <div class="row m-1 justify-content-center">
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Customer Id</div>
+                          </div>
+                          <input
+                            type="text"
+                            class="filter-checkbox form-control-sm"
+                            id="custId"
+                            placeholder="Enter Customer Id..."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                              MIN Violated Amount
+                            </div>
+                          </div>
+                          <input
+                            type="number"
+                            class="filter-checkbox form-control-sm"
+                            id="minViolatedAmount"
+                            placeholder="Enter min Violated Amount..."
+                          />
+                        </div>
+                        <h6 class="text-center m-1">To</h6>
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">
+                              MAX Violated Amount
+                            </div>
+                          </div>
+                          <input
+                            type="number"
+                            class="filter-checkbox form-control-sm"
+                            id="maxViolatedAmount"
+                            placeholder="Enter max Violated Amount..."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-4">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Account Number</div>
+                          </div>
+                          <input
+                            type="text"
+                            class="filter-checkbox form-control-sm"
+                            id="AccountNumber"
+                            placeholder="Enter Account Number..."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Branch</div>
+                          </div>
+                          <select class="form-control-sm" id="Branch">
+                            <option value="">All</option>
+                            <option value="Panjaguta">Panjaguta</option>
+                            <option value="Kukatpali">Kukatpali</option>
+                            <option value="KPHB">KPHB</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Date</div>
+                          </div>
+                          <input
+                            id="rangeCalendarFlatpickr"
+                            class="form-control-sm flatpickr flatpickr-input active"
+                            type="text"
+                            style="background-color: transparent !important"
+                            placeholder="Select Date Range.."
+                          />
+                        </div>
+                      </div>
+                      <div class="col-lg-4 mt-3">
+                        <div class="btn-group submitter-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Account Type</div>
+                          </div>
+                          <select
+                            class="form-control-sm status-dropdown"
+                            id="AccType"
+                          >
+                            <option value="">All</option>
+                            <option value="Current Account">
+                              Current Account
+                            </option>
+                            <option value="Savings Account">
+                              Savings Account
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 text-center mt-1 mb-2">
+                      <button
+                        id="filter-button"
+                        class="btn btn-sm btn-blue mt-3"
+                      >
+                        Apply Filters
+                      </button>
+                    </div>
+                  </div>
+                  <div class="row pt-4">
+                    <div class="col-12 text-left">
+                      <button
+                        type="button"
+                        onclick="downloadAll()"
+                        class="btn btn-sm btn-blue"
+                        style="
+                          width: 70px;
+                          height: 30px;
+                          padding: 0;
+                          float: right;
+                        "
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          fill="#ffff"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                          <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></g>
+                          <g id="SVGRepo_iconCarrier">
+                            <path
+                              d="M12.5535 16.5061C12.4114 16.6615 12.2106 16.75 12 16.75C11.7894 16.75 11.5886 16.6615 11.4465 16.5061L7.44648 12.1311C7.16698 11.8254 7.18822 11.351 7.49392 11.0715C7.79963 10.792 8.27402 10.8132 8.55352 11.1189L11.25 14.0682V3C11.25 2.58579 11.5858 2.25 12 2.25C12.4142 2.25 12.75 2.58579 12.75 3V14.0682L15.4465 11.1189C15.726 10.8132 16.2004 10.792 16.5061 11.0715C16.8118 11.351 16.833 11.8254 16.5535 12.1311L12.5535 16.5061Z"
+                              fill="#ffff"
+                            ></path>
+                            <path
+                              d="M3.75 15C3.75 14.5858 3.41422 14.25 3 14.25C2.58579 14.25 2.25 14.5858 2.25 15V15.0549C2.24998 16.4225 2.24996 17.5248 2.36652 18.3918C2.48754 19.2919 2.74643 20.0497 3.34835 20.6516C3.95027 21.2536 4.70814 21.5125 5.60825 21.6335C6.47522 21.75 7.57754 21.75 8.94513 21.75H15.0549C16.4225 21.75 17.5248 21.75 18.3918 21.6335C19.2919 21.5125 20.0497 21.2536 20.6517 20.6516C21.2536 20.0497 21.5125 19.2919 21.6335 18.3918C21.75 17.5248 21.75 16.4225 21.75 15.0549V15C21.75 14.5858 21.4142 14.25 21 14.25C20.5858 14.25 20.25 14.5858 20.25 15C20.25 16.4354 20.2484 17.4365 20.1469 18.1919C20.0482 18.9257 19.8678 19.3142 19.591 19.591C19.3142 19.8678 18.9257 20.0482 18.1919 20.1469C17.4365 20.2484 16.4354 20.25 15 20.25H9C7.56459 20.25 6.56347 20.2484 5.80812 20.1469C5.07435 20.0482 4.68577 19.8678 4.40901 19.591C4.13225 19.3142 3.9518 18.9257 3.85315 18.1919C3.75159 17.4365 3.75 16.4354 3.75 15Z"
+                              fill="#ffff"
+                            ></path>
+                          </g>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    class="d-flex flex-column align-items-center widget-content widget-content-area justify-content-center pb-0 pt-0"
+                    data-backdrop="false"
+                    style="position: relative; z-index: 852px; top: 0"
+                  ></div>
+
+                  <div class="widget-content widget-content-area">
+                    <div class="table-responsive mb-4">
+                      <section>
+                        <table
+                          id="example"
+                          class="display nowrap"
+                          style="width: 100%"
+                        >
+                          <thead>
+                            <tr>
+                              <th>
+                                <input
+                                  type="checkbox"
+                                  disabled
+                                  id="select-all"
+                                  class="checkbox"
+                                />
+                              </th>
+                              <th>Account<br />Number</th>
+                              <th class="">
+                                Customer<br />
+                                No
+                              </th>
+                              <th class="d-none">
+                                Branch <br />
+                                Code
+                              </th>
+                              <th class="d-none">
+                                Allocated <br />
+                                Date
+                              </th>
+                              <th class="d-none">
+                                Account <br />
+                                Type
+                              </th>
+                              <th>
+                                Pendding <br />
+                                Days
+                              </th>
+                              <th>
+                                Overall Risk<br />
+                                Rating
+                              </th>
+                              <th>Scenarios <br />violated</th>
+                              <th>
+                                Violation <br />
+                                Amount
+                              </th>
+                              <th class="d-none">Ticket ID</th>
+                              <th>
+                                Create <br />
+                                case
+                              </th>
+                              <!-- <th>Add Comment</th> -->
+                            </tr>
+                          </thead>
+                          <tbody id="tableBody">
+                            {% for value in data %}
+                            <tr>
+                              <th>
+                                <input type="checkbox" class="checkbox" />
+                              </th>
+                              {% if 'ACCTNO' in value.keys() %}
+                              <td>{{value['ACCTNO']}}</td>
+                              {% else %}
+                              <td>-</td>
+                              {% endif %}
+
+                              <td class="">
+                                <form
+                                  action="{{ url_for('acc_holder_history') }}"
+                                  method="post"
+                                >
+                                  <input
+                                    type="text"
+                                    name="accnum"
+                                    value="{{value['ACCTNO']}}"
+                                    style="display: none"
+                                  />
+                                  <input
+                                    type="text"
+                                    name="txdate"
+                                    value="{{value['TXDATE']}}"
+                                    style="display: none"
+                                  />
+                                  <input
+                                    type="text"
+                                    name="txamt"
+                                    value="{{value['TXAMT']}}"
+                                    style="display: none"
+                                  />
+                                  <input
+                                    type="text"
+                                    name="custid"
+                                    value="{{value['CUSTCD']}}"
+                                    style="display: none"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="ticket_id"
+                                    value="{{ value['ticketid'] }}"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="scenarioType"
+                                    value="{{ value['scenario_code'] }}"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="txtype"
+                                    value="{{ value['TXTYPE'] }}"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="trnsflowtype"
+                                    value="{{ value['TRNFLOWTYPE'] }}"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="cashflowtype"
+                                    value="{{ value['CASHFLOWTYPE'] }}"
+                                  />
+                                  <input
+                                    type="text"
+                                    name="typee"
+                                    value="{{type}}"
+                                    style="display: none"
+                                  />
+                                  {% if 'CUSTCD' in value.keys() %}
+                                  <button type="submit" style="border: none">
+                                    {{value['CUSTCD']}}
+                                  </button>
+                                  {% else %}
+                                  <button type="submit" style="border: none">
+                                    -
+                                  </button>
+                                  {% endif %}
+                                </form>
+                              </td>
+                              {% if 'BranchCode' in value.keys() %}
+                              <td class="d-none">{{value['BranchCode']}}</td>
+                              {% else %}
+                              <td class="d-none">Kukatpali</td>
+                              {% endif %} {% if 'alert_created_on' in
+                              value.keys() %}
+                              <td class="d-none">
+                                {{value['alert_created_on']}}
+                              </td>
+                              {% endif %} {% if 'CUST_TYPE_CODE' in value.keys()
+                              %}
+                              <td class="d-none">
+                                {{value['CUST_TYPE_CODE']}}
+                              </td>
+                              {% else %}
+                              <td class="d-none">----</td>
+                              {% endif %}
+                              <td>
+                                {% set difference_days = ((currentDate -
+                                value['alert_created_on']).days)|abs %} {{
+                                difference_days }} Days
+                              </td>
+                              {% if 'RIP' in value.keys() %}
+                              <td>{{value['RIP']}}</td>
+                              {% else %}
+                              <td>--</td>
+                              {% endif %} {% if 'scenario_code' in value.keys()
+                              %}
+                              <td>{{value['scenario_code']}}</td>
+                              {% else %}
+                              <td>
+                                <form
+                                  action="{{ url_for('acc_violation_history') }}"
+                                  method="POST"
+                                >
+                                  <input
+                                    type="hidden"
+                                    name="account_number"
+                                    value="{{ value['ACCTNO'] }}"
+                                  />
+                                  <a href="#" onclick="submitForm();">1</a>
+                                </form>
+                              </td>
+                              {% endif %} {% if 'TXAMT' in value.keys() %}
+                              <td>{{value['TXAMT']}}</td>
+                              {% else %}
+                              <td>-</td>
+                              {% endif %} {% if 'ticketid' in value.keys() %}
+                              <td class="d-none">{{value['ticketid']}}</td>
+                              {% endif %}
+
+                              <td>
+                                <form
+                                  id="myForm"
+                                  action="{{ url_for('sent_back_case_FormPage') }}"
+                                  method="post"
+                                >
+                                  <input
+                                    type="hidden"
+                                    name="ticket_id"
+                                    value="{{ value['ticketid'] }}"
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="custId"
+                                    value="{{ value['CUSTCD'] }}"
+                                  />
+
+                                  <button
+                                    id="edit"
+                                    type="submit"
+                                    class="btn btn-sm btn-red"
+                                    style="
+                                      width: 30px;
+                                      height: 30px;
+                                      padding: 0;
+                                    "
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-width="2"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      class="feather feather-file-plus"
+                                    >
+                                      <path
+                                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                                      ></path>
+                                      <polyline
+                                        points="14 2 14 8 20 8"
+                                      ></polyline>
+                                      <line
+                                        x1="12"
+                                        y1="18"
+                                        x2="12"
+                                        y2="12"
+                                      ></line>
+                                      <line
+                                        x1="9"
+                                        y1="15"
+                                        x2="15"
+                                        y2="15"
+                                      ></line>
+                                    </svg>
+                                  </button>
+                                </form>
+                              </td>
+                            </tr>
+
+                            {% endfor %}
+
+                            <!-- Add more rows with your own data as needed -->
+                          </tbody>
+                        </table>
+                      </section>
+
+                      <!-- modal  -->
+
+                      <!-- Button trigger modal -->
+
+                      <!--  END CONTENT AREA  -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% include 'footer.html' %}
+      </div>
+    </div>
+    <!-- END MAIN CONTAINER -->
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../static/bootstrap/js/popper.min.js"></script>
+    <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="../static/assets/js/app.js"></script>
+
+    <!-- viwe JS start -->
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- viwe JS ends -->
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"
+    ></script>
+    <script>
+      $(document).ready(function () {
+        App.init();
+      });
+    </script>
+    <script src="../static/assets/js/custom.js"></script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+    <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+    <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+    <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+    <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+    <script
+      type="text/javascript"
+      language="javascript"
+      src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"
+    ></script>
+
+    <script>
+      $(document).ready(function () {
+        $("#usersTab").click(function () {
+          $("#addUserTab, #allUsersTab").toggle();
+        });
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var isDateFiltering = false;
+        var dataTable;
+        var dateArr = [];
+
+        // Initialize DataTable
+        $(document).ready(function () {
+          dataTable = $("#example").DataTable({
+            rowReorder: {
+              selector: "td:nth-child(2)",
+            },
+            responsive: true,
+            // Disable initial pagination
+            scrollY: "300px", // Set the height of the scrollable area
+            scrollCollapse: true, // Enable the scrollbar to collapse
+            scrollInfinite: true, // Enable infinite scrolling
+            info: true,
+
+            // "columnDefs": [
+
+            //   {
+            //     "targets": [8],
+            //     "visible": false
+            //   }
+            // ]
+          });
+
+          function datePicker() {
+            // Get a reference to the input element
+            var dateRangeInput = document.getElementById(
+              "rangeCalendarFlatpickr"
+            );
+            // Initialize flatpickr with date range configuration and the onChange event
+            return flatpickr(dateRangeInput, {
+              mode: "range", // This enables date range selection
+            });
+          }
+          function filterTableByDateRange(startDate, endDate) {
+            var amou = false;
+            var table = document.getElementById("tableBody");
+            var rows = table.getElementsByTagName("tr");
+            // Show all rows when the date range is empty
+            if (!startDate || !endDate) {
+              for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = "";
+              }
+              return; // Exit the function when the date range is empty
+            }
+            for (var i = 0; i < rows.length; i++) {
+              var row = rows[i];
+              var dateCell_undef = row.getElementsByTagName("td")[3]; // Assuming the date is in the 5th index
+              var dateCell = dateCell_undef.textContent;
+              if (dateCell) {
+                var dateTimeParts = dateCell.split(" ");
+                var dateParts = dateTimeParts[0].split("-");
+                var timeParts = dateTimeParts[1].split(":");
+                var day = parseInt(dateParts[2], 10);
+                var month = parseInt(dateParts[1], 10) - 1; // Months are zero-based
+                var year = parseInt(dateParts[0], 10);
+                var hours = parseInt(timeParts[0], 10);
+                var minutes = parseInt(timeParts[1], 10);
+                var seconds = parseInt(timeParts[2], 10);
+                var rowDate = new Date(
+                  year,
+                  month,
+                  day,
+                  hours,
+                  minutes,
+                  seconds
+                );
+                if (rowDate >= startDate && rowDate <= endDate) {
+                  row.style.display = "";
+                  amou = true;
+                  console.log(" IN RANGE DATES");
+                } else {
+                  row.style.display = "none";
+                  amou = false;
+                  console.log("NOT IN RANGE DATES");
+                }
+              }
+            }
+            return amou;
+          }
+          // Example usage:
+          var flatpickrInstance = datePicker();
+          // Bind applyFilters function to button click
+          $("#filter-button").on("click", function () {
+            applyFilters();
+
+            var minViolatedAmount =
+              document.getElementById("minViolatedAmount").value;
+            var maxViolatedAmount =
+              document.getElementById("maxViolatedAmount").value;
+
+            // Get the selected dates from the flatpickr instance
+            var selectedDates = flatpickrInstance.selectedDates;
+            // If a date range is selected, filter the table
+            if (selectedDates.length === 2) {
+              var startDate = selectedDates[0];
+              var endDate = selectedDates[1];
+              var dece = filterTableByDateRange(startDate, endDate);
+
+              if (
+                dece &&
+                minViolatedAmount.length != 0 &&
+                maxViolatedAmount.length != 0
+              ) {
+                filterTableByViolationAmounts(
+                  minViolatedAmount,
+                  maxViolatedAmount
+                );
+              }
+            } else if (
+              minViolatedAmount.length != 0 &&
+              maxViolatedAmount.length != 0
+            ) {
+              filterTableByViolationAmounts(
+                minViolatedAmount,
+                maxViolatedAmount
+              );
+            } else {
+              // Handle the case where the date range is not selected
+
+              console.log("Please select a date range");
+              var table = document.getElementById("tableBody");
+              var rows = table.getElementsByTagName("tr");
+              // Show all rows when the date range is empty
+              for (var i = 0; i < rows.length; i++) {
+                rows[i].style.display = "";
+              }
+              return; // Exit the function when the date range is empty
+            }
+          });
+        });
+
+        // Apply filters function
+        function applyFilters() {
+          console.log(dateArr);
+
+          var custId = $("#custId").val();
+          // var violatedAmount = $('#ViolatedAmount').val();
+          var accountNumber = $("#AccountNumber").val();
+          var branch = $("#Branch").val();
+          var accounttype = $("#AccType").val();
+
+          // Clear existing search
+          dataTable.columns().search("");
+
+          // Apply filters
+          dataTable
+            .columns(1)
+            .search(accountNumber)
+            .columns(2)
+            .search(custId)
+            .columns(3)
+            .search(branch)
+            .column(5)
+            .search(accounttype);
+
+          // Filter based on dateArr
+          dataTable.column(4).search("").draw();
+
+          dateArr.forEach(function (date) {
+            dataTable.column(4).search(date).draw();
+          });
+        }
+      });
+
+      function filterTableByViolationAmounts(
+        minViolatedAmount,
+        maxViolatedAmount
+      ) {
+        var table = document.getElementById("tableBody");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 0; i < rows.length; i++) {
+          var row = rows[i];
+          console.log("this is amount range : ", row);
+          var dateCell_undef = row.getElementsByTagName("td")[8]; // Assuming the date is in the 5th index
+          var amountCell = dateCell_undef.textContent;
+          console.log(amountCell);
+          amountCell = Number(amountCell);
+
+          console.log("Parsed amountCell:", amountCell);
+          console.log("minViolatedAmount:", minViolatedAmount);
+          console.log("maxViolatedAmount:", maxViolatedAmount);
+
+          if (
+            !isNaN(amountCell) &&
+            amountCell >= minViolatedAmount &&
+            amountCell <= maxViolatedAmount
+          ) {
+            row.style.display = "";
+            console.log(" IN RANGE DATES");
+          } else {
+            row.style.display = "none";
+            console.log("NOT IN RANGE DATES");
+          }
+        }
+      }
+
+      function submitForm() {
+        // Find the parent form and submit it
+        var form = event.target.closest("form");
+        form.submit();
+      }
+    </script>
+    <script>
+      function downloadAll(){
+          var ticket_numbers = {{ data | tojson }};
+          fetch('/activeCases', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  ticket_numbers: ticket_numbers
+              })
+          })
+          .then(response => {
+              // Check if response is successful
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              // Convert response to blob
+              return response.blob();
+          })
+          .then(blob => {
+              // Create a URL for the blob
+              const url = window.URL.createObjectURL(blob);
+              // Create a link element
+              const link = document.createElement('a');
+              link.href = url;
+              // Set the link to download the zip file
+              link.setAttribute('download', 'cmsmsubmitedcases.zip');
+              // Append the link to the body
+              document.body.appendChild(link);
+              // Click the link to trigger the download
+              link.click();
+              // Remove the link from the body
+              document.body.removeChild(link);
+          })
+          .catch(error => {
+              // Handle error
+              console.error('There was an error!', error);
+          });
+      }
+    </script>
+  </body>
+</html>

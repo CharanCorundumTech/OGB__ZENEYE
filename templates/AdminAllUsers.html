@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<div class="success-message">
+    {{ success_message }}
+</div>
+
+<head>
+    
+    {% include 'metaData.html' %}
+
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+    <style>
+        .card {
+            width: 80vw;
+        }
+
+        .text-primary {
+            color: #00579c !important;
+        }
+
+        #tb_1 {
+            cursor: default;
+            background-color: #00579c !important;
+            border-color: #00579c !important;
+        }
+
+
+        .layout-px-spacing {
+            min-height: calc(100vh - 166px) !important;
+        }
+
+        #profileMLRO {
+            justify-content: center !important;
+            gap: 30px;
+            cursor: pointer;
+            transition: all 0.5s ease-in-out;
+            border-bottom: 1.5px solid rgba(128, 128, 128, 0.114);
+            padding-bottom: 10px;
+        }
+
+        #profileMLRO:hover {
+            background-color: #b0b0b024;
+            border-radius: 5px;
+        }
+
+        .paths:hover {
+            text-decoration: underline;
+        }
+
+        .profileName {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: #00579c !important;
+        }
+
+        .mb-3 {
+            font-size: 15px !important;
+            font-weight: normal !important;
+            color: #80808088 !important;
+        }
+        .error-input {
+        border: 2px solid red;
+    }
+    </style>
+
+    <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+
+
+    {% if msg %}
+    <script>
+        alert('{{ msg }}')
+    </script>
+    {% endif %}
+
+</head>
+
+<body>
+    <!-- BEGIN LOADER -->
+    <div id="load_screen">
+        <div class="loader">
+            <div class="loader-content">
+                <div class="spinner-grow align-self-center"></div>
+            </div>
+        </div>
+    </div>
+    <!--  END LOADER -->
+
+    <!--  BEGIN NAVBAR  -->
+    {% include 'header.html' %}
+
+    <!--  END NAVBAR  -->
+
+    <!--  BEGIN NAVBAR  -->
+    <div class="sub-header-container">
+        <header class="header navbar navbar-expand-sm">
+            <a href="javascript:void(0);" class="sidebarCollapse" data-placement="bottom"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="feather feather-menu">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </a>
+
+            <ul class="navbar-nav flex-row" style="gap: 10px;">
+                <li>
+                    <div class="page-header">
+                        <div class="page-title">
+                            <nav class="breadcrumb-one" aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="{{ url_for('ITdashboard') }}"
+                                            class="text-blue font-weight-bold">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"
+                                                class="feather feather-home">
+                                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                            </svg>
+                                        </a></li>
+                                    
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{url_for('AllUsers')}}" class="text-primary">/ <span class="paths ">All Users</span></a>
+
+                </li>
+            </ul>
+        </header>
+    </div>
+    <!--  END NAVBAR  -->
+
+        <!--  BEGIN MAIN CONTAINER  -->
+        <div class="main-container" id="container">
+
+            <div class="overlay"></div>
+            <div class="search-overlay"></div>
+
+            <!--  BEGIN SIDEBAR  -->
+            {% include 'sidebar.html' %}
+
+            <!--  END SIDEBAR  -->
+
+
+            <div class="modal fade-bg" id="newuser" data-backdrop="false">
+                <div class="modal-dialog -lg">
+                    <div class="modal-content">
+
+                        <!-- Modal Header -->
+
+                        <div class="modal-header">
+                            <p class="modal-title"> Add new User Details </p>
+                            <button type="button" class="close"
+                                data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                            <form action="" method="POST" id="myForm"></form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="modal-body">
+
+                                        <div class="row p-3">
+                                            <div class="col-6 mb-3">
+                                                <label for="name"
+                                                    class="form-label">Username</label>
+
+                                                <input required  type="text"
+                                                    class="form-control userName"
+                                                    name="username" placeholder="Username"
+                                                    aria-label="Username" id="username"
+                                                    >
+                                                    <div id="errorMsgusername" style="color: red;"></div>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label for="empid"
+                                                    class="form-label">EMP ID</label>
+
+                                                <input required type="text"
+                                                    class="form-control empid"
+                                                    name="empid" placeholder="EMP ID"
+                                                    aria-label="Username" id="empid"
+                                                    >
+                                                    <div id="errorMsgempid" style="color: red;"></div>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label for="emailid"
+                                                    class="form-label">Email</label>
+                                                <input type="email"
+                                                    class="form-control emailId"
+                                                    name="emailid" placeholder="Email"
+                                                    aria-label="Email" required oninput="validateEmail(this)"
+                                                    >
+                                                    <div id="errorMsgEmail" style="color: red;"></div>
+                                            </div>
+
+                                            <div class="col-6 mb-3">
+                                                <label for="role"
+                                                    class="form-label">Designation</label>
+
+                                                <select name="role"
+                                                    class="form-control inputState roleSelect" id="role">
+
+                                                    <option disabled selected>Designation</option>
+                                                    <!-- <option value="IT Officer">IT Officer</option> -->
+                                                    <option value="MLRO">MLRO</option>
+                                                    <option value="CM/SM">CM/SM</option>
+                                                    <option value="AGM">AGM</option>
+                                                    <option value="BranchMakers">BranchMakers</option>
+                                                    <option value="ROS">ROS</option>
+                                                    <option value="SDN/USER">SDN</option>
+
+                                                </select>
+                                                <div id="errorMsgRole" style="color: red;"></div>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label for="mobileno"
+                                                    class="form-label">Mobile No</label>
+                                                <input type="text"
+                                                    class="form-control mobileNo"
+                                                    name="mobileno" id="mobileno" placeholder="Mobile No"
+                                                    aria-label="Mobile No" oninput="formatMobileNumber(this)"
+                                                    >
+                                                    <p id="mobilenomsgError" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-6 mb-3">
+                                                <label for="address"
+                                                    class="form-label">Address</label>
+                                                    <textarea required name="address" id="address" cols="20" rows="5"
+                                                    class="form-control address"
+                                                    placeholder="Address..."
+                                                    aria-label="Password"></textarea>
+                                                    <p id="addressmsgError" style="color: red;"></p>
+                                            </div>
+
+                                           
+
+
+                                        </div>
+                                        
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal footer -->
+                            <div class="modal-footer">
+                                <button type="submit"
+                                    class="btn btn-primary" onclick="return validateForm()">Submit</button>
+                                <button type="button" class="btn btn-danger"
+                                    data-dismiss="modal">Close</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--  BEGIN CONTENT AREA  -->
+            <div id="content" class="main-content">
+                <div class="layout-px-spacing">
+
+                    <div class="row layout-top-spacing">
+
+                        <div class="col-12">
+                            <div class="card p-3">
+                                <div style="position: absolute;right: 0;" class="mr-3">
+                                    <button type="button" class=" btn btn-sm btn-blue mr-2"  data-toggle="modal" data-target="#newuser">new User</button>
+                                    <button type="button" class=" btn btn-sm btn-blue mr-2" onclick="multiUserUpload()" >Upload File</button>
+                                    
+                                    <form id="uploadFile" action="" method="post" enctype="multipart/form-data" class="d-none">
+                                    <input type="file" class="d-none" name="multUsers" id="multUsers" accept=".xlsx">
+                                </form>
+                                </div>
+                                <div class="form-inline py-4">
+
+                                    <label class="col-1" for="role" class="form-inline">Designation</label>
+
+                                    <select class="form-inline form-control col-2" name="role" id="role"
+                                        onchange="codeFilter()">
+
+                                        <option disabled selected>Select Designation</option>
+                                        <option value="MLRO">MLRO</option>
+                                        <option value="CM/SM">CM/SM</option>
+                                        <option value="AGM">AGM</option>
+                                        <option value="BranchMakers">BranchMakers</option>
+                                        <option value="ROS">ROS</option>
+                                        <option value="SDN/USER">SDN</option>
+                                        <option value="">Show All</option>
+
+                                    </select>
+
+                                    <label class="col-1">Status</label>
+                                    <select class="form-inline form-control col-2" name="status" id="status"
+                                        onchange="codeFilter()">
+                                        <option disabled selected>Select Status</option>
+                                        <option value="Created">Created</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Rejected">Rejected</option>
+                                        <option value="">Show All</option>
+                                    </select>
+
+
+                                    <label class="col-1">Leave Status</label>
+                                    <select class="form-inline form-control col-2" name="leave" id="leave"
+                                        onchange="codeFilter()">
+                                        <option disabled selected>Select Leave Status</option>
+                                        <option value="Working">Working</option>
+                                        <option value="On Leave">On Leave</option>
+                                        <option value="">Show All</option>
+                                    </select>
+
+                                </div>
+
+                                <table id="dtExample" class="display">
+                                    <thead>
+                                        <tr>
+                                           {% for column in columns %}
+                <th>{{ column }}</th>
+            {% endfor %}
+                                            <!-- <th>Designation</th>
+                                            <th>Mobile No</th>
+                                            <th>status</th>
+                                            <th>leave Status</th>-->
+                                            <!-- <th>Edit</th> -->
+                                            <th>Delete</th>
+                                            <th>Revive</th> 
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr>
+                                         {% for column in columns %}
+                <td>{{ user[column] }}</td>
+            {% endfor %}
+                                            <!-- <td>{{ user[3] }}</td>
+                                            <td>{{ user[6] }}</td>
+                                            <td>{{ user[4] }}</td>
+                                            <td>{{user[10]}}</td>
+                                            <td>{{user[11]}}</td> -->
+
+                                            <td>
+    <button type="button" class="btn btn-sm btn-danger deleteButton">
+        <svg viewBox="0 0 24 24" fill="none" width="70%" height="70%"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                stroke-linejoin="round"></g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                <path d="M4 7H20" stroke="#ffffff" stroke-width="2"
+                                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                                </path>
+                                                                <path
+                                                                    d="M6 10L7.70141 19.3578C7.87432 20.3088 8.70258 21 9.66915 21H14.3308C15.2974 21 16.1257 20.3087 16.2986 19.3578L18 10"
+                                                                    stroke="#ffffff" stroke-width="2"
+                                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                                </path>
+                                                                <path
+                                                                    d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z"
+                                                                    stroke="#ffffff" stroke-width="2"
+                                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                                </path>
+                                                            </g>
+                                                        </svg>
+    </button>
+</td>
+<td>
+    <button type="button" class="btn btn-sm btn-success viewButton" disabled>
+        <svg viewBox="0 0 16 16" width="70%" height="70%" xmlns="http://www.w3.org/2000/svg"
+                                                            fill="#000000">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round"
+                                                                stroke-linejoin="round"></g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                <g fill="#ffffff">
+                                                                    <path
+                                                                        d="m 5 12 v 1 h 0.007812 c -0.003906 0.265625 0.101563 0.519531 0.285157 0.707031 l 2 2 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 l 2 -2 c 0.183594 -0.1875 0.289063 -0.441406 0.289063 -0.707031 h 0.003906 v -1 z m 0 0">
+                                                                    </path>
+                                                                    <path
+                                                                        d="m 8 -0.0078125 l -5 3.1406245 v 4.714844 l 5 3.144532 l 5 -3.144532 v -4.714844 z m 0 6.0000005 l -3.644531 -2.175782 l 3.644531 -2.292968 l 3.644531 2.292968 z m 0 0">
+                                                                    </path>
+                                                                </g>
+                                                            </g>
+                                                        </svg>
+    </button>
+</td>
+
+
+                                       
+
+                                       
+
+                                         
+
+                                        </tr>
+
+                                        <!-- The View Modal -->
+                                        <div class="modal fade-bg" id="myModal{{user._id}}" data-backdrop="false">
+                                            <div class="modal-dialog -lg">
+                                                <div class="modal-content">
+
+                                                    <!-- Modal Header -->
+
+                                                    <div class="modal-header">
+                                                        <p class="modal-title"> <b>{{ user.role }} : </b>{{ user.name }}
+                                                        </p>
+                                                        <button type="button" class="close"
+                                                            data-dismiss="modal">&times;</button>
+                                                    </div>
+
+                                                    <!-- Modal body -->
+                                                    <form action="" method="POST">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="modal-body">
+
+                                                                    <div class="row p-3">
+                                                                        <div class="col-6 mb-3">
+                                                                            <label for="name"
+                                                                                class="form-label">Username</label>
+
+                                                                            <input type="text"
+                                                                                class="form-control userName"
+                                                                                name="name" placeholder="Username"
+                                                                                aria-label="Username"
+                                                                                value="{{ user.name }}">
+                                                                        </div>
+                                                                        <div class="col-6 mb-3">
+                                                                            <label for="emailid"
+                                                                                class="form-label">Email</label>
+                                                                            <input type="text"
+                                                                                class="form-control emailId"
+                                                                                name="emailid" placeholder="Email"
+                                                                                aria-label="Email"
+                                                                                value="{{ user.emailid }}">
+                                                                        </div>
+
+                                                                        <div class="col-6 mb-3">
+                                                                            <label for="role"
+                                                                                class="form-label">Designation</label>
+
+                                                                            <select name="role"
+                                                                                class="form-control inputState roleSelect">
+
+                                                                                <option disabled selected>Designation
+                                                                                </option>
+                                                                                <!-- <option value="IT Officer">IT Officer</option> -->
+                                                                                <option value="MLRO">MLRO</option>
+                                                                                <option value="CM/SM">CM/SM</option>
+                                                                                <option value="AGM">AGM</option>
+                                                                                <option value="BranchMakers">BranchMakers</option>
+                                                                                <option value="ROS">ROS</option>
+                                                                                <option value="SDN/USER">SDN</option>
+
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="col-6 mb-3">
+                                                                            <label for="mobileno"
+                                                                                class="form-label">Mobile No</label>
+                                                                            <input type="number"
+                                                                                class="form-control mobileNo"
+                                                                                name="mobileno" placeholder="Mobile No"
+                                                                                aria-label="Mobile No"
+                                                                                value="{{ user.mobileno }}" min="0">
+                                                                        </div>
+                                                                        <div class="col-6 mb-3">
+                                                                            <label for="address"
+                                                                                class="form-label">Address</label>
+                                                                            <textarea name="address" cols="20" rows="5"
+                                                                                class="form-control address"
+                                                                                placeholder="Address..."
+                                                                                aria-label="Password">{{ user.address }}</textarea>
+                                                                        </div>
+
+                                                                        <div class="col-6 mb-3">
+                                                                            <label for="role" class="form-label">Leave
+                                                                                Status</label>
+
+                                                                            <select name="leave"
+                                                                                class="form-control leaveSelect">
+
+                                                                                <option disabled selected>Leave Status
+                                                                                </option>
+                                                                                <!-- <option value="IT Officer">IT Officer</option> -->
+                                                                                <option value="Working">Working
+                                                                                </option>
+                                                                                <option value="On Leave">On Leave
+                                                                                </option>
+                                                                                <!-- <option value="DGM/PO">DGM/PO</option>  -->
+
+                                                                            </select>
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <!-- <div class="d-flex justify-content-center mb-4">
+                                                        <button class="btn btn-blue">Submit</button>
+                                                    </div> -->
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Modal footer -->
+                                                        <div class="modal-footer">
+                                                            <button type="submit"
+                                                                class="btn btn-primary">Submit</button>
+                                                            <button type="button" class="btn btn-danger"
+                                                                data-dismiss="modal">Close</button>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- END Model -->
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% include 'footer.html' %}
+
+
+
+
+
+            <!-- END MAIN CONTAINER -->
+
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+            <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
+            <script src="../static/bootstrap/js/popper.min.js"></script>
+            <script src="../static/bootstrap/js/bootstrap.min.js"></script>
+            <script src="../static/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+            <script src="../static/assets/js/app.js"></script>
+
+            <!-- viwe JS start -->
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+                crossorigin="anonymous"></script>
+        
+
+            <!-- viwe JS ends -->
+
+
+            <script type="text/javascript" language="javascript"
+                src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+            <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+            <script>
+
+                $(document).ready(function () {
+                    App.init();
+                });
+
+
+            </script>
+            <script src="../static/assets/js/custom.js"></script>
+            <!-- END GLOBAL MANDATORY SCRIPTS -->
+
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+            <script src="../static/plugins/apex/apexcharts.min.js"></script>
+
+            <script src="../static/assets/js/dashboard/dash_1.js"></script>
+
+            <!-- <script src="../static/assets/js/tables.js/tableCheckBox.js"></script> -->
+            <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
+
+            <script src="../static/plugins/table/datatable/datatables.js"></script>
+
+            <script type="text/javascript" language="javascript"
+                src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js">
+                </script>
+            <script>
+                $(document).ready(function () {
+                    $('#usersTab').click(function () {
+                        $('#addUserTab, #allUsersTab').toggle();
+                    });
+                });
+            </script>
+
+            <script>
+                // $(document).ready(function () {
+                //     $('#dtExample').DataTable({
+                //             rowReorder: {
+                //                 selector: "td:nth-child(2)",
+                //             },
+                //             responsive: true
+                //         });
+                // });
+
+                function roleInfo(roleInfo, leaveStatus) {
+                    var user = {
+                        role: roleInfo,
+                        leave: leaveStatus
+                    };
+
+                    var roleElements = document.getElementsByClassName("roleSelect");
+                    var leaveSelect = document.getElementsByClassName("leaveSelect");
+                    for (var i = 0; i < roleElements.length; i++) {
+                        roleElements[i].value = user.role;
+                        leaveSelect[i].value = user.leave;
+                    }
+                }
+
+                var dataTable;
+                document.addEventListener("DOMContentLoaded", function () {
+
+
+
+                    // Initialize DataTable
+                    $(document).ready(function () {
+                        dataTable = $("#dtExample").DataTable({
+                            rowReorder: {
+                                selector: "td:nth-child(2)",
+                            },
+                            responsive: true
+                        })
+                    })
+                })
+
+
+                function codeFilter() {
+                    let role = document.getElementById('role').value;
+                    let status = document.getElementById('status').value;
+                    let leave = document.getElementById('leave').value;
+
+
+
+
+                    if (dataTable) {
+                        if ((role.length != 0 && status.length != 0 && leave.length != 0) && (role != "Select Designation" && status != "Select Status" && leave != "Select Leave Status")) {
+
+                            dataTable.columns().search('');
+
+                            dataTable.columns(3).search(role);
+                            dataTable.columns(5).search(status);
+                            dataTable.columns(6).search(leave);
+                        }
+                        else if ((role.length != 0 && status.length != 0) && (role != "Select Designation" && status != "Select Status")) {
+                            dataTable.columns().search('');
+
+                            dataTable.columns(3).search(role);
+                            dataTable.columns(5).search(status);
+                        }
+                        else if ((role.length != 0 && leave.length != 0) && (role != "Select Designation" && leave != "Select Leave Status")) {
+                            dataTable.columns().search('');
+
+                            dataTable.columns(3).search(role);
+                            dataTable.columns(6).search(leave);
+                        }
+                        else if ((leave.length != 0 && status.length != 0) && (leave != "Select Leave Status" && status != "Select Status")) {
+                            dataTable.columns().search('');
+
+                            dataTable.columns(5).search(status);
+                            dataTable.columns(6).search(leave);
+                        }
+                        else if (role.length != 0 && role != "Select Designation") {
+                            dataTable.columns().search('');
+                            dataTable.columns(3).search(role);
+                        }
+                        else if (status.length != 0 && status != "Select Status") {
+                            dataTable.columns().search('');
+                            dataTable.columns(5).search(status);
+                        }
+                        else if (leave.length != 0 && leave != "Select Leave Status") {
+                            dataTable.columns().search('');
+                            dataTable.columns(6).search(leave);
+                        }
+                        else {
+                            // If code is not provided, clear the search, clear the table, and draw
+                            dataTable.search('').columns().search('').draw();
+                            return; // exit the function to prevent further processing
+                        }
+
+                        // Redraw the table to apply the filter
+                        dataTable.draw();
+                    } else {
+                        console.error("DataTable is not defined.");
+                    }
+
+
+                }
+
+
+                function multiUserUpload(){
+                    let multUsers = document.getElementById('multUsers');
+                    multUsers.click()
+
+                }
+
+                function subFileFunction(){
+                    let uploadFile = document.getElementById('uploadFile');
+                    let multUsers = document.getElementById('multUsers');
+
+                    if(multUsers.files.length > 0){
+                        uploadFile.submit();
+                    }
+                }
+
+                setInterval(()=>{
+                    subFileFunction()
+                },5000)
+
+
+            </script>
+
+<!-- MOBILE NO FORMAT -->
+
+<script>
+    function formatMobileNumber(input) {
+        if (input.value.trim() !== '') {
+            let sanitizedValue = input.value.replace(/[^+0-9]/g, '');
+            
+            // Prevent input of more than 10 digits
+            if (sanitizedValue.length > 10) {
+                sanitizedValue = sanitizedValue.slice(0, 10);
+                document.getElementById('mobilenomsgError').innerText = 'Mobile number must be only 10 digits long';
+            } else if (sanitizedValue.length < 10) {
+                document.getElementById('mobilenomsgError').innerText = 'Mobile number must be only 10 digits long';
+            } else {
+                document.getElementById('mobilenomsgError').innerText = '';
+            }
+
+            if (sanitizedValue.startsWith('+')) {
+                sanitizedValue = '+' + sanitizedValue.slice(1).replace(/\+/g, '');
+                
+                if (sanitizedValue.length > 3) {
+                    sanitizedValue = sanitizedValue.slice(0, 3) + ' ' + sanitizedValue.slice(3);
+                }
+            } else {
+                sanitizedValue = sanitizedValue.replace(/\D/g, '');
+            }
+            
+            input.value = sanitizedValue;
+        }
+    }
+
+    // Add form submission validation
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+        const inputValue = document.getElementById("mobileno").value;
+        const sanitizedValue = inputValue.replace(/[^0-9]/g, "");
+
+        if (sanitizedValue.length < 10 || sanitizedValue.length > 10) {
+            document.getElementById("mobilenomsgError").textContent = 'Mobile number must be only 10 digits long.';
+            document.getElementById("mobileno").classList.add('error-input');
+            event.preventDefault(); // Prevent form submission
+        } else {
+            document.getElementById("mobilenomsgError").textContent = '';
+            document.getElementById("mobileno").classList.remove('error-input');
+        }
+    });
+</script>
+
+<script>
+    function restrictToAlphanumericWithSpaces(elementId, errorMsgId, maxLength) {
+        const inputField = document.getElementById(elementId);
+        const errorMessage = document.getElementById(errorMsgId);
+        inputField.addEventListener("input", function(event) {
+            const inputValue = event.target.value;
+            const sanitizedValue = inputValue.replace(/[^a-zA-Z0-9\s]/g, ""); // Restrict to letters, numbers, and spaces only
+            const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+            event.target.value = trimmedValue;
+            if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+                errorMessage.textContent = `Field must contain only letters (a-z, A-Z), numbers (0-9), and spaces, and be up to ${maxLength} characters long.`;
+            } else {
+                errorMessage.textContent = "";
+            }
+        });
+    }
+    function restrictToAlphanumeric(elementId, errorMsgId, maxLength) {
+        const inputField = document.getElementById(elementId);
+        const errorMessage = document.getElementById(errorMsgId);
+        inputField.addEventListener("input", function(event) {
+            const inputValue = event.target.value;
+            const sanitizedValue = inputValue.replace(/[^a-zA-Z0-9]/g, ""); // Restrict to letters and numbers only
+            const trimmedValue = sanitizedValue.slice(0, maxLength); // Trim to maxLength characters
+            event.target.value = trimmedValue;
+            if (inputValue !== sanitizedValue || sanitizedValue.length > maxLength) {
+                errorMessage.textContent = `Field must contain only letters (a-z, A-Z) and numbers (0-9) and be up to ${maxLength} characters long.`;
+            } else {
+                errorMessage.textContent = "";
+            }
+        });
+    }
+    restrictToAlphanumericWithSpaces("username", "errorMsgusername", 20);
+    restrictToAlphanumeric("empid", "errorMsgempid", 10);
+</script>
+
+
+  <script>
+    function validateEmail(input) {
+        const errorMsg = document.getElementById("errorMsgEmail");
+        const inputValue = input.value;
+  
+        // Regular expression to match email-like characters
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  
+        if (!emailRegex.test(inputValue)) {
+            errorMsg.textContent = "Enter a valid email address.";
+        } else {
+            errorMsg.textContent = "";
+        }
+    }
+  </script>
+<script>
+    function validateForm() {
+        var roleSelect = document.getElementById("role");
+        var errorMsgRole = document.getElementById("errorMsgRole");
+        var username = document.getElementById("username");
+        var errorMsgUsername = document.getElementById("errorMsgusername");
+        var empid = document.getElementById("empid");
+        var errorMsgEmpid = document.getElementById("errorMsgempid");
+        var address = document.getElementById("address");
+        var addressmsgError = document.getElementById("addressmsgError");
+        
+        if (roleSelect.value === 'Designation') {
+            errorMsgRole.textContent = "Please select a designation.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgRole.textContent = "";
+        }
+
+        if (username.value.trim() === '') {
+            errorMsgUsername.textContent = "Username is required.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgUsername.textContent = "";
+        }
+
+        if (empid.value.trim() === '') {
+            errorMsgEmpid.textContent = "EMP ID is required.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgEmpid.textContent = "";
+        }
+
+        if (address.value.trim() === '') {
+            addressmsgError.textContent = "address  is required.";
+            return false; // Prevent form submission
+        } else {
+            addressmsgError.textContent = "";
+        }
+        
+        if (email.value.trim() === '') {
+            errorMsgEmail.textContent = "Email is required.";
+            return false; // Prevent form submission
+        } else {
+            errorMsgEmail.textContent = "";
+        }
+
+       
+
+        // If all required fields are filled, allow form submission
+        return true;
+    }
+</script>
+
+<script>
+    // Function to enable one button and disable the other
+    function toggleButtons(enableBtn, disableBtn) {
+        enableBtn.removeAttribute('disabled');
+        disableBtn.setAttribute('disabled', 'disabled');
+    }
+
+    // Event listener for all Delete buttons
+    const deleteButtons = document.querySelectorAll('.deleteButton');
+    deleteButtons.forEach(deleteButton => {
+        deleteButton.addEventListener('click', function() {
+            const viewButton = this.closest('tr').querySelector('.viewButton');
+            toggleButtons(viewButton, this);
+        });
+    });
+
+    // Event listener for all View buttons
+    const viewButtons = document.querySelectorAll('.viewButton');
+    viewButtons.forEach(viewButton => {
+        viewButton.addEventListener('click', function() {
+            const deleteButton = this.closest('tr').querySelector('.deleteButton');
+            toggleButtons(deleteButton, this);
+        });
+    });
+</script>
+
+
+
+
+</body>
+
+</html>
