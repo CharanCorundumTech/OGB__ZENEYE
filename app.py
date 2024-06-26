@@ -12804,7 +12804,7 @@ def sdn():
 
             main_docs_list.sort(key=operator.itemgetter('fuzzy_value', 'created'), reverse=True)
             # print('======SDN SEARCH MATCH DATA =======',main_docs_list)
-            print('=====SDN SEARCHED 1ST MATCH DATA=======',main_docs_list[0])   #This is for checking storing properly or not in table
+            print('=====SDN SEARCHED 1ST MATCH DATA=======',main_docs_list[0])   #check db for storing properly or not in table with this data
 
             conn_kamal.execute("""
             IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SDN_Searched_Data')
