@@ -12534,6 +12534,7 @@ main_docs_list=[]
 @secure_route(required_role=['MLRO', 'ROS', 'BranchMakers'])
 def sdn():
     role = session.get('user_role')
+    searched_by_user_email= session.get('email_id')
     print(role,"role")
     if role not in ['MLRO','ROS','BranchMakers']:
         return "Access denied", 403
@@ -12802,7 +12803,9 @@ def sdn():
                     doc['created'] = datetime.min
 
             main_docs_list.sort(key=operator.itemgetter('fuzzy_value', 'created'), reverse=True)
-            print('======SDN SEARCHED MATCH DATA =======',main_docs_list)
+            # print('======SDN SEARCH MATCH DATA =======',main_docs_list)
+            print('=====SDN SEARCHED 1ST MATCH DATA=======',main_docs_list[0])   #This is for checking storing properly or not in table
+
             conn_kamal.execute("""
             IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SDN_Searched_Data')
             BEGIN
@@ -12850,6 +12853,7 @@ def sdn():
                     fuzzy_value INT,
                     key_name NVARCHAR(250),
                     table_name NVARCHAR(250),
+                    searched_by_user_email NVARCHAR(250),
                     original_created NVARCHAR(250)
                 );
             END
@@ -12861,27 +12865,82 @@ def sdn():
                 for item in main_docs_list:
                     conn_kamal.execute("""
                     INSERT INTO SDN_Searched_Data (
-                        [Index], _id, category, sub_category, created, modified, entity_type, country, source, name, first_name, last_name, title, primary_name, alias, dob, pob, gender, nationality, position, address, photo, remarks, contact_number, email, passport, pan, cin, din, linked_to, description, published_date, domain_name, news_title, title_translated, summary, text, text_translated, person, entity_sentiment, fuzzy_value, key_name, table_name, original_created
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        [Index], _id, category, sub_category, created, modified, entity_type, country, source, name, first_name, last_name, title, primary_name, alias, dob, pob, gender, nationality, position, address, photo, remarks, contact_number, email, passport, pan, cin, din, linked_to, description, published_date, domain_name, news_title, title_translated, summary, text, text_translated, person, entity_sentiment, fuzzy_value, key_name, table_name,searched_by_user_email, original_created
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (
-                        item["Index"], item["_id"], item["category"], item["sub_category"], item["created"], item["modified"], item["entity_type"], item["country"], item["source"], item["name"], item["first_name"], item["last_name"], item["title"], item["primary_name"], item["alias"], item["dob"], item["pob"], item["gender"], item["nationality"], item["position"], item["address"], item["photo"], item["remarks"], item["contact_number"], item["email"], item["passport"], item["pan"], item["cin"], item["din"], item["linked_to"], item["description"], item["published_date"], item["domain_name"], item["news_title"], item["title_translated"], item["summary"], item["text"], item["text_translated"], item["person"], item["entity_sentiment"], item["fuzzy_value"], item["key_name"], item["table_name"], item["original_created"]
+                        item["Index"], item["_id"], item["category"], item["sub_category"], item["created"], item["modified"], item["entity_type"], item["country"], item["source"], item["name"], item["first_name"], item["last_name"], item["title"], item["primary_name"], item["alias"], item["dob"], item["pob"], item["gender"], item["nationality"], item["position"], item["address"], item["photo"], item["remarks"], item["contact_number"], item["email"], item["passport"], item["pan"], item["cin"], item["din"], item["linked_to"], item["description"], item["published_date"], item["domain_name"], item["news_title"], item["title_translated"], item["summary"], item["text"], item["text_translated"], item["person"], item["entity_sentiment"], item["fuzzy_value"], item["key_name"], item["table_name"],searched_by_user_email, item["original_created"]
                     ))
                 conn_kamal.commit()
             except Exception as e:
                 print("An error occurred:", e)
                 # conn_kamal.rollback()  # Rollback the transaction if an error occurs
             finally:
-                print('hiiii')
-                # conn_kamal.close()  # Close the connection
-
-            # conn_kamal.execute(category_query)
+                print('Search data stored done...')
+                # conn_kamal.close()  
 
             for doc in main_docs_list:
-                # print('==========SDN SEARCHED DATA DOCS=====',doc)
                 doc['created'] = doc['original_created']
                 del doc['original_created']
-            print('=====SDN SEARCHED 1ST MATCH DATA=======',main_docs_list[0])
-        return render_template("sdndashboard.html", data=main_docs_list, msg=msg, unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], sub_cats=sub_cats, type='sdn', role=role)
+        return render_template("sdndashboard.html", data=main_docs_list,cc='display-filers', msg=msg, unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], sub_cats=sub_cats, type='sdn', role=role)
+
+
+@app.route("/sdnSearcheddata", methods=["GET", "POST"])
+@secure_route(required_role=['MLRO', 'ROS', 'BranchMakers'])
+def sdnSearcheddata():
+    role = session.get('user_role')
+    searched_by_user_email = session.get('email_id')
+    print(role, "role")
+
+    if role not in ['MLRO', 'ROS', 'BranchMakers']:
+        return "Access denied", 403
+
+    try:
+        cursor = conn_kamal.cursor()
+        cursor.execute("""
+            SELECT * 
+            FROM SDN_Searched_Data 
+            WHERE searched_by_user_email = ?
+        """, (searched_by_user_email,))
+
+        searcheddata = cursor.fetchall()
+
+        if not searcheddata:
+            return render_template(
+                "sdndashboard.html", 
+                data=None, 
+                msg="No data found", 
+                cc='hide-filters', 
+                unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], 
+                sub_cats=sub_cats, 
+                type='sdnSearcheddata', 
+                role=role
+            )
+
+        return render_template(
+            "sdndashboard.html", 
+            data=searcheddata, 
+            cc='hide-filters', 
+            unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], 
+            sub_cats=sub_cats, 
+            type='sdnSearcheddata', 
+            role=role
+        )
+
+    except pyodbc.Error as e:
+        print(f"Error: {e}")
+        return render_template(
+            "sdndashboard.html", 
+            data=None, 
+            msg="Nothing to Show Search Something", 
+            cc='hide-filters', 
+            unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], 
+            sub_cats=sub_cats, 
+            type='sdnSearcheddata', 
+            role=role
+        )
+
+
+
 
 main_docs_list=[]
 @app.route('/upload', methods=['POST', 'GET'])

@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\pavan\OneDrive\Desktop\OGB Production\Odisha_Gramya_Bank_App_deployed_apr_23_2024\Odisha_Gramya_Bank_App_deployed\Banking-Queries\venv
+set VIRTUAL_ENV=C:\Users\chara\Downloads\OGB_Zeneye\OGB__ZENEYE\venv
 
 if not defined PROMPT set PROMPT=$P$G
 
