@@ -12811,59 +12811,6 @@ def sdn():
             # print('======SDN SEARCH MATCH DATA =======',main_docs_list)
             print('=====SDN SEARCHED 1ST MATCH DATA=======',main_docs_list[0])   #check db for storing properly or not in table with this data
 
-            # conn_kamal.execute("""
-            # IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SDN_Searched_Data')
-            # BEGIN
-            #     CREATE TABLE SDN_Searched_Data (
-            #         [Index] INT,
-            #         _id NVARCHAR(250),
-            #         category NVARCHAR(250),
-            #         sub_category NVARCHAR(250),
-            #         created DATETIME,
-            #         modified NVARCHAR(250),
-            #         entity_type NVARCHAR(250),
-            #         country NVARCHAR(250),
-            #         source NVARCHAR(MAX),
-            #         name NVARCHAR(MAX),
-            #         first_name NVARCHAR(250),
-            #         last_name NVARCHAR(250),
-            #         title NVARCHAR(250),
-            #         primary_name NVARCHAR(250),
-            #         alias NVARCHAR(250),
-            #         dob NVARCHAR(250),
-            #         pob NVARCHAR(250),
-            #         gender NVARCHAR(50),
-            #         nationality NVARCHAR(250),
-            #         position NVARCHAR(250),
-            #         address NVARCHAR(250),
-            #         photo NVARCHAR(250),
-            #         remarks NVARCHAR(250),
-            #         contact_number NVARCHAR(250),
-            #         email NVARCHAR(250),
-            #         passport NVARCHAR(250),
-            #         pan NVARCHAR(250),
-            #         cin NVARCHAR(250),
-            #         din NVARCHAR(250),
-            #         linked_to NVARCHAR(250),
-            #         description NVARCHAR(4000),
-            #         published_date DATETIME,
-            #         domain_name NVARCHAR(250),
-            #         news_title NVARCHAR(MAX),
-            #         title_translated NVARCHAR(MAX),
-            #         summary NVARCHAR(MAX),
-            #         text NVARCHAR(MAX),
-            #         text_translated NVARCHAR(MAX),
-            #         person NVARCHAR(MAX),
-            #         entity_sentiment NVARCHAR(MAX),
-            #         fuzzy_value INT,
-            #         key_name NVARCHAR(250),
-            #         table_name NVARCHAR(250),
-            #         searched_by_user NVARCHAR(250),
-            #         searched_by_user_Branch_code NVARCHAR(250),
-            #         original_created NVARCHAR(250)
-            #     );
-            # END
-            # """)
             conn_kamal.execute("""
             IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'OutputTable')
             BEGIN
@@ -12880,28 +12827,13 @@ def sdn():
             # conn_kamal.commit()
 
             try:
-                # for item in main_docs_list:
-                #     conn_kamal.execute("""
-                #     INSERT INTO OutputTable (
-                #         [Index], _id, category, sub_category, created, modified, entity_type, country, source, name, first_name, last_name, title, primary_name, alias, dob, pob, gender, nationality, position, address, photo, remarks, contact_number, email, passport, pan, cin, din, linked_to, description, published_date, domain_name, news_title, title_translated, summary, text, text_translated, person, entity_sentiment, fuzzy_value, key_name, table_name,searched_by_user,searched_by_user_Branch_code, original_created
-                #     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                #     """, (
-                #         item["Index"], item["_id"], item["category"], item["sub_category"], item["created"], item["modified"], item["entity_type"], item["country"], item["source"], item["name"], item["first_name"], item["last_name"], item["title"], item["primary_name"], item["alias"], item["dob"], item["pob"], item["gender"], item["nationality"], item["position"], item["address"], item["photo"], item["remarks"], item["contact_number"], item["email"], item["passport"], item["pan"], item["cin"], item["din"], item["linked_to"], item["description"], item["published_date"], item["domain_name"], item["news_title"], item["title_translated"], item["summary"], item["text"], item["text_translated"], item["person"], item["entity_sentiment"], item["fuzzy_value"], item["key_name"], item["table_name"],searched_by_user,user_Branch_code, item["original_created"]
-                #     ))
                 def custom_json_encoder(obj):
                     if isinstance(obj, datetime):
-                        return obj.isoformat()  # Convert datetime objects to ISO format strings
+                        return obj.isoformat()  
                     raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
                 
-                # for item in main_docs_list:
-                #     sanctions_output = json.dumps(item, default=custom_json_encoder)
-
-                # Create a dictionary to hold the sanctions output
                 sanctions_output_dict = {"sanctions": []}
 
-                # Iterate through main_docs_list and append each item to the sanctions_output_dict
-                # for item in main_docs_list:
-                #     sanctions_output_dict["sanctions"].append(item)
                 for item in main_docs_list:
                         filtered_item = {
                             "id": item.get("_id"),
@@ -12911,9 +12843,7 @@ def sdn():
                         }
                         sanctions_output_dict["sanctions"].append(filtered_item)
 
-                # Serialize the entire sanctions_output_dict to a JSON string
                 sanctions_output_json = json.dumps(sanctions_output_dict, default=custom_json_encoder)
-
 
                 conn_kamal.execute("""
                 INSERT INTO OutputTable (
@@ -12927,7 +12857,7 @@ def sdn():
                 print("An error occurred while Inserting Data===:", e)
                 conn_kamal.rollback()  # Rollback if an error occurs
             finally:
-                print('Search data stored done...')
+                print('......Search data stored done...')
                 # conn_kamal.close() 
 
             for doc in main_docs_list:
@@ -12938,7 +12868,7 @@ def sdn():
                 del doc['original_created'] 
         return render_template("sdndashboard.html", data=main_docs_list,cc='display-filers', msg=msg, unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], sub_cats=sub_cats, type='sdn', role=role)
 
-
+# Fetch SDN_Searched_Data route
 @app.route("/sdnSearcheddata", methods=["GET", "POST"])
 @secure_route(required_role=['MLRO', 'ROS', 'BranchMakers'])
 def sdnSearcheddata():
@@ -13269,8 +13199,8 @@ def view(table_name, unique_id, value):
     for doc1 in data:
         sanctions_output = json.loads(doc1['SanctionsOutput'])
         sanctions_array = sanctions_output.get('sanctions', [])
-    print('=====================SSSS',sanctions_array)
-    return render_template("view3.html", value=value,custid=unique_id, document=sanctions_array, type='view', role=role)
+    print('=====================sanctions_array==========',sanctions_array)
+    return render_template("view2.html", value=value,custid=unique_id, document=sanctions_array, type='view', role=role)
 
 @app.route("/sdndashboard")
 @secure_route(required_role=['IT OFFICER', 'MLRO', 'ROS', 'BranchMakers'])
@@ -13279,7 +13209,6 @@ def sdndashboard():
     print(role,"role")
     if role not in ['IT OFFICER', 'MLRO','ROS','BranchMakers']:
         return "Access denied", 403  
-
 
     return render_template("sdndashboard.html", unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], sub_cats=sub_cats,type='sdn' ,role=role)
 
