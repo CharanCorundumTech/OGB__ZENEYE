@@ -2452,6 +2452,7 @@ def post_login():
                         "Password": user_tuple[7],# u can remove this
                         "Role": user_tuple[6],
                         "Status": user_tuple[10],
+                        "Branch_code": user_tuple[16],
                     }
                     print(user,"user")
                 
@@ -2462,6 +2463,7 @@ def post_login():
                     email_column = user["EmailId"]
                     hashed_password = user["Password"]
                     user_role = user["Role"]
+                    user_Branch_code = user["Branch_code"]
                     print(user_role)
                     status = user["Status"]
                 
@@ -2472,6 +2474,7 @@ def post_login():
                         if status == "Approved":
                             session["email_id"] = str(email_column)
                             session["user_role"] = user_role
+                            session["user_Branch_code"] = user_Branch_code
                             session.permanent = True
                             if user_role == "IT OFFICER":
                                     try:
@@ -4993,7 +4996,7 @@ from flask import Flask
 
 def count_tickets(mlro_id):
     current_date = datetime.date.today().strftime('%Y-%m-%d')
-    conn = pyodbc.connect("Driver={SQL Server};SERVER=MSI;Database=ticket_id;Trusted_Connection=yes;MARS_Connection=yes")
+    conn = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticket_id;Trusted_Connection=yes;MARS_Connection=yes")
     cursor = conn.cursor()
     query = "SELECT COUNT(*) FROM tickets WHERE mlroCasesTicket = ? AND CONVERT(DATE, currentDate) = ?"
     cursor.execute(query, (mlro_id, current_date))
@@ -5022,7 +5025,7 @@ def send_email(sender_email, sender_password, recipient_email, subject, body):
     except Exception as e:
         print(f"Failed to send email to {recipient_email}: {str(e)}")
 def get_mlro_details():
-    conn = pyodbc.connect("Driver={SQL Server};SERVER=MSI;Database=ticket_id;Trusted_Connection=yes;MARS_Connection=yes")
+    conn = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticket_id;Trusted_Connection=yes;MARS_Connection=yes")
     cursor = conn.cursor()
     query = "SELECT EmailId, id FROM [user] WHERE Role = 'MLRO'"
     cursor.execute(query)
@@ -12534,7 +12537,9 @@ main_docs_list=[]
 @secure_route(required_role=['MLRO', 'ROS', 'BranchMakers'])
 def sdn():
     role = session.get('user_role')
-    searched_by_user_email= session.get('email_id')
+    user_Branch_code = session.get('user_Branch_code')
+    searched_by_user= session.get('user_role')
+    email_id_user= session.get('email_id')
     print(role,"role")
     if role not in ['MLRO','ROS','BranchMakers']:
         return "Access denied", 403
@@ -12806,81 +12811,131 @@ def sdn():
             # print('======SDN SEARCH MATCH DATA =======',main_docs_list)
             print('=====SDN SEARCHED 1ST MATCH DATA=======',main_docs_list[0])   #check db for storing properly or not in table with this data
 
+            # conn_kamal.execute("""
+            # IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SDN_Searched_Data')
+            # BEGIN
+            #     CREATE TABLE SDN_Searched_Data (
+            #         [Index] INT,
+            #         _id NVARCHAR(250),
+            #         category NVARCHAR(250),
+            #         sub_category NVARCHAR(250),
+            #         created DATETIME,
+            #         modified NVARCHAR(250),
+            #         entity_type NVARCHAR(250),
+            #         country NVARCHAR(250),
+            #         source NVARCHAR(MAX),
+            #         name NVARCHAR(MAX),
+            #         first_name NVARCHAR(250),
+            #         last_name NVARCHAR(250),
+            #         title NVARCHAR(250),
+            #         primary_name NVARCHAR(250),
+            #         alias NVARCHAR(250),
+            #         dob NVARCHAR(250),
+            #         pob NVARCHAR(250),
+            #         gender NVARCHAR(50),
+            #         nationality NVARCHAR(250),
+            #         position NVARCHAR(250),
+            #         address NVARCHAR(250),
+            #         photo NVARCHAR(250),
+            #         remarks NVARCHAR(250),
+            #         contact_number NVARCHAR(250),
+            #         email NVARCHAR(250),
+            #         passport NVARCHAR(250),
+            #         pan NVARCHAR(250),
+            #         cin NVARCHAR(250),
+            #         din NVARCHAR(250),
+            #         linked_to NVARCHAR(250),
+            #         description NVARCHAR(4000),
+            #         published_date DATETIME,
+            #         domain_name NVARCHAR(250),
+            #         news_title NVARCHAR(MAX),
+            #         title_translated NVARCHAR(MAX),
+            #         summary NVARCHAR(MAX),
+            #         text NVARCHAR(MAX),
+            #         text_translated NVARCHAR(MAX),
+            #         person NVARCHAR(MAX),
+            #         entity_sentiment NVARCHAR(MAX),
+            #         fuzzy_value INT,
+            #         key_name NVARCHAR(250),
+            #         table_name NVARCHAR(250),
+            #         searched_by_user NVARCHAR(250),
+            #         searched_by_user_Branch_code NVARCHAR(250),
+            #         original_created NVARCHAR(250)
+            #     );
+            # END
+            # """)
             conn_kamal.execute("""
-            IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SDN_Searched_Data')
+            IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'OutputTable')
             BEGIN
-                CREATE TABLE SDN_Searched_Data (
-                    [Index] INT,
-                    _id NVARCHAR(250),
-                    category NVARCHAR(250),
-                    sub_category NVARCHAR(250),
-                    created DATETIME,
-                    modified NVARCHAR(250),
-                    entity_type NVARCHAR(250),
-                    country NVARCHAR(250),
-                    source NVARCHAR(MAX),
-                    name NVARCHAR(MAX),
-                    first_name NVARCHAR(250),
-                    last_name NVARCHAR(250),
-                    title NVARCHAR(250),
-                    primary_name NVARCHAR(250),
-                    alias NVARCHAR(250),
-                    dob NVARCHAR(250),
-                    pob NVARCHAR(250),
-                    gender NVARCHAR(50),
-                    nationality NVARCHAR(250),
-                    position NVARCHAR(250),
-                    address NVARCHAR(250),
-                    photo NVARCHAR(250),
-                    remarks NVARCHAR(250),
-                    contact_number NVARCHAR(250),
-                    email NVARCHAR(250),
-                    passport NVARCHAR(250),
-                    pan NVARCHAR(250),
-                    cin NVARCHAR(250),
-                    din NVARCHAR(250),
-                    linked_to NVARCHAR(250),
-                    description NVARCHAR(MAX),
-                    published_date DATETIME,
-                    domain_name NVARCHAR(250),
-                    news_title NVARCHAR(MAX),
-                    title_translated NVARCHAR(MAX),
-                    summary NVARCHAR(MAX),
-                    text NVARCHAR(MAX),
-                    text_translated NVARCHAR(MAX),
-                    person NVARCHAR(MAX),
-                    entity_sentiment NVARCHAR(MAX),
-                    fuzzy_value INT,
-                    key_name NVARCHAR(250),
-                    table_name NVARCHAR(250),
-                    searched_by_user_email NVARCHAR(250),
-                    original_created NVARCHAR(250)
+                CREATE TABLE OutputTable (
+                   [CUSTCD] [nvarchar](200) NULL,
+                    [CustomerName] [nvarchar](250) NULL,
+                    [SanctionsOutput] [nvarchar](4000) NULL,
+                    [Status] [int] NULL,
+                    [searched_by_user] NVARCHAR(250),
+                    [searched_by_user_Branch_code] NVARCHAR(250),
                 );
             END
             """)
             # conn_kamal.commit()
 
-            # Insert data into the table
             try:
+                # for item in main_docs_list:
+                #     conn_kamal.execute("""
+                #     INSERT INTO OutputTable (
+                #         [Index], _id, category, sub_category, created, modified, entity_type, country, source, name, first_name, last_name, title, primary_name, alias, dob, pob, gender, nationality, position, address, photo, remarks, contact_number, email, passport, pan, cin, din, linked_to, description, published_date, domain_name, news_title, title_translated, summary, text, text_translated, person, entity_sentiment, fuzzy_value, key_name, table_name,searched_by_user,searched_by_user_Branch_code, original_created
+                #     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                #     """, (
+                #         item["Index"], item["_id"], item["category"], item["sub_category"], item["created"], item["modified"], item["entity_type"], item["country"], item["source"], item["name"], item["first_name"], item["last_name"], item["title"], item["primary_name"], item["alias"], item["dob"], item["pob"], item["gender"], item["nationality"], item["position"], item["address"], item["photo"], item["remarks"], item["contact_number"], item["email"], item["passport"], item["pan"], item["cin"], item["din"], item["linked_to"], item["description"], item["published_date"], item["domain_name"], item["news_title"], item["title_translated"], item["summary"], item["text"], item["text_translated"], item["person"], item["entity_sentiment"], item["fuzzy_value"], item["key_name"], item["table_name"],searched_by_user,user_Branch_code, item["original_created"]
+                #     ))
+                def custom_json_encoder(obj):
+                    if isinstance(obj, datetime):
+                        return obj.isoformat()  # Convert datetime objects to ISO format strings
+                    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+                
+                # for item in main_docs_list:
+                #     sanctions_output = json.dumps(item, default=custom_json_encoder)
+
+                # Create a dictionary to hold the sanctions output
+                sanctions_output_dict = {"sanctions": []}
+
+                # Iterate through main_docs_list and append each item to the sanctions_output_dict
+                # for item in main_docs_list:
+                #     sanctions_output_dict["sanctions"].append(item)
                 for item in main_docs_list:
-                    conn_kamal.execute("""
-                    INSERT INTO SDN_Searched_Data (
-                        [Index], _id, category, sub_category, created, modified, entity_type, country, source, name, first_name, last_name, title, primary_name, alias, dob, pob, gender, nationality, position, address, photo, remarks, contact_number, email, passport, pan, cin, din, linked_to, description, published_date, domain_name, news_title, title_translated, summary, text, text_translated, person, entity_sentiment, fuzzy_value, key_name, table_name,searched_by_user_email, original_created
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        item["Index"], item["_id"], item["category"], item["sub_category"], item["created"], item["modified"], item["entity_type"], item["country"], item["source"], item["name"], item["first_name"], item["last_name"], item["title"], item["primary_name"], item["alias"], item["dob"], item["pob"], item["gender"], item["nationality"], item["position"], item["address"], item["photo"], item["remarks"], item["contact_number"], item["email"], item["passport"], item["pan"], item["cin"], item["din"], item["linked_to"], item["description"], item["published_date"], item["domain_name"], item["news_title"], item["title_translated"], item["summary"], item["text"], item["text_translated"], item["person"], item["entity_sentiment"], item["fuzzy_value"], item["key_name"], item["table_name"],searched_by_user_email, item["original_created"]
-                    ))
+                        filtered_item = {
+                            "id": item.get("_id"),
+                            "category": item.get("category"),
+                            "sub_category": item.get("sub_category"),
+                            # "Fuzzy Value": item.get("Fuzzy_value")
+                        }
+                        sanctions_output_dict["sanctions"].append(filtered_item)
+
+                # Serialize the entire sanctions_output_dict to a JSON string
+                sanctions_output_json = json.dumps(sanctions_output_dict, default=custom_json_encoder)
+
+
+                conn_kamal.execute("""
+                INSERT INTO OutputTable (
+                    CUSTCD, CustomerName, SanctionsOutput, Status, searched_by_user, searched_by_user_Branch_code
+                ) VALUES ( ?, ?, ?, ?, ?, ?)
+                """, (
+                    '001', 'Test_CHARAN',sanctions_output_json,1,searched_by_user,user_Branch_code
+                ))
                 conn_kamal.commit()
             except Exception as e:
-                print("An error occurred:", e)
-                # conn_kamal.rollback()  # Rollback the transaction if an error occurs
+                print("An error occurred while Inserting Data===:", e)
+                conn_kamal.rollback()  # Rollback if an error occurs
             finally:
                 print('Search data stored done...')
-                # conn_kamal.close()  
+                # conn_kamal.close() 
 
             for doc in main_docs_list:
+                # print('===========MATCHED DATA============',doc)
                 doc['created'] = doc['original_created']
-                del doc['original_created']
+                doc['CUSTCD'] = '001' # hard coded ----has to come from frontend
+                doc['CustomerName'] = 'Test_CHARAN' # hard coded ----has to come from frontend
+                del doc['original_created'] 
         return render_template("sdndashboard.html", data=main_docs_list,cc='display-filers', msg=msg, unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], sub_cats=sub_cats, type='sdn', role=role)
 
 
@@ -12888,7 +12943,9 @@ def sdn():
 @secure_route(required_role=['MLRO', 'ROS', 'BranchMakers'])
 def sdnSearcheddata():
     role = session.get('user_role')
-    searched_by_user_email = session.get('email_id')
+    searched_by_user = session.get('user_role')
+    user_Branch_code = session.get('user_Branch_code')
+
     print(role, "role")
 
     if role not in ['MLRO', 'ROS', 'BranchMakers']:
@@ -12896,26 +12953,35 @@ def sdnSearcheddata():
 
     try:
         cursor = conn_kamal.cursor()
-        cursor.execute("""
-            SELECT * 
-            FROM SDN_Searched_Data 
-            WHERE searched_by_user_email = ?
-        """, (searched_by_user_email,))
+        if role =='BranchMakers':
+            cursor.execute("""
+                SELECT * 
+                FROM OutputTable 
+                WHERE searched_by_user IN ('ROS', 'BranchMakers') AND searched_by_user_Branch_code =?
+            """,(user_Branch_code,))
+            searcheddata = cursor.fetchall()
+                           
+        else:
+            cursor.execute("""
+                SELECT * 
+                FROM OutputTable 
+                WHERE searched_by_user = ? AND searched_by_user_Branch_code =?
+            """, (searched_by_user,user_Branch_code))
 
-        searcheddata = cursor.fetchall()
+            searcheddata = cursor.fetchall()
 
         if not searcheddata:
             return render_template(
                 "sdndashboard.html", 
                 data=None, 
-                msg="No data found", 
+                msg="No Previous Search Records Found", 
                 cc='hide-filters', 
                 unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], 
                 sub_cats=sub_cats, 
                 type='sdnSearcheddata', 
                 role=role
             )
-
+        print('===============1st Match Data================',searcheddata[0])
         return render_template(
             "sdndashboard.html", 
             data=searcheddata, 
@@ -12923,7 +12989,8 @@ def sdnSearcheddata():
             unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], 
             sub_cats=sub_cats, 
             type='sdnSearcheddata', 
-            role=role
+            role=role,
+            table_name='OutputTable'
         )
 
     except pyodbc.Error as e:
@@ -12931,7 +12998,7 @@ def sdnSearcheddata():
         return render_template(
             "sdndashboard.html", 
             data=None, 
-            msg="Nothing to Show Search Something", 
+            msg="No Records Found", 
             cc='hide-filters', 
             unique_entities=['Individual', 'Organization', 'Country', 'Vessel', 'Aircraft', 'Entity', 'N/A'], 
             sub_cats=sub_cats, 
@@ -13175,7 +13242,7 @@ def view(table_name, unique_id, value):
 
     print("Entered the view function")
 
-    query = f"SELECT * FROM {table_name} WHERE _id LIKE '{unique_id}'"
+    query = f"SELECT * FROM {table_name} WHERE CUSTCD LIKE '{unique_id}'"
     data = []
 
     try:
@@ -13199,7 +13266,11 @@ def view(table_name, unique_id, value):
                 print(f"Converted {key} to ISO format")
 
     print("Rendering template")
-    return render_template("view.html", value=value, document=data, type='view', role=role)
+    for doc1 in data:
+        sanctions_output = json.loads(doc1['SanctionsOutput'])
+        sanctions_array = sanctions_output.get('sanctions', [])
+    print('=====================SSSS',sanctions_array)
+    return render_template("view3.html", value=value,custid=unique_id, document=sanctions_array, type='view', role=role)
 
 @app.route("/sdndashboard")
 @secure_route(required_role=['IT OFFICER', 'MLRO', 'ROS', 'BranchMakers'])

@@ -799,7 +799,7 @@ padding: 0px;
 
                       <table id="example" class="display">
                         <thead>
-                          <tr>
+                          <!-- <tr>
                             <th></th>
                             <th></th>
                             <th>#</th>
@@ -813,6 +813,21 @@ padding: 0px;
                             <th>view</th>
                             <th>Download</th>
 
+                          </tr> -->
+                          <tr>
+                            <th></th>
+                            <th></th>
+                            <th>#</th>
+                            <th>CUST_ID</th>
+                            <th>CustomerName</th>
+                            <!-- <th>CATEGORY</th> -->
+                            <!-- <th>SUB<br>CATEGORY</th> -->
+                            <!-- <th>Fuzzy</th> -->
+                            <!-- <th>DATE<br>OF<br>BIRTH</th> -->
+                            <!-- <th>view</th> -->
+                            <!-- <th>Status</th> -->
+                            <th>VIEW</th>
+
                           </tr>
                         </thead>
 
@@ -822,9 +837,9 @@ padding: 0px;
                             <td><input type="checkbox" class="select-checkbox"></td>
                             <td class="accordion-toggle"><i class="fa-solid fa-circle-arrow-right"></i></td>
                             <td>{{loop.index}}</td>
-                            {% if ',' in doc['name'] %}
+                            {% if ',' in doc['CUSTCD'] %}
                             {% set combined_list = [] %}
-                            {% for part in doc['name'].split(',') %}
+                            {% for part in doc['CUSTCD'].split(',') %}
                             {% if doc['key_name'].lower() in part.lower() %}
                             {% set _ = combined_list.append(part) %}
                             {% endif %}
@@ -832,17 +847,18 @@ padding: 0px;
                             {% set combined_string = combined_list | join(',') %}
                             <td>{{ combined_string }}</td>
                             {% else %}
-                            <td>{{doc['name']}}</td>
+                            <td>{{doc['CUSTCD']}}</td>
                             {% endif %}
-                            <td>{{doc['id_num']}}</td>
-                            <td>{{doc['category']}}</td>
-                            <td>{{doc['sub_category']}}</td>
-                            <td>{{ doc['fuzzy_value'] | int }}</td>
-                            <td>{{doc['dob']}}</td>
-                            <td>{{doc['pob']}}</td>
+                            <td>{{doc['CustomerName']}}</td>
+                            <!-- <td>{{doc['SanctionsOutput']}}</td> -->
+                            <!-- <td>{{doc['Status']}}</td> -->
                             <td>
-                              <a href="{{url_for('view',table_name=doc['table_name'],unique_id=doc['_id'],value=loop.index)}}"
+                              {% if table_name %}
+                              <a href="{{url_for('view',table_name=table_name,unique_id=doc['CUSTCD'],value=loop.index)}}"
                                 target="_blank">
+                              {% endif %}
+                              <!-- <a href="{{url_for('view',table_name=doc['table_name'],unique_id=doc['CUSTCD'],value=loop.index)}}"
+                                target="_blank"> -->
                                 <button class="btn btn-primary  btn-sm rounded">
                                   <svg viewBox="0 0 576 512" width="36" height="25" xmlns="http://www.w3.org/2000/svg"
                                     fill="#000000">
@@ -862,7 +878,7 @@ padding: 0px;
                                     </g>
                                   </svg></button></a>
                             </td>
-                            <td>
+                            <!-- <td>
                               <button id="downloadBtn" class="btn btn-primary rounded  btn-sm download-btn"
                                 data-csv="{{doc}}">
                                 <a href="#">
@@ -881,7 +897,7 @@ padding: 0px;
                                   </svg>
                                 </a>
                               </button>
-                            </td>
+                            </td> -->
                           </tr>
                           {% endfor %}
                         </tbody>
