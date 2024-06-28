@@ -3246,7 +3246,7 @@ def submit_form():
         conn4.commit()
         conn4.close()
         session['user_created_again'] = "User Added Successfully with Password"
-        return redirect(url_for('AllUsers'))
+        return redirect(url_for('AllUsers')) 
 
 
 
