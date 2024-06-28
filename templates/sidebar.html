@@ -23,6 +23,24 @@
 
       </li> 
       <li class="menu">
+        <a href="#"  aria-expanded="false" class="dropdown-toggle" id="usersTab">
+            <div class="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Users</span>
+            </div>
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+        </a>
+     <a href="{{url_for('AddUser')}}"  {% if type == 'AddUser' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle" id="addUserTab" style="display: none;">
+            <div class="ml-5">Add User</div></a>
+            <a href="{{url_for('AllUsers')}}"  {% if type == 'AllUsers' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle" id="allUsersTab" style="display: none;">
+            <div class="ml-5">All Users</div></a>
+            <a href="{{url_for('leavePenddingDistribution')}}"  {% if type == 'leavePenddingDistribution' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle" id="allUsersTab" style="display: none;">
+            <div class="ml-5">Leaves <br/> Distribution</div></a>
+        </a>
+    </li>
+      <li class="menu">
           <a href="{{ url_for('FINnetReports') }}" {% if type == 'FINnetReports' %} data-active="true" aria-expanded="true" {% endif %} class="dropdown-toggle">
               <div class="">
                   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

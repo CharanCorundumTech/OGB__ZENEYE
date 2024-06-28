@@ -142,6 +142,18 @@ def get_db_connection():
     
     return sql_conn
 
+conn_str_ticketid= 'Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES'
+
+def get_db_connection_TICKETID():
+    sql_conn = None
+    try:
+        sql_conn = pyodbc.connect(conn_str_ticketid)
+        print("Connection to SQL Server established successfully.")
+    except Exception as e:
+        print("Error connecting to SQL Server:", e)
+    
+    return sql_conn
+
 # SQL query to retrieve table names
 conn_kamal = get_db_connection()
 
@@ -295,7 +307,7 @@ def detltaADupdate(USERNAME,PASSWORD):
 
     if not table_exists:
         create_table_sql = """
-        CREATE TABLE [user] (
+        CREATE TABLE dbo.[user] (
             id INT IDENTITY(1,1) PRIMARY KEY,
             EmpId NVARCHAR(500),
             UserName NVARCHAR(500),
@@ -326,13 +338,13 @@ def detltaADupdate(USERNAME,PASSWORD):
 
     removedUsers = []
     for doc in users:
-        curAD.execute("SELECT userPrincipalName FROM [user] WHERE userPrincipalName = ?", (doc['userPrincipalName'],))
+        curAD.execute("SELECT userPrincipalName FROM dbo.[user] WHERE userPrincipalName = ?", (doc['userPrincipalName'],))
         existing_email = curAD.fetchone()
         removedUsers.append(doc['userPrincipalName'])
 
         if existing_email:
             update_data_sql = f"""
-            UPDATE [user]
+            UPDATE dbo.[user]
             SET
             EmpId = ?,
             UserName = ?,
@@ -377,7 +389,7 @@ def detltaADupdate(USERNAME,PASSWORD):
 
         else:
             insert_data_sql = """
-            INSERT INTO [user] (
+            INSERT INTO dbo.[user] (
             
                 EmpId,
                 UserName,
@@ -426,7 +438,7 @@ def detltaADupdate(USERNAME,PASSWORD):
 
     removed_users_str = ', '.join([f"'{user}'" for user in removedUsers])
 
-    removeSQL = f"DELETE FROM [user] WHERE userPrincipalName NOT IN ({removed_users_str})"
+    removeSQL = f"DELETE FROM dbo.[user] WHERE userPrincipalName NOT IN ({removed_users_str})"
 
     curAD.execute(removeSQL)
     mysqlAD.connection.commit()
@@ -2307,12 +2319,12 @@ def refresh_captcha():
 #             if userExist != 'locked' or userExist != 'invaliedCred':
 #                 sql = """
 #                     SELECT *
-#                     FROM [user]
+#                     FROM dbo.[user]
 #                     WHERE LOWER(userPrincipalName) = LOWER(?)
 #                 """
 #                 # sql = """
 #                 #     SELECT *
-#                 #     FROM [user]
+#                 #     FROM dbo.[user]
 #                 #     WHERE EmailId = ?
 #                 # """
 #                 # try:
@@ -2436,7 +2448,7 @@ def post_login():
        
                 sql = """
                     SELECT *
-                    FROM [user]
+                    FROM dbo.[user]
                     WHERE EmailId = ?
                 """
 
@@ -2589,7 +2601,7 @@ def AdminAllUsers():
 
     mysqlAdminAllUsers = connAdminAllUsers.cursor()
     try:
-        query = "SELECT * FROM [user] WHERE EmailId = ?" 
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?" 
 
         mysqlAdminAllUsers.execute(query, (email,))
         
@@ -2611,7 +2623,7 @@ def AdminAllUsers():
         
         data=[]
 
-        select_query = "SELECT * FROM [user]"
+        select_query = "SELECT * FROM dbo.[user]"
         
         mysqlAdminAllUsers.execute(select_query)
         columns = [desc[0] for desc in mysqlAdminAllUsers.description]
@@ -2655,7 +2667,7 @@ def userLeaveStatus():
     emailid = request.form.get('emailid')
     
     try:
-        updateQuery = "UPDATE [user] SET LeaveStatus = 'Leave' WHERE EmailId = ?"
+        updateQuery = "UPDATE dbo.[user] SET LeaveStatus = 'Leave' WHERE EmailId = ?"
         mysqlAdminAllUsersLeave.execute(updateQuery, (emailid,))
         mysqlAdminAllUsersLeave.commit()
 
@@ -2686,7 +2698,7 @@ def userWorkingStatus():
 
     try:
 
-        updateQuery = "UPDATE [user] SET LeaveStatus = 'Working' WHERE EmailId = ?"
+        updateQuery = "UPDATE dbo.[user] SET LeaveStatus = 'Working' WHERE EmailId = ?"
         mysqlAdminAllUsersWorking.execute(updateQuery, (emailid,))
         mysqlAdminAllUsersWorking.commit()
         
@@ -2731,7 +2743,7 @@ def ITdashboard():
 
         try:
 
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
             mysqlItDash.execute(query, (email,))
                 
@@ -2762,13 +2774,935 @@ def ITdashboard():
             return render_template("IT OFFICER.html",ituser=user,countSubmited=countSubmited,numUsers=0,mlroDetails=[],cmUsers=[],cmDetails=[],perdayDatait=[],role='IT OFFICER',type='ITdashboard')
         
         except Exception as e:
-            mysqlItDash.rollback()
-            connItDash.close()
+            # mysqlItDash.rollback()
+            # connItDash.close()
             return f'Something Went Wrong: {e} ,Please Re-Login Again', 500
 
 
 # ----------------- HO ADMIN OR IT OFFICER FINET REPORTS PAGE END - POINT -----------------------------------
 
+
+
+@app.route("/AddUser")
+@secure_route(required_role='IT OFFICER')
+def AddUser():
+    # user = users_collection.find_one({'role': 'IT OFFICER'})
+    conn01 = get_db_connection_TICKETID()
+    cursor = conn01.cursor()
+    cursor.execute("SELECT * FROM dbo.[user] WHERE Role = 'IT OFFICER'")
+    user = cursor.fetchone()
+    emial_id=user.EmailId
+
+
+    ituser = {'image': ""}
+    if user:
+        # ituser = users_collection.find_one({'emailid': user.get('emailid')})
+        ituser = cursor.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?",(emial_id))
+        if ituser and 'Image' in ituser:
+            ituser.Image = base64.b64encode(ituser.Image).decode('utf-8')
+    msg=None
+    if 'ps_error' in session:
+        msg = session.pop('ps_error',None)
+    if 'user_exists' in session:
+        msg = session.pop('user_exists',None)
+    if msg!=None:
+        return render_template("AddUser.html",msg=msg,ituser=ituser,type='AddUser',role='IT OFFICER')
+    else:
+        return render_template("AddUser.html",ituser=ituser,type='AddUser',role='IT OFFICER')
+
+@app.route('/searchUser',methods=['POST'])
+@secure_route(required_role=['IT OFFICER'])
+def searchUser():
+    userInfo = request.get_json()
+    user = userInfo["user"]
+    field = userInfo["field"]
+    # userDetails = users_collection.find_one({field:user},{"_id":0})
+    conn3 = get_db_connection_TICKETID()
+    cursor = conn3.cursor()
+    sql = "SELECT * FROM [user] WHERE UserName = ?"
+
+    cursor.execute(sql, user)
+
+    userDetails = cursor.fetchone()
+
+    cursor.close()
+    conn3.close()
+
+    if userDetails:
+        print('User Details===', userDetails)
+
+        # Convert fetched data to a dictionary
+        userDetailsDict = {
+            "name": userDetails.UserName,
+            "emailid": userDetails.EmailId,
+            "mobileno": userDetails.MobileNo,
+            "role": userDetails.Role,
+            "address": userDetails.Address,
+            "empid": userDetails.EmpId,
+        }
+
+        if "password" not in userDetailsDict:
+            finalDetails = {
+                "name": userDetailsDict["name"],
+                "emailid": userDetailsDict["emailid"],
+                "mobileno": userDetailsDict["mobileno"],
+                "role": userDetailsDict["role"],
+                "address": userDetailsDict["address"],
+                "empid": userDetailsDict["empid"],
+            }
+        return finalDetails
+    elif userDetails and "password" in userDetails:
+        return {"none":"exists"}
+    else:
+        return {"none":"no data"}
+
+
+
+@app.route("/AllUsers", methods=['GET'])
+@secure_route(required_role='IT OFFICER')
+def AllUsers():
+    conn01 = get_db_connection_TICKETID()
+    cursor = conn01.cursor()
+    cursor.execute("SELECT * FROM dbo.[user] WHERE Role = 'IT OFFICER'")
+    user = cursor.fetchone()
+    emial_id=user.EmailId
+
+
+    ituser = {'image': ""}
+    if user:
+        # ituser = users_collection.find_one({'emailid': user.get('emailid')})
+        ituser = cursor.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?",(emial_id))
+        if ituser and 'Image' in ituser:
+            ituser.Image = base64.b64encode(ituser.Image).decode('utf-8')
+
+    msg = None
+    if "user_created_again" in session:
+        msg = session.pop('user_created_again',None)
+    if 'success_user_created' in session:
+        msg = session.pop('success_user_created',None)
+    if msg!=None:
+        # fetch_data_sql = "SELECT EMPID, UserName, UserEmail, Designation, MobileNo, Address FROM charan"
+        fetch_data_sql = "SELECT * FROM user"
+
+        try:
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+            cursor.execute(fetch_data_sql)
+            rows = cursor.fetchall()
+             # Get column names
+            columns = [column[0] for column in cursor.description]
+            
+            # Convert rows to list of dictionaries
+            users = [dict(zip(columns, row)) for row in rows]
+            print("Data fetched successfully from 'Users' table.")
+            print('Data from table======',users)
+        except Exception as e:
+            print("Error fetching data from 'Users' table:", e)
+            users = []
+        finally:
+            print('helloo')
+            # cursor.close()
+            # conn.close()
+
+        return render_template("AllUsers.html", users=users, msg=msg, ituser=ituser, type='AllUsers', role='IT OFFICER')
+    else:
+        # fetch_data_sql = "SELECT EMPID, UserName, UserEmail, Designation, MobileNo, Address FROM charan"
+        fetch_data_sql = "SELECT * FROM dbo.[user]"
+
+        try:
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+            cursor.execute(fetch_data_sql)
+            rows = cursor.fetchall()
+             # Get column names
+            columns = [column[0] for column in cursor.description]
+            
+            # Convert rows to list of dictionaries
+            users = [dict(zip(columns, row)) for row in rows]
+            print("Data fetched successfully from 'Users' table.")
+            print('Data from table======',users)
+
+        except Exception as e:
+            print("Error fetching data from 'Users' table:", e)
+            users = []
+        finally:
+            # print('hellooo')
+            cursor.close()
+            conn.close()
+
+        return render_template("AllUsers.html", users=users, msg=msg, ituser=ituser, type='AllUsers', role='IT OFFICER')
+
+
+
+
+@app.route('/newUser',methods=['POST','GET'])
+@secure_route(required_role=['IT OFFICER'])
+def newUser():
+    print('============new user===============')
+    # Extract form data
+    username = request.form['username']
+    emailid = request.form['emailid']
+    empid = request.form['empid']
+    mobileno = request.form['mobileno']
+    role = request.form['role']
+    address = request.form['address']
+
+    # SQL command to insert data into the Users table
+    insert_data_sql = """
+    INSERT INTO [user] (EmpId, UserName, EmailId, MobileNo, Address, Role)
+    VALUES (?, ?, ?, ?, ?, ?)
+    """
+
+    try:
+        # Establish a connection to the database
+        conn2 = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES")
+        cursor = conn2.cursor()
+
+        # Execute the SQL command with the form data
+        cursor.execute(insert_data_sql, (empid, username, emailid, mobileno, address,role))
+        print('============new user craeted===============')
+
+        # Commit the transaction
+        conn2.commit()
+
+        print("Data inserted successfully into 'charan' table.")
+    
+    except Exception as e:
+        print("Error inserting data into 'charan' table:", e)
+    
+    finally:
+        # Close the cursor and connection
+        cursor.close()
+        conn2.close()
+
+    # Redirect to the AllUsers view after successful insertion
+    return redirect(url_for('AllUsers'))
+
+
+        
+@app.route('/updateUser',methods=['POST'])
+@secure_route(required_role=['IT OFFICER'])
+def updateUser():
+    idNo = request.form.get("id")
+    updateName = request.form.get("name")
+    updateEmail = request.form.get("emailid")
+    updateMobile = request.form.get("mobileno")
+    updateAddress = request.form.get("address")
+    updateRole = request.form.get("role")
+    updatePassword = request.form.get("Password")
+    updateRePassword = request.form.get("Re-Enter Password")
+    updateLeave = request.form.get("leave")
+    users_collection.update_one(
+        {"emailid":updateEmail},
+        {"$set": {"name": updateName,"emailid":updateEmail,"mobileno":updateMobile,"address":updateAddress,"role":updateRole,"leaveStatus":updateLeave}}
+    )
+    return redirect(url_for('AllUsers'))
+
+
+
+
+@app.route('/enableUser',methods=['POST'])
+@secure_route(required_role=['IT OFFICER'])
+def enableUser():
+    if request.method == 'POST':
+        email = request.form['emailid']
+
+       
+        users_collection.update_one({'emailid':email},{"$unset": {'partial_Delete': 1},"$set":{'status':'Approved',"leaveStatus":'On Leave'}},upsert=False)
+        user = users_collection.find_one({'emailid':email})
+        allocated_to = user['Assigned_to']
+
+        users_collection.update_one(
+            {'emailid': allocated_to, 'mlros_assigned': {'$in': [email]}},
+            {'$push': {'mlros_assigned': email}}
+        ) 
+
+
+        if user:
+                    base_url = "http://127.0.0.1:5000/reset_password"
+                    reset_token = secrets.token_hex(10)
+                    users_collection.update_one({'emailid':email},{"$set":{"reset_password_token":hash_password(reset_token)}})
+                    reset_link = f"{base_url}?user_id={email}&token={reset_token}"
+                    send_password_reset_email(email,reset_link,'userRevived')
+        
+        
+                   
+        
+        return redirect(url_for('AllUsers'))
+
+
+@app.route('/deleteUser',methods=['POST'])
+@secure_route(required_role=['IT OFFICER'])
+def deleteUser():
+    if request.method == 'POST':
+        email = request.form['emailid']
+        user = users_collection.find_one({'emailid':email,'Status':{'$exists':True},'Status':'Approved','leaveStatus':{'$exists':True}})
+        if user :
+            allocated_to = user['Assigned_to']
+            users_collection.update_one({'emailid':email},{"$set":{"partial_Delete":True,'Status':'Deleted',"leaveStatus":'On Leave'}})
+
+            users_collection.update_one(
+                {'emailid': allocated_to, 'mlros_assigned': {'$in': [email]}},
+                {'$pull': {'mlros_assigned': email}}
+            )
+
+        return redirect(url_for('AllUsers'))
+
+
+
+@app.route('/multiUsersCreation',methods=['POST','GET'])
+@secure_route(required_role=['IT OFFICER'])
+def multiUsersCreation():
+    file = request.files['multUsers']
+
+    usersMail = users_collection.find()
+    mails = []
+    for info in usersMail:
+        mails.append(info['emailid'])
+    df = pd.read_excel(file.read())
+
+   
+    filtered_emails = df[~df['emailid'].isin(mails)]
+
+
+    for index, row in filtered_emails.iterrows():
+        mobilenumber = str(row['mobileno'])
+        empi = str(row['empid'])
+        users_collection.insert_one({
+            'name': row['name'],
+            'emailid': row['emailid'], 
+            'mobileno': mobilenumber,
+            'address': row['address'],
+            'role': row['role'],
+            'empid':empi
+        })
+    
+    return redirect(url_for('AllUsers'))
+
+
+def hash_password(password):
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password
+
+@app.route('/submit-form', methods=['POST'])
+@secure_route(required_role=['IT OFFICER'])
+def submit_form():
+    if request.method == 'POST':
+        emailid = request.form['emailid']
+        role = request.form['role']
+        password = request.form['password']
+        re_entered_password = request.form['Re-Enter Password']
+        status = "Created"
+        hashed_password = hash_password(password)
+
+        if password != re_entered_password:
+            session['ps_error'] = 'Passwords do not match. Please try again.'
+            return redirect(url_for('AddUser'))
+
+        conn4 = get_db_connection_TICKETID()
+        cursor = conn4.cursor()
+        sql = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
+        cursor.execute(sql, (emailid,))
+        userDetails = cursor.fetchone()
+
+        if userDetails:
+            existing_user = userDetails
+
+        if role == 'CM/SM':
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'MLROs_assigned'")
+            MLROs_assigned_exists = cursor.fetchone()
+            if not MLROs_assigned_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD MLROs_assigned VARCHAR(255)")
+
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to_agm'")
+            assigned_to_agm_exists = cursor.fetchone()
+            if not assigned_to_agm_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to_agm VARCHAR(255)")
+
+            sql = """
+            UPDATE dbo.[user]
+            SET 
+                [Password] = ?, 
+                [Status] = ?, 
+                [MLROs_assigned] = '', 
+                [Assigned_to] = '',
+                [Assigned_to_agm] = ''
+            WHERE EmpId = ?
+            """
+            cursor.execute(sql, (hashed_password, status, existing_user.EmpId))
+
+            sql = """
+            SELECT *
+            FROM dbo.[user]
+            WHERE 
+                Role = 'MLRO' AND 
+                Assigned_to = '' AND 
+                Status IN ('Created', 'Approved')
+            """
+            cursor.execute(sql)
+            mlros_data = cursor.fetchall()
+            for mlro_doc in mlros_data:
+                cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='CM/SM' AND Status='Created'", (existing_user.EmpId,))
+                cm_user = cursor.fetchone()
+                if cm_user and len(cm_user.MLROs_assigned.split(',')) < 5:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cm_user.EmailId, mlro_doc.EmpId))
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=MLROs_assigned + ',' + ? WHERE EmpId=?", (mlro_doc.EmailId, cm_user.EmpId))
+
+            # Fetch AGMs to be assigned
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND Status IN ('Created', 'Approved')")
+            agm_data = cursor.fetchall()
+            for agm_doc in agm_data:
+                cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='CM/SM' AND Assigned_to_agm='' AND Status='Created'", (existing_user.EmpId,))
+                cm_user = cursor.fetchone()
+                if cm_user and len(agm_doc.CMS_assigned.split(',')) <= 3:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to_agm=? WHERE EmpId=?", (agm_doc.EmailId, cm_user.EmpId))
+                    cursor.execute("UPDATE dbo.[user] SET CMS_assigned=CMS_assigned + ',' + ? WHERE EmpId=?", (cm_user.EmailId, agm_doc.EmpId))
+                    break
+
+        elif role == 'MLRO':
+            # Check and add Assigned_to column if it doesn't exist
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to'")
+            assigned_to_exists = cursor.fetchone()
+            if not assigned_to_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to VARCHAR(255)")
+
+            # Check and add Assigned_to_ros column if it doesn't exist
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to_ros'")
+            assigned_to_ros_exists = cursor.fetchone()
+            if not assigned_to_ros_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to_ros VARCHAR(255)")
+
+            # Update user information
+            sql_update = """
+            UPDATE dbo.[user]
+            SET 
+                [Password] = ?, 
+                [Status] = ?, 
+                Assigned_to = '', 
+                Assigned_to_ros = ''
+            WHERE EmpId = ?
+            """
+            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
+
+            # Fetch CM/SM data
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='CM/SM' AND Status IN ('Created', 'Approved')")
+            cmsm_data = cursor.fetchall()
+            print('cm/sm=======',cmsm_data)
+
+            # Fetch all unassigned MLROs
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='MLRO' AND Assigned_to='' AND Status='Created'")
+            mlro_users = cursor.fetchall()
+
+            
+            # Assign MLROs to CM/SM in groups of 5
+            for mlro_index, mlro_user in enumerate(mlro_users):
+                for cmsm_index, cmsm_doc in enumerate(cmsm_data):
+                    # Check if the MLROs_assigned list for the current CM/SM contains less than 5 MLROs
+                    if cmsm_doc.MLROs_assigned:
+                        assigned_mlros = cmsm_doc.MLROs_assigned.split(',')
+                        if len(assigned_mlros) < 5:
+                            # Assign MLRO to CM/SM
+                            cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cmsm_doc.EmailId, mlro_user.EmpId))
+
+                            # Update MLROs_assigned for CM/SM
+                            new_mlros_assigned = cmsm_doc.MLROs_assigned + ',' + mlro_user.EmailId if cmsm_doc.MLROs_assigned else mlro_user.EmailId
+                            cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, cmsm_doc.EmpId))
+                            break
+                    else:
+                        # Assign MLRO to CM/SM
+                        cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cmsm_doc.EmailId, mlro_user.EmpId))
+
+                        # Update MLROs_assigned for CM/SM
+                        cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (mlro_user.EmailId, cmsm_doc.EmpId))
+                        break
+
+
+        elif role == 'AGM':
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'CMS_assigned'")
+            cms_assigned_exists = cursor.fetchone()
+            if not cms_assigned_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD CMS_assigned VARCHAR(255)")
+
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'ROS_assigned'")
+            ros_assigned_exists = cursor.fetchone()
+            if not ros_assigned_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD ROS_assigned VARCHAR(255)")
+
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to_dgm'")
+            assigned_to_dgm_exists = cursor.fetchone()
+            if not assigned_to_dgm_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to_dgm VARCHAR(255)")
+            # Fetch dgm data
+            cc=cursor.execute("SELECT * FROM dbo.[user] WHERE Role='DGM/PO' AND Status IN ('Created', 'Approved')")
+            dgm_info=cc.fetchall()
+            print('#######################dgm###################',dgm_info)
+            # cursor.execute("UPDATE charan SET [Password]=?, [Status]=?, CMS_assigned='', ROS_assigned='', Assigned_to_dgm='' WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
+            cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=?, CMS_assigned='', ROS_assigned='', Assigned_to_dgm='' WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
+
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='DGM/PO' AND Status IN ('Created', 'Approved')")
+            dgm_data = cursor.fetchall()
+            for dgm_doc in dgm_data:
+                print('#######################dgm###################',dgm_doc)
+                cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='AGM' AND Assigned_to_dgm='' AND Status='Created'", (existing_user.EmpId,))
+                agm_user = cursor.fetchone()
+                # if agm_user and len(dgm_doc.AGM_assigned.split(',')) < 3:
+                if agm_user:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to_dgm=? WHERE EmpId=?", (dgm_doc.EmailId, agm_user.EmpId))
+                    # cursor.execute("UPDATE charan SET AGM_assigned=AGM_assigned + ',' + ? WHERE EmpId=?", (agm_user.EmailId, dgm_doc.EmpId))
+                    break
+
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='CM/SM' AND Assigned_to_agm='' AND Status='Created'")
+            cm_users = cursor.fetchall()
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND Status IN ('Created', 'Approved')")
+            agm_data = cursor.fetchall()
+            for cm_doc in cm_users:
+                for agm_doc in agm_data:
+                    if len(agm_doc.CMS_assigned.split(',')) < 3 and cm_doc.Assigned_to_agm == '':
+                        cursor.execute("UPDATE dbo.[user] SET Assigned_to_agm=? WHERE EmpId=?", (agm_doc.EmailId, cm_doc.EmpId))
+                        cursor.execute("UPDATE dbo.[user] SET CMS_assigned=CMS_assigned + ',' + ? WHERE EmpId=?", (cm_doc.EmailId, agm_doc.EmpId))
+                        break
+
+        elif role == 'ROS':
+            cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=?, Assigned_to_agm='' WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
+
+            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND Status IN ('Created', 'Approved')")
+            agm_data = cursor.fetchall()
+            cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='ROS' AND Assigned_to_agm='' AND Status='Created'", (existing_user.EmpId,))
+            cm_user = cursor.fetchone()
+            for agm_doc in agm_data:
+                if cm_user and len(agm_doc.ROS_assigned.split(',')) < 2 and cm_user.Assigned_to_agm == '':
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to_agm=? WHERE EmpId=?", (agm_doc.EmailId, cm_user.EmpId))
+                    cursor.execute("UPDATE dbo.[user] SET ROS_assigned=ROS_assigned + ',' + ? WHERE EmpId=?", (cm_user.EmailId, agm_doc.EmpId))
+                    break
+
+        elif role in ['BranchMakers', 'SDN/USER']:
+            cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=? WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
+
+        conn4.commit()
+        conn4.close()
+        session['user_created_again'] = "User Added Successfully with Password"
+        return redirect(url_for('AllUsers'))
+
+
+
+@app.route('/VerifyUser', methods=['GET', 'POST'])
+@secure_route(required_role=['AGM','DGM/PO'])
+def VerifyUser():
+    # try:
+    #     session['user_role']
+    # except:
+    #     session["Pls_login"]="Session expired, Login again"
+    #     return redirect(url_for('sign_in'))
+    user_role = session.get('user_role')
+    emailid = session.get('email_id')
+    notify = notification(emailid)
+
+    
+    if request.method == 'POST':
+        emp_id = request.form.get('emp_id')
+        role = request.form.get('role')
+        mail = request.form.get('emailid')
+        action = request.form.get('action')
+        if action == 'approve':
+            # users_collection.update_one({'_id': ObjectId(user_id)}, {'$set': {'Status': 'Approved','leaveStatus':"Working"}})
+            # user = users_collection.find_one({'emailid':mail})
+            # SQL query to update the user's status and leave status
+            conn6 = get_db_connection_TICKETID()
+            cursor = conn6.cursor()
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'LeaveStatus'")
+            leaveStatus_exists = cursor.fetchone()
+
+            # If leaveStatus column doesn't exist, alter the table to add it
+            if not leaveStatus_exists:
+                cursor.execute("ALTER TABLE dbo.[user] ADD LeaveStatus VARCHAR(255)")
+
+            sql_update = """
+            UPDATE dbo.[user]
+            SET [Status] = ?, LeaveStatus = ?
+            WHERE EmpId = ?
+            """
+
+            # Execute the query with the parameters
+            cursor.execute(sql_update, ('Approved', 'Working', emp_id))
+            # Commit the transaction
+            conn6.commit()
+
+            # SQL query to find the user by email ID
+            sql_find = """
+            SELECT * FROM dbo.[user]
+            WHERE EmailId = ?
+            """
+
+            # Execute the query with the parameter
+            cursor.execute(sql_find, (mail,))
+
+            # Fetch the result
+            user = cursor.fetchone()
+            # Print the user details if found
+            if user:
+                print('User Details:*******************', user)
+            else:
+                print('User not found.')
+
+            
+            if user:
+                    base_url = "http://127.0.0.1:5000/reset_password"
+                    reset_token = secrets.token_hex(10)
+                    users_collection.update_one({'emailid':mail},{"$set":{"reset_password_token":hash_password(reset_token)}})
+                    reset_link = f"{base_url}?user_id={mail}&token={reset_token}"
+                    send_password_reset_email(mail,reset_link,'general')
+            
+            
+
+            if role == "AGM":
+                
+                cmsm_data = users_collection.find({"role":"CM/SM","Assigned_to_agm":"","Status":"Created"})
+                for cmsm_doc in cmsm_data:
+                    agm_user = users_collection.find_one({"_id":ObjectId(user_id),"role":"AGM","Status":"Approved"})
+                    agm_user_assigned_cmsm = agm_user["cms_assigned"]
+                    if len(agm_user_assigned_cmsm)<3:
+                        users_collection.update_one({"_id":cmsm_doc["_id"],"emailid":cmsm_doc["emailid"],"role":"CM/SM","Status":"Created"},{"$set":{"Assigned_to_agm":agm_user['emailid']}})
+                        users_collection.update_one({"_id":ObjectId(user_id),"role":"AGM","emailid":agm_user['emailid'],"Status":"Approved"},{"$push": {"cms_assigned": cmsm_doc["emailid"]}})
+        elif action == 'reject':
+            # users_collection.update_one({'_id': ObjectId(user_id)}, {'$set': {'Status': 'Rejected'}})
+            conn6 = get_db_connection_TICKETID()
+            cursor = conn6.cursor()
+            sql_update = """
+            UPDATE dbo.[user]
+            SET [Status] = ?
+            WHERE EmpId = ?
+            """
+
+            # Execute the query with the parameters
+            cursor.execute(sql_update, ('Rejected', emp_id))
+            # Commit the transaction
+            conn6.commit()
+            if role == "MLRO":
+                users_collection.update_one({'_id': ObjectId(user_id)}, {'$set': {"Assigned_to":"","Assigned_to_ros":""}})
+            # user = users_collection.find_one({'_id': ObjectId(user_id),'Status': 'Rejected'})
+            # SQL query to find the user by EmpId and Status
+            sql_find_user = """
+            SELECT * FROM dbo.[user]
+            WHERE EmpId = ? AND [Status] = 'Rejected'
+            """
+
+            # Execute the query with the parameter
+            cursor.execute(sql_find_user, (emp_id,))
+            user = cursor.fetchone()
+
+            user_email = user.EmailId
+
+            # users_collection.update_many(
+            #     {
+            #         "$or": [
+            #             {"cms_assigned": {"$in": [user_email]}},
+            #             {"mlros_assigned": {"$in": [user_email]}}
+            #         ]
+            #     },
+            #     {"$pull": {
+            #         "cms_assigned": user_email,
+            #         "mlros_assigned": user_email
+            #     }}
+            # )
+            # SQL query to update cms_assigned and mlros_assigned fields
+            sql_update_assigned = """
+            UPDATE dbo.[user]
+            SET 
+                cms_assigned = REPLACE(cms_assigned, ?, ''), 
+                mlros_assigned = REPLACE(mlros_assigned, ?, '')
+            WHERE cms_assigned LIKE ? OR mlros_assigned LIKE ?
+            """
+
+            # Execute the query with the parameters
+            cursor.execute(sql_update_assigned, (user_email, user_email, f'%{user_email}%', f'%{user_email}%'))
+
+            # Commit the transaction
+            conn6.commit()
+
+
+            # users_collection.update_many(
+            #     {
+            #         "$or": [
+            #             {"Assigned_to": user_email},
+            #             {"Assigned_to_ros": user_email}
+            #         ]
+            #     },
+            #     {"$set": {
+            #         "Assigned_to": {
+            #             "$cond": {
+            #                 "if": {
+            #                     "$eq": ["$Assigned_to", user_email]
+            #                 },
+            #                 "then": "",
+            #                 "else": "$Assigned_to"
+            #             }
+            #         },
+            #         "Assigned_to_ros": {
+            #             "$cond": {
+            #                 "if": {
+            #                     "$eq": ["$Assigned_to_ros", user_email]
+            #                 },
+            #                 "then": "",
+            #                 "else": "$Assigned_to_ros"
+            #             }
+            #         }
+            #     }}
+            # )
+            # SQL query to update Assigned_to and Assigned_to_ros fields
+            sql_update_assigned_to = """
+            UPDATE dbo.[user]
+            SET 
+                Assigned_to = CASE WHEN Assigned_to = ? THEN '' ELSE Assigned_to END,
+                Assigned_to_ros = CASE WHEN Assigned_to_ros = ? THEN '' ELSE Assigned_to_ros END
+            WHERE Assigned_to = ? OR Assigned_to_ros = ?
+            """
+
+            # Execute the query with the parameters
+            cursor.execute(sql_update_assigned_to, (user_email, user_email, user_email, user_email))
+
+            # Commit the transaction
+            conn6.commit()
+
+    
+    if user_role=="AGM":
+        # agm_user = users_collection.find_one({'role':"AGM",'emailid':emailid,'status':"Approved"})
+        connAGM = get_db_connection_TICKETID()
+        cursor = connAGM.cursor()
+
+        def fetch_user_by_role_email_status(role, emailid, status):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            sql_query = "SELECT * FROM dbo.[user] WHERE Role = ? AND EmailId = ? AND Status = ?"
+            cursor.execute(sql_query, (role, emailid, status))
+            
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+            
+            return user
+
+        def fetch_user_info(emailid, status):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            sql_query = "SELECT * FROM dbo.[user] WHERE EmailId = ? AND Status = ?"
+            cursor.execute(sql_query, (emailid, status))
+            
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+            
+            if user and 'Image' in user:
+                user['Image'] = base64.b64encode(user['Image']).decode('utf-8')
+            
+            return user
+
+        def fetch_cm_users(status, role, cm_users_list):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
+            sql_query = "SELECT * FROM dbo.[user] WHERE Status = ? AND Role = ?"
+            cursor.execute(sql_query, (status, role))
+            
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return users
+
+        def fetch_mlro_users(status, role, cm_users_list):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
+            sql_query = "SELECT * FROM dbo.[user] WHERE Status = ? AND Role = ?"
+            cursor.execute(sql_query, (status, role))
+            
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return users
+
+        def fetch_ros_users(status, role, emailid):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            sql_query = "SELECT * FROM dbo.[user] WHERE Status = ? AND Role = ? AND Assigned_to_agm = ?"
+            cursor.execute(sql_query, (status, role, emailid))
+            
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return users
+
+        def fetch_remaining_users(status, roles):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            roles_str = ', '.join(f"'{role}'" for role in roles)
+            sql_query = f"SELECT * FROM dbo.[user] WHERE Status = ? AND Role IN ({roles_str})"
+            cursor.execute(sql_query, (status,))
+            
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return users
+
+        status_created = "Created"
+        role_agm = "AGM"
+        role_cm_sm = "CM/SM"
+        role_mlro = "MLRO"
+        role_ros = "ROS"
+        roles_remaining = ["BranchMakers"]
+
+        agm_user = fetch_user_by_role_email_status(role_agm, emailid, "Approved")
+        info = fetch_user_info(emailid, "Approved")
+
+        if agm_user:
+            cm_users_list = agm_user.CMS_assigned.split(",") if agm_user.CMS_assigned else []
+            cm_users = fetch_cm_users(status_created, role_cm_sm, cm_users_list)
+            mlro_users = fetch_mlro_users(status_created, role_mlro, cm_users_list)
+
+            users = list(cm_users) + list(mlro_users)
+            mlro_emailids = [user.EmailId for user in mlro_users]
+            
+            ros_users = fetch_ros_users(status_created, role_ros, emailid)
+            users.extend(ros_users)
+            
+            remaining_users = fetch_remaining_users(status_created, roles_remaining)
+            users.extend(remaining_users)
+        else:
+            users = []
+
+        return render_template("VerifyUser.html", users=users,ROLE="AGM",agmuser=info,type='VerifyUser',notify=notify)
+    elif user_role == "DGM/PO":
+        # created_users = users_collection.find({'status': 'Created','role':'AGM'})
+        # sdn_users=users_collection.find({'status':'Created','role':'SDN/USER'})
+        # users = list(created_users) + list(sdn_users)
+        # Fetch created AGM users
+        conn5 = get_db_connection_TICKETID()
+        cursor = conn5.cursor()
+        cursor.execute("SELECT * FROM dbo.[user] WHERE [Status]='Created' AND Role='AGM'")
+        created_agm_users = cursor.fetchall()
+
+        # Fetch created SDN/USER users
+        cursor.execute("SELECT * FROM dbo.[user] WHERE [Status]='Created' AND Role='SDN/USER'")
+        created_sdn_users = cursor.fetchall()
+
+        # Combine the results
+        users = created_agm_users + created_sdn_users
+
+        # agm_user = users_collection.find_one({'role':"AGM",'emailid':emailid,'status':"Approved"})
+        # Fetch approved AGM user with the given emailid
+        cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND EmailId=? AND [Status]='Approved'", (emailid,))
+        agm_user = cursor.fetchone()
+
+        info = users_collection.find_one({'emailid':emailid,'status':'Approved'})
+        if 'image' in info:
+            # Encode the image data as a base64 string
+            info['image'] = base64.b64encode(info['image']).decode('utf-8')
+        # Fetch user info with the given emailid and approved status
+        # cursor.execute("SELECT * FROM charan WHERE EmailId=? AND [Status]='Created'", (emailid,))
+        # info = cursor.fetchone()
+        print('cccccccc=========',info)
+
+        # # Check if the 'image' column exists in the result
+        # if info and 'image' in info:
+        #     # Assuming 'image' is stored as a byte array in the 'image' column
+        #     # Encode the image data as a base64 string
+        #     image_base64 = base64.b64encode(info['image']).decode('utf-8')
+        #     info['image'] = image_base64
+
+        return render_template("VerifyUser.html", users=users,ROLE="DGM",dgmuser=info,type='VerifyUser',notify=notify)
+
+
+@app.route('/leavePenddingDistribution',methods=['POST','GET'])
+@secure_route(required_role='IT OFFICER')
+def leavePenddingDistribution():
+    user = users_collection.find_one({'role': 'IT OFFICER'})
+
+    ituser = {'image': ""}
+    if user:
+        ituser = users_collection.find_one({'emailid': user.get('emailid')})
+
+        if ituser and 'image' in ituser:
+            ituser['image'] = base64.b64encode(ituser['image']).decode('utf-8')
+
+
+    on_leave_info = users_collection.find({
+                        '$and': [
+                            {'leaveStatus': 'On Leave', 'status': 'Approved','allocated_tickets': {'$ne': None},'allocated_tickets':{'$ne': []}},
+                            {'$or': [{'role': 'MLRO'}, {'role': 'CM/SM'}]},
+                        ]
+                    },{"_id": 0 })
+    data = {}
+    countMLRO = 0
+    countCM = 0
+    mlroOnLeaveName = []
+    cmOnLeaveName = []
+    for user in on_leave_info:
+        print(user)
+        if user["role"] == "MLRO":
+            mlroOnLeaveName.append(user["name"])
+            countMLRO +=1
+        if user["role"] == "CM/SM":
+            cmOnLeaveName.append(user["name"])
+            countCM +=1
+        if "allocated_tickets" in user:
+            token = user["allocated_tickets"]
+            for da in token:
+                date_pattern = r'\d{4}-\d{2}-\d{2}'
+
+                # Use re.search to find the first occurrence of the pattern in the token
+                match = re.search(date_pattern, da)
+                
+                # Check if a match was found
+                if match:
+                    extracted_date = match.group()
+                    # Check if the extracted_date is already a key in the dictionary
+                    if extracted_date in data:
+                        if 'permisionFormCount' in user:
+                            user_info = {"name": user["name"], "role": user["role"],"emailid": user["emailid"],"count":user['permisionFormCount']}
+                        else:
+                            user_info = {"name": user["name"], "role": user["role"],"emailid": user["emailid"],"count":0}
+                        
+                        if user["name"] in data[extracted_date]:
+                            data[extracted_date][user["name"]]["tickets"].append(da)
+                        else:
+                            data[extracted_date][user["name"]] = {"user_info": user_info, "tickets": [da]}
+                    else:
+                        data[extracted_date] = {user["name"]: {"user_info": {"name": user["name"],"emailid": user["emailid"],"role": user["role"],"count":0}, "tickets": [da]}}
+
+
+    working_emps = users_collection.find({
+                        '$and': [
+                            {'leaveStatus': 'Working', 'status': 'Approved'},
+                            {'$or': [{'role': 'MLRO'}, {'role': 'CM/SM'}]},
+                        ]
+                    },{"_id": 0 })
+    
+    workingMLRO = []
+    workingCM = []
+
+    for emp in working_emps:
+        if emp["role"] == "MLRO":
+            workingMLRO.append(emp["emailid"])
+            # countMLRO +=1
+        if emp["role"] == "CM/SM":
+            workingCM.append(emp["emailid"])
+            # countCM +=1
+    print(workingMLRO)
+    print(workingCM)
+
+    # print("this is data",data)
+    return render_template("leavePage.html",data=data,countMLRO=countMLRO,countCM=countCM,mlroOnLeaveName=mlroOnLeaveName,cmOnLeaveName=cmOnLeaveName,workingMLRO=workingMLRO,workingCM=workingCM,ituser=ituser,type='leavePenddingDistribution',role='IT OFFICER')
+ 
 
 @app.route('/FINnetReports', methods=['GET'])
 @secure_route(required_role='IT OFFICER')
@@ -2816,7 +3750,7 @@ def FINnetReports():
 #             for ticket_id in ticket_ids:
 #                 ticketId.append(ticket_id[0])
 
-#             mysqlAllocate.execute("SELECT id FROM [user] WHERE Role = 'MLRO' ")
+#             mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO' ")
 
 #             mlroId = mysqlAllocate.fetchall()
 
@@ -2852,55 +3786,114 @@ def FINnetReports():
 #         connAllocate.close()
 
 #         return f'Something Went Wrong {e} , Please Re-Login Again ', 500
+
+
+
+  
    
-def allocate():
+# def allocate():
 
 
-    # connAllocate = pyodbc.connect(f"Driver={{SQL Server}};SERVER={serverIP2};Database=ticketid;UID={userSQL2};PWD={pwdSQL2}")
-    connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES")
+#     # connAllocate = pyodbc.connect(f"Driver={{SQL Server}};SERVER={serverIP2};Database=ticketid;UID={userSQL2};PWD={pwdSQL2}")
+#     connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES")
 
-    mysqlAllocate = connAllocate.cursor()
-    try:
-            current_datetime = datetime.now()
-            current_date = current_datetime.date()
-            midnight_datetime = datetime.combine(current_date, datetime.min.time())
+#     mysqlAllocate = connAllocate.cursor()
+#     try:
+#             current_datetime = datetime.now()
+#             current_date = current_datetime.date()
+#             midnight_datetime = datetime.combine(current_date, datetime.min.time())
 
 
-            tickets = []
-            allMlros = []
+#             tickets = []
+#             allMlros = []
 
-            mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
-            column_exists = mysqlAllocate.fetchone()
+#             mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
+#             column_exists = mysqlAllocate.fetchone()
 
-            # If the column doesn't exist, add it
-            if not column_exists:
-                mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
+#             # If the column doesn't exist, add it
+#             if not column_exists:
+#                 mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
        
-            mysqlAllocate.execute("SELECT id FROM [user] WHERE Role = 'MLRO'")
+#             mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO'")
 
-            mlroId = mysqlAllocate.fetchone()[0]
+#             mlroId = mysqlAllocate.fetchone()[0]
 
-            mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL",(mlroId,))
-            mysqlAllocate.commit()
+#             mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL",(mlroId,))
+#             mysqlAllocate.commit()
 
-            mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
-            mysqlAllocate.commit()
+#             mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
+#             mysqlAllocate.commit()
 
 
             
 
 
 
-            connAllocate.close()
+#             connAllocate.close()
      
-            # return redirect(url_for('ITdashboard'))
-    except Exception as e:
+#             # return redirect(url_for('ITdashboard'))
+#     except Exception as e:
 
-        mysqlAllocate.rollback()
+#         mysqlAllocate.rollback()
+#         connAllocate.close()
+
+#         return f'Something Went Wrong {e} , Please Re-Login Again '
+   
+
+
+
+
+
+######### New Updated Function for allocation##########################
+
+def allocate():
+    connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid;MARS_Connection=YES")
+    mysqlAllocate = connAllocate.cursor()
+
+    try:
+        current_datetime = datetime.now()
+        current_date = current_datetime.date()
+        midnight_datetime = datetime.combine(current_date, datetime.min.time())
+
+        # Ensure the column 'alert_allocated_on' exists
+        mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
+        column_exists = mysqlAllocate.fetchone()
+
+        if not column_exists:
+            mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
+
+        # Get all MLROs
+        mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO'")
+        allMlros = [row[0] for row in mysqlAllocate.fetchall()]
+
+        # Get MLROs on leave
+        mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO' AND leave_status = 'On Leave'")
+        mlrosOnLeave = [row[0] for row in mysqlAllocate.fetchall()]
+
+        # Get available MLROs
+        availableMlros = [mlro for mlro in allMlros if mlro not in mlrosOnLeave]
+
+        if not availableMlros:
+            raise Exception("No available MLROs to allocate tickets")
+
+        # Update scenarios for available MLROs
+        for mlroId in availableMlros:
+            mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL AND allocatedTicket IS NULL", (mlroId,))
+            mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
+        
+        # Reallocate alerts for MLROs on leave
+        for mlroId in mlrosOnLeave:
+            for availableMlroId in availableMlros:
+                mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE allocatedTicket = ?", (availableMlroId, mlroId))
+                mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, availableMlroId))
+        
+        connAllocate.commit()
         connAllocate.close()
 
-        return f'Something Went Wrong {e} , Please Re-Login Again '
-   
+    except Exception as e:
+        mysqlAllocate.rollback()
+        connAllocate.close()
+        return f'Something Went Wrong: {e}. Please Re-Login Again.'
 
 
 # ------------------ """ ONLINE STR DOWNLOAD PAGE """ IN FINET REPORT PAGE TAB  -------------------------------
@@ -2924,7 +3917,7 @@ def online_STR_download_page():
         mysqlonlineSTRDownload = connAdminonlineSTRDownload.cursor()
 
         try:
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
             mysqlonlineSTRDownload.execute(query, (email,))
                 
@@ -3003,7 +3996,7 @@ def online_STR_download_page():
 #         mysqlofflineSTRDownload = connAdminofflineSTRDownload.cursor()
 
 
-#         query = "SELECT * FROM [user] WHERE EmailId = ?"
+#         query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
 #         mysqlofflineSTRDownload.execute(query, (email,))
                 
@@ -3087,7 +4080,7 @@ def offline_STR_download_page():
             data.append(obj)
         print(data)
             
-    query = "SELECT * FROM [dbo].[user] WHERE [Role] = ?"
+    query = "SELECT * FROM [dbo].dbo.[user] WHERE [Role] = ?"
 
     cur.execute(query, ('IT OFFICER',))
             
@@ -4463,7 +5456,7 @@ def MLROdashboard():
         mlro_email = session['email_id']
 
 
-        query = "SELECT id FROM [user] WHERE EmailId = ?"
+        query = "SELECT id FROM dbo.[user] WHERE EmailId = ?"
         mysqlMlroDash.execute(query, (mlro_email,))
         user = mysqlMlroDash.fetchone()
 
@@ -4548,7 +5541,7 @@ def MLRONextLevel():
     
         mlro_email = session['email_id']
         
-        query = "SELECT * FROM [user] WHERE EmailId = ?" 
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?" 
 
         mysqlMlroNext.execute(query, (mlro_email,))
         
@@ -4576,7 +5569,7 @@ def MLRONextLevel():
         if role == "DGM/PO":
             mlro_email = session['mlroMailid']
             
-            mysqlMlroNext.execute("SELECT * FROM [user] WHERE EmailId = ?", (mlro_email,))
+            mysqlMlroNext.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (mlro_email,))
             rows = mysqlMlroNext.fetchall()
             
             if not rows:
@@ -4634,7 +5627,7 @@ def MLRONextLeveljson():
         mysqlMlroNext = connMLRONext.cursor()
 
         mlro_email = session['email_id']
-        query = "SELECT * FROM [user] WHERE CAST(EmailId AS nvarchar(max)) = ?"
+        query = "SELECT * FROM dbo.[user] WHERE CAST(EmailId AS nvarchar(max)) = ?"
         mysqlMlroNext.execute(query, (mlro_email,))
         rows = mysqlMlroNext.fetchall()
 
@@ -4735,7 +5728,7 @@ def MLRONextLevelSubmitView():
 
     try:
 
-        mysqlMLROSub.execute("SELECT * FROM [user] WHERE EmailId = ?", (mlro_email,))
+        mysqlMLROSub.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (mlro_email,))
         rows = mysqlMLROSub.fetchall()
         
         columns = [col[0] for col in mysqlMLROSub.description]
@@ -4748,7 +5741,7 @@ def MLRONextLevelSubmitView():
         
         if role == "DGM/PO":
             mlro_email = mlroMailid
-            mysqlMLROSub.execute("SELECT * FROM [user] WHERE EmailId = ?", (mlro_email,))
+            mysqlMLROSub.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (mlro_email,))
             rows = mysqlMLROSub.fetchall()
             
             if not rows:
@@ -4816,7 +5809,7 @@ def Closed_Mlro_Alerts():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlCloasedMlro.execute(query, (mlro_email,))
         
@@ -4910,7 +5903,7 @@ def return_Mlro_Alerts():
     mysqlsentbackClosedmlro = connsnetbackClosedmlro.cursor()
 
     try:
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlsentbackClosedmlro.execute(query, (mlroEmail,))
         
@@ -5027,7 +6020,7 @@ def send_email(sender_email, sender_password, recipient_email, subject, body):
 def get_mlro_details():
     conn = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticket_id;Trusted_Connection=yes;MARS_Connection=yes")
     cursor = conn.cursor()
-    query = "SELECT EmailId, id FROM [user] WHERE Role = 'MLRO'"
+    query = "SELECT EmailId, id FROM dbo.[user] WHERE Role = 'MLRO'"
     cursor.execute(query)
     mlro_data = cursor.fetchall()
     cursor.close()
@@ -5352,7 +6345,7 @@ def CM_SM_dashboard():
 
     try:
 
-        query = "SELECT id FROM [user] WHERE EmailId = ?"
+        query = "SELECT id FROM dbo.[user] WHERE EmailId = ?"
         mysqlCmDash.execute(query, (cm_email,))
         user = mysqlCmDash.fetchone()
 
@@ -5401,7 +6394,7 @@ def CM_SM_dashboard():
 
 
         # Fetch user with Role 'MLRO'
-        query1 = "SELECT * FROM [user] WHERE Role = 'MLRO'"
+        query1 = "SELECT * FROM dbo.[user] WHERE Role = 'MLRO'"
         mysqlCmDash.execute(query1)
         rows = mysqlCmDash.fetchall()
 
@@ -5481,7 +6474,7 @@ def CM_SM_NextLevel():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlCMNext.execute(query, (cm_email,))
         
@@ -5577,7 +6570,7 @@ def closed_Data_To_CM():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlClosedCm.execute(query, (cm_email,))
         
@@ -5663,7 +6656,7 @@ def CM_SM_NextLevelSubmitView():
 
     try:
 
-        mysqlCMSub.execute("SELECT * FROM [user] WHERE EmailId = ?", (cm_email,))
+        mysqlCMSub.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (cm_email,))
         rows = mysqlCMSub.fetchall()
         
 
@@ -5681,7 +6674,7 @@ def CM_SM_NextLevelSubmitView():
         
         if role == "DGM/PO":
             cm_email = cmMailid
-            mysqlCMSub.execute("SELECT * FROM [user] WHERE EmailId = ?", (cm_email,))
+            mysqlCMSub.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (cm_email,))
             rows = mysqlCMSub.fetchall()
             
             if not rows:
@@ -5752,7 +6745,7 @@ def closed_alerts_cm():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlClosedCm.execute(query, (cm_email,))
         
@@ -5862,7 +6855,7 @@ def DGMdashboard():
 
             try:
 
-                query = "SELECT id FROM [user] WHERE EmailId = ?"
+                query = "SELECT id FROM dbo.[user] WHERE EmailId = ?"
                 mysqlgmDash.execute(query, (dgm_email,))
                 user = mysqlgmDash.fetchone()
 
@@ -5906,7 +6899,7 @@ def DGMdashboard():
             
         
 
-            query1 = "SELECT * FROM [user] WHERE Role = 'MLRO'"
+            query1 = "SELECT * FROM dbo.[user] WHERE Role = 'MLRO'"
             mysqlgmDash.execute(query1)
             rows = mysqlgmDash.fetchall()
 
@@ -5962,7 +6955,7 @@ def DGMdashboard():
                 count_commented_cm = 0
 
     
-            query1 = "SELECT * FROM [user] WHERE Role = 'CM/SM'"
+            query1 = "SELECT * FROM dbo.[user] WHERE Role = 'CM/SM'"
 
             mysqlgmDash.execute(query1)
             rows = mysqlgmDash.fetchall()
@@ -6055,7 +7048,7 @@ def DGMNextLevel():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlDGMNext.execute(query, (email,))
         
@@ -6141,7 +7134,7 @@ def DGMNextLevelSubmitView():
 
         try:
 
-            mysqlGMSub.execute("SELECT * FROM [user] WHERE EmailId = ?", (dgm_email,))
+            mysqlGMSub.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (dgm_email,))
 
             rows = mysqlGMSub.fetchall()
             
@@ -6219,7 +7212,7 @@ def DGMNextLevelSubmitViewRejected():
 
         try:
 
-            mysqlGMRejSub.execute("SELECT * FROM [user] WHERE EmailId = ?", (dgm_email,))
+            mysqlGMRejSub.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (dgm_email,))
 
             rows = mysqlGMRejSub.fetchall()
 
@@ -6297,7 +7290,7 @@ def DGMNextLevelSubmitViewRejected():
 
 
 #     try:
-#         select_query = "SELECT * FROM [user] WHERE EmailId = ?"
+#         select_query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
 #         mysqlGMOfflineDash.execute(select_query,(dgm_email,))
 
@@ -6308,7 +7301,7 @@ def DGMNextLevelSubmitViewRejected():
 #             dgmuser['image'] = base64.b64encode(dgmuser['image']).decode('utf-8')
 
 
-#         select_get_user_id_query = "SELECT id FROM [user] WHERE Role = 'ROS' "
+#         select_get_user_id_query = "SELECT id FROM dbo.[user] WHERE Role = 'ROS' "
 
 #         mysqlGMOfflineDash.execute(select_get_user_id_query)
 
@@ -6395,7 +7388,7 @@ def DGMNextLevelSubmitViewRejected():
 #             user_id = user_id_tuple[0]
 
 #             # Get User Details
-#             select_get_user_details_query = "SELECT EmpId,EmailId FROM [user] WHERE id = ?"
+#             select_get_user_details_query = "SELECT EmpId,EmailId FROM dbo.[user] WHERE id = ?"
 
 #             mysqlGMOfflineDash.execute(select_get_user_details_query,(user_id,))
 
@@ -6405,13 +7398,13 @@ def DGMNextLevelSubmitViewRejected():
 #             Email = user_details[1]
 
 #             # Total Pending Ticket Count ROS
-#             select_get_brach_code_query = "SELECT BranchCode FROM [user] WHERE [id] = ?"
+#             select_get_brach_code_query = "SELECT BranchCode FROM dbo.[user] WHERE [id] = ?"
 
 #             mysqlGMOfflineDash.execute(select_get_brach_code_query,(user_id,))
 
 #             B_code = mysqlGMOfflineDash.fetchone()[0]
             
-#             select_get_b_user_id_query = "SELECT id FROM [user] WHERE BranchCode = ? AND Role = 'BranchMakers' "
+#             select_get_b_user_id_query = "SELECT id FROM dbo.[user] WHERE BranchCode = ? AND Role = 'BranchMakers' "
 
 #             mysqlGMOfflineDash.execute(select_get_b_user_id_query,(B_code,))
 
@@ -6484,14 +7477,14 @@ def DGMofflinedashboard():
         return redirect(url_for('post_login'))
     dgm_email = session['email_id']
     try:
-        select_query = "SELECT * FROM [dbo].[user] WHERE [EmailId] = ?"
+        select_query = "SELECT * FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
         cursor.execute(select_query,(dgm_email,))
         dgmuser = cursor.fetchone()
         if 'image' in dgmuser:
             # Encode the image data as a base64 string
             dgmuser['image'] = base64.b64encode(dgmuser['image']).decode('utf-8')
 
-        select_get_user_id_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = 'ROS' "
+        select_get_user_id_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = 'ROS' "
         cursor.execute(select_get_user_id_query)
         User_ids = cursor.fetchall()
 
@@ -6561,18 +7554,18 @@ def DGMofflinedashboard():
             user_id = user_id_tuple[0]
 
             # Get User Details
-            select_get_user_details_query = "SELECT [EmpId],[EmailId] FROM [dbo].[user] WHERE [id] = ?"
+            select_get_user_details_query = "SELECT [EmpId],[EmailId] FROM [dbo].dbo.[user] WHERE [id] = ?"
             cursor.execute(select_get_user_details_query,(user_id,))
             user_details = cursor.fetchone()
             EmpID = user_details[0]
             Email = user_details[1]
 
             # Total Pending Ticket Count ROS
-            select_get_brach_code_query = "SELECT [BranchCode] FROM [dbo].[user] WHERE [id] = ?"
+            select_get_brach_code_query = "SELECT [BranchCode] FROM [dbo].dbo.[user] WHERE [id] = ?"
             cursor.execute(select_get_brach_code_query,(user_id,))
             B_code = cursor.fetchone()[0]
             
-            select_get_b_user_id_query = "SELECT [id] FROM [dbo].[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers' "
+            select_get_b_user_id_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers' "
             cursor.execute(select_get_b_user_id_query,(B_code,))
             B_User_id = cursor.fetchone()[0]
 
@@ -6635,7 +7628,7 @@ def acc_holder_offline_history():
     mlro_email = session['email_id']
     cur = mysql2.connection.cursor()
 
-    query = "SELECT * FROM [user] WHERE EmailId = ?"
+    query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
     cur.execute(query, (mlro_email,))
     
@@ -6789,7 +7782,7 @@ def offline_dgm_Str():
 
 #     try:
 #         # Here we are try to the data arrengment for DGM 
-#         select_query1 = "SELECT id from [user] where [EmailId] = ?"
+#         select_query1 = "SELECT id from dbo.[user] where [EmailId] = ?"
 #         mysqlGMofflineStrSub.execute(select_query1, (ros_email,))
 #         branch_code = mysqlGMofflineStrSub.fetchone()
 #         B_id = branch_code[0]
@@ -6837,7 +7830,7 @@ def offline_dgm_submited_Str():
     
     # Here we are try to the data arrengment for DGM 
     # Getting the user id based on Email Id(Email Id stored in Session)
-    select_query1 = "SELECT id from [dbo].[user] where [EmailId] = ?"
+    select_query1 = "SELECT id from [dbo].dbo.[user] where [EmailId] = ?"
     try:
         cursor.execute(select_query1, (ros_email,))
         branch_code = cursor.fetchone()
@@ -6947,7 +7940,7 @@ def update_threshold_values():
 
     try:
 
-        select_query = "SELECT * FROM [user] WHERE EmailId = ?"
+        select_query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlThreshold.execute(select_query,(dgm_email,))
 
@@ -7031,7 +8024,7 @@ def DV_threshold_values():
 
     try:
 
-        select_query = "SELECT * FROM [user] WHERE EmailId = ?"
+        select_query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlThresholdValues.execute(select_query,(dgm_email,))
 
@@ -7165,7 +8158,7 @@ def display_Sent_Back_Alerts():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
         mysqlDispSentBackCase.execute(query, (email,))
         
@@ -7267,7 +8260,7 @@ def rejectAlert():
         
 
     try:
-        query = "SELECT id FROM [user] WHERE EmailId = ?"
+        query = "SELECT id FROM dbo.[user] WHERE EmailId = ?"
         mysqlSentbackAlertRej.execute(query, (cm_email,))
         cmId_row = mysqlSentbackAlertRej.fetchone()
         
@@ -7337,7 +8330,7 @@ def deletedcases():
             ticket_id = request.form.get('ticket_id')
             rediretingEndPoint = request.form.get('type')
 
-            query = "SELECT * FROM [user] WHERE EmailId = ?" 
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?" 
 
             mysqlDeletedCases.execute(query, (mlro_email,))
             
@@ -7405,7 +8398,7 @@ def Display_Deleted_Mlro_Alerts():
     try:
 
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?" 
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?" 
 
         mysqlDeleteCases.execute(query, (mlro_email,))
         
@@ -7494,7 +8487,7 @@ def enableCases():
         mysqlEnableCases = connEnablCases.cursor()
 
         try:
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
             mysqlEnableCases.execute(query, (mlro_email,))
 
@@ -7567,7 +8560,7 @@ def enableCases():
 #     mysqlBranchland = connBranchland.cursor()
     
 #     try:
-#         mysqlBranchland.execute("SELECT * FROM [user] WHERE EmailId = ?", (email_id,))
+#         mysqlBranchland.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email_id,))
 
 #         user = mysqlBranchland.fetchone()
         
@@ -7599,7 +8592,7 @@ def branchmakers():
     
     # Fetch user info from MS SQL Server
     cursor = mysql2.connection.cursor()
-    cursor.execute("SELECT * FROM [dbo].[user] WHERE [EmailId]=?", (email_id,))
+    cursor.execute("SELECT * FROM [dbo].dbo.[user] WHERE [EmailId]=?", (email_id,))
     user = cursor.fetchone()
 
     branchmakeruser = {}
@@ -7771,7 +8764,7 @@ def offline_sumited_branchmaker():
 
 #     try:
 
-#         mysqlROSDash.execute("SELECT * FROM [user] WHERE EmailId=?", (ros_email,))
+#         mysqlROSDash.execute("SELECT * FROM dbo.[user] WHERE EmailId=?", (ros_email,))
 
 #         rosuser = mysqlROSDash.fetchone()
 
@@ -7779,13 +8772,13 @@ def offline_sumited_branchmaker():
 #                 rosuser['image'] = base64.b64encode(rosuser['image']).decode('utf-8')
             
         
-#         select_get_brach_code_query = "SELECT BranchCode FROM [user] WHERE EmailId = ?"
+#         select_get_brach_code_query = "SELECT BranchCode FROM dbo.[user] WHERE EmailId = ?"
 
 #         mysqlROSDash.execute(select_get_brach_code_query,(ros_email,))
 
 #         B_code = mysqlROSDash.fetchone()[0]
         
-#         select_get_user_id_query = "SELECT id FROM [user] WHERE BranchCode = ? AND Role = 'BranchMakers' "
+#         select_get_user_id_query = "SELECT id FROM dbo.[user] WHERE BranchCode = ? AND Role = 'BranchMakers' "
 
 #         mysqlROSDash.execute(select_get_user_id_query,(B_code,))
 
@@ -7879,19 +8872,19 @@ def offline_sumited_branchmaker():
 #     ros_email = session['email_id']
 #     cursor = mysql2.connection.cursor()
 
-#     select_query = "SELECT * FROM [dbo].[user] WHERE [EmailId] = ?"
+#     select_query = "SELECT * FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
 #     cursor.execute(select_query, ros_email)
 #     rosuser = cursor.fetchone()
 #     if 'image' in rosuser:
 #         rosuser['image'] = base64.b64encode(rosuser['image']).decode('utf-8')
     
     
-#     select_get_brach_code_query = "SELECT [BranchCode] FROM [dbo].[user] WHERE [EmailId] = ?"
+#     select_get_brach_code_query = "SELECT [BranchCode] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
 #     cursor.execute(select_get_brach_code_query,(ros_email,))
 #     B_code = cursor.fetchone()[0]
 #     print('B_code :', B_code)
     
-#     select_get_user_id_query = "SELECT [id] FROM [dbo].[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers' "
+#     select_get_user_id_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers' "
 #     cursor.execute(select_get_user_id_query,(B_code,))
 #     User_id = cursor.fetchone()[0]
 #     print('User_id :', User_id)
@@ -7981,18 +8974,18 @@ def ROSDashboard():
     cursor = mysql2.connection.cursor()
 
     try:
-        select_query = "SELECT * FROM [dbo].[user] WHERE [EmailId] = ?"
+        select_query = "SELECT * FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
         cursor.execute(select_query, (ros_email,))
         rosuser = cursor.fetchone()
         if 'image' in rosuser:
             rosuser['image'] = base64.b64encode(rosuser['image']).decode('utf-8')
 
-        select_get_branch_code_query = "SELECT [BranchCode] FROM [dbo].[user] WHERE [EmailId] = ?"
+        select_get_branch_code_query = "SELECT [BranchCode] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
         cursor.execute(select_get_branch_code_query, (ros_email,))
         B_code = cursor.fetchone()[0]
         print('B_code :', B_code)
 
-        select_get_user_id_query = "SELECT [id] FROM [dbo].[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers' "
+        select_get_user_id_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers' "
         cursor.execute(select_get_user_id_query, (B_code,))
         User_id = cursor.fetchone()[0]
         print('User_id :', User_id)
@@ -8098,7 +9091,7 @@ def ROSDashboard():
 #     try:
 #         try:    
     
-#             select_query1 = "SELECT BranchCode FROM [user] WHERE EmailId = ?"
+#             select_query1 = "SELECT BranchCode FROM dbo.[user] WHERE EmailId = ?"
 
 #             mysqlROSPending.execute(select_query1, (ros_email,))
 
@@ -8152,14 +9145,14 @@ def ros():
     
     # Here we are try to the data arrengment for ROS because now we are dealing with multiple ROS
     # Getting the Branch Code based on Email Id(Email Id stored in Session)
-    select_query1 = "SELECT [BranchCode] FROM [user] WHERE [EmailId] = ?"
+    select_query1 = "SELECT [BranchCode] FROM dbo.[user] WHERE [EmailId] = ?"
     cursor.execute(select_query1, (ros_email,))
     branch_code = cursor.fetchone()
     B_code = branch_code[0]
     # print(branch_code[0])
 
     # Getting the Email Id of Branchmaker based on Branch Code and Role
-    select_query2 = "SELECT [EmailId] FROM [user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers'"
+    select_query2 = "SELECT [EmailId] FROM dbo.[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers'"
     cursor.execute(select_query2, (B_code,))
     ros_email_id = cursor.fetchall()
     #print(ros_email_id)
@@ -8206,7 +9199,7 @@ def ros():
 
 #     try:
 
-#         select_query1 = "SELECT id from [user] where [EmailId] = ?"
+#         select_query1 = "SELECT id from dbo.[user] where [EmailId] = ?"
 
 #         mysqlROSSub.execute(select_query1, (ros_email,))
 
@@ -8269,7 +9262,7 @@ def offline_submited_Str():
     
     # Here we are try to the data arrengment for ROS because now we are dealing with multiple ROS
     # Getting the user id based on Email Id(Email Id stored in Session)
-    select_query1 = "SELECT id from [dbo].[user] where [EmailId] = ?"
+    select_query1 = "SELECT id from [dbo].dbo.[user] where [EmailId] = ?"
     cursor.execute(select_query1, (ros_email,))
     branch_code = cursor.fetchone()
     
@@ -8348,7 +9341,7 @@ def caseFormPage():
             
             mlro_email = session['email_id']
 
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
             mysqlMlroForm.execute(query, (mlro_email,))
             
@@ -8367,7 +9360,7 @@ def caseFormPage():
             if 'image' in mlro:
                     mlro['image'] = base64.b64encode(mlro['image']).decode('utf-8')
 
-            mysqlMlroForm.execute("SELECT EmailId FROM [user] WHERE Role = ?",('CM/SM',))
+            mysqlMlroForm.execute("SELECT EmailId FROM dbo.[user] WHERE Role = ?",('CM/SM',))
             allocatedCM = mysqlMlroForm.fetchone()[0]
 
 
@@ -8499,7 +9492,7 @@ def caseFormPageEdit():
         
             email = session['email_id']
 
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
             mysqlCaseFormEdit.execute(query, (email,))
             
@@ -8540,7 +9533,7 @@ def caseFormPageEdit():
 
 
             if info["Role"] == "CM/SM":
-                mysqlCaseFormEdit.execute("SELECT EmailId FROM [user] WHERE Role = ?",('DGM/PO',))
+                mysqlCaseFormEdit.execute("SELECT EmailId FROM dbo.[user] WHERE Role = ?",('DGM/PO',))
                 allocated = mysqlCaseFormEdit.fetchone()[0]
                 endpo = 'CM_SM_NextLevel'
 
@@ -8583,7 +9576,7 @@ def sent_back_case_FormPage():
         try:
 
 
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
             mysqlDispSentBackCaseForm.execute(query, (email,))
             
@@ -8624,11 +9617,11 @@ def sent_back_case_FormPage():
 
 
             if info["Role"] == "CM/SM":
-                mysqlDispSentBackCaseForm.execute("SELECT EmailId FROM [user] WHERE Role = ?",('DGM/PO',))
+                mysqlDispSentBackCaseForm.execute("SELECT EmailId FROM dbo.[user] WHERE Role = ?",('DGM/PO',))
                 allocated = mysqlDispSentBackCaseForm.fetchone()[0]
 
             if info["Role"] == "MLRO":
-                mysqlDispSentBackCaseForm.execute("SELECT EmailId FROM [user] WHERE Role = ?",('CM/SM',))
+                mysqlDispSentBackCaseForm.execute("SELECT EmailId FROM dbo.[user] WHERE Role = ?",('CM/SM',))
                 allocated = mysqlDispSentBackCaseForm.fetchone()[0]
         
             connDispSentBackCaseForm.close()
@@ -8667,7 +9660,7 @@ def returnCaseFormEdit():
 
         try:
     
-            query = "SELECT * FROM [user] WHERE EmailId = ?"
+            query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
             mysqlsentbackClosededit.execute(query, (mlro_email,))
             mlro = mysqlsentbackClosededit.fetchone()
     
@@ -8743,11 +9736,11 @@ def sendBackCaseCreated():
             mailid = session['email_id']
 
 
-            mysqlSentBackCase.execute("SELECT Role FROM [user] WHERE EmailId = ?", (mailid,))
+            mysqlSentBackCase.execute("SELECT Role FROM dbo.[user] WHERE EmailId = ?", (mailid,))
             role = mysqlSentBackCase.fetchone()[0]
 
 
-            mysqlSentBackCase.execute("SELECT id FROM [user] WHERE EmailId = ?", (reverseTo,))
+            mysqlSentBackCase.execute("SELECT id FROM dbo.[user] WHERE EmailId = ?", (reverseTo,))
             reverseToId = mysqlSentBackCase.fetchone()[0]
 
             if role == 'DGM/PO':
@@ -8819,7 +9812,7 @@ def sendBackCaseCreated():
 
 #     cursor = mysql2.connection.cursor()
 
-#     select_query = "SELECT * FROM [user] WHERE [EmailId] = ?"
+#     select_query = "SELECT * FROM dbo.[user] WHERE [EmailId] = ?"
 #     cursor.execute(select_query, (emailId,))
 #     user = cursor.fetchone()
   
@@ -8858,7 +9851,7 @@ def offline_Form_Edit():
     
     emailId = session['email_id']
 
-    select_query = "SELECT * FROM [dbo].[user] WHERE [EmailId] = ?"
+    select_query = "SELECT * FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
     cursor.execute(select_query, (emailId,))
     user = cursor.fetchone()
     print(user)
@@ -8962,7 +9955,7 @@ def submetCaseForm():
         
                 user = session['email_id']
         
-                query = "SELECT * FROM [user] WHERE EmailId = ?"
+                query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
 
                 mysqlCaseForm.execute(query, (user,))
                 
@@ -9032,7 +10025,7 @@ def submetCaseForm():
 
 
                 if info["Role"] != 'DGM/PO':
-                    mysqlCaseForm.execute("SELECT * FROM [user] WHERE EmailId = ?",(sentTo,))
+                    mysqlCaseForm.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?",(sentTo,))
 
                     sentToId = mysqlCaseForm.fetchone()[0]
 
@@ -9357,7 +10350,7 @@ def submetCaseForm():
 #                 table_exists = conn.fetchone()
                 
 #                 # Getting the user id of the branchmaker
-#                 select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+#                 select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
 #                 conn.execute(select_query, (branchmaker_email))
 #                 result = conn.fetchone()
 #                 obj['id'] = result[0]
@@ -9757,7 +10750,7 @@ def post_manual_str():
                 table_exists = cursor.fetchone()
                 
                  # Getting the user id of the branchmaker
-                select_query = "SELECT [id] FROM [user] WHERE [EmailId] = ?"
+                select_query = "SELECT [id] FROM dbo.[user] WHERE [EmailId] = ?"
                 cursor.execute(select_query, (branchmaker_email,))
                 result = cursor.fetchone()
                 obj['id'] = result[0]
@@ -10194,7 +11187,7 @@ def post_manual_str():
 #             cursor.execute(update_data_for_ros_dgm_query, (obj['SuspiciousDueToproceedofCrime'], obj['SuspiciousDueToComplexTranscaction'],obj['SuspiciousDueToNoecoRational'], obj['SuspiciousDueToFinancingTerrorism'], obj['AttemptedTranscaction'], obj['LEAInformed'], obj['PriorityRating'], obj['ReportCoverage'], obj['leadetails'], obj['AdditionalDocument'], obj['Aroundofsuspision'], obj['DetailsofInvestigation'], ticket_id))
 #             conn.commit()
 
-#             search_query = "SELECT [Role] FROM [dbo].[user] WHERE EmailId = ?"
+#             search_query = "SELECT [Role] FROM [dbo].dbo.[user] WHERE EmailId = ?"
 #             cursor.execute(search_query, (mailid,))
 #             result = cursor.fetchone()
 #             print("data:",result[0])
@@ -10221,7 +11214,7 @@ def post_manual_str():
 #                         # Tid = result[0]
 
 #                         # Getting the User ID based on User Email id(Email id is getting for the Session)
-#                         select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+#                         select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
 #                         cursor.execute(select_query, (ros_email_updated,))
 #                         result1 = cursor.fetchone()
 #                         id = result1[0]
@@ -10254,7 +11247,7 @@ def post_manual_str():
 #                         # Tid = result[0]
 
 #                         # Getting the User ID based on User Email id(Email id is getting for the Session)
-#                         select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+#                         select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
 #                         cursor.execute(select_query, (ros_email_updated,))
 #                         result1 = cursor.fetchone()
 #                         id = result1[0]
@@ -10278,7 +11271,7 @@ def post_manual_str():
 #                     conn.commit()
 
 #                     # Getting the User ID based on User Email id(Email id is getting for the Session)
-#                     select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+#                     select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
 #                     cursor.execute(select_query, (ros_email_updated,))
 #                     result1 = cursor.fetchone()
 #                     id = result1[0]
@@ -10319,7 +11312,7 @@ def post_manual_str():
 #                             # Tid = result[0]
 
 #                             # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-#                             select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+#                             select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
 #                             cursor.execute(select_query, ('DGM/PO',))
 #                             result1 = cursor.fetchone()
 #                             id = result1[0]
@@ -10346,7 +11339,7 @@ def post_manual_str():
 #                             mysql2.connection.commit()
 
 #                             # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-#                             select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+#                             select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
 #                             cursor.execute(select_query, ('DGM/PO',))
 #                             result1 = cursor.fetchone()
 #                             id = result1[0]
@@ -10380,7 +11373,7 @@ def post_manual_str():
 #                             # Tid = result[0]
 
 #                             # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-#                             select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+#                             select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
 #                             cursor.execute(select_query, ('DGM/PO',))
 #                             result1 = cursor.fetchone()
 #                             id = result1[0]
@@ -10407,7 +11400,7 @@ def post_manual_str():
 #                                 mysql2.connection.commit()
 
 #                                 # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-#                                 select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+#                                 select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
 #                                 cursor.execute(select_query, ('DGM/PO',))
 #                                 result1 = cursor.fetchone()
 #                                 id = result1[0]
@@ -10432,7 +11425,7 @@ def post_manual_str():
 #                     conn.commit()
 
 #                     # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-#                     select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+#                     select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
 #                     cursor.execute(select_query, ('DGM/PO',))
 #                     result1 = cursor.fetchone()
 #                     id = result1[0]
@@ -10621,7 +11614,7 @@ def update_offline_str_ros():
             cursor.execute(update_data_for_ros_dgm_query, (obj['SuspiciousDueToproceedofCrime'], obj['SuspiciousDueToComplexTranscaction'],obj['SuspiciousDueToNoecoRational'], obj['SuspiciousDueToFinancingTerrorism'], obj['AttemptedTranscaction'], obj['LEAInformed'], obj['PriorityRating'], obj['ReportCoverage'], obj['leadetails'], obj['AdditionalDocument'], obj['Aroundofsuspision'], obj['DetailsofInvestigation'], ticket_id))
             conn.commit()
 
-            search_query = "SELECT [Role] FROM [dbo].[user] WHERE EmailId = ?"
+            search_query = "SELECT [Role] FROM [dbo].dbo.[user] WHERE EmailId = ?"
             cursor.execute(search_query, (mailid,))
             result = cursor.fetchone()
             print("data:",result[0])
@@ -10648,7 +11641,7 @@ def update_offline_str_ros():
                         # Tid = result[0]
 
                         # Getting the User ID based on User Email id(Email id is getting from the Session)
-                        select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+                        select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
                         cursor.execute(select_query, (ros_email_updated,))
                         result1 = cursor.fetchone()
                         id = result1[0]
@@ -10681,7 +11674,7 @@ def update_offline_str_ros():
                         # Tid = result[0]
 
                         # Getting the User ID based on User Email id(Email id is getting for the Session)
-                        select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+                        select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
                         cursor.execute(select_query, (ros_email_updated,))
                         result1 = cursor.fetchone()
                         id = result1[0]
@@ -10705,7 +11698,7 @@ def update_offline_str_ros():
                     conn.commit()
 
                     # Getting the User ID based on User Email id(Email id is getting for the Session)
-                    select_query = "SELECT [id] FROM [dbo].[user] WHERE [EmailId] = ?"
+                    select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
                     cursor.execute(select_query, (ros_email_updated,))
                     result1 = cursor.fetchone()
                     id = result1[0]
@@ -10746,7 +11739,7 @@ def update_offline_str_ros():
                             # Tid = result[0]
 
                             # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-                            select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+                            select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
                             cursor.execute(select_query, ('DGM/PO',))
                             result1 = cursor.fetchone()
                             id = result1[0]
@@ -10773,7 +11766,7 @@ def update_offline_str_ros():
                             mysql2.connection.commit()
 
                             # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-                            select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+                            select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
                             cursor.execute(select_query, ('DGM/PO',))
                             result1 = cursor.fetchone()
                             id = result1[0]
@@ -10807,7 +11800,7 @@ def update_offline_str_ros():
                             # Tid = result[0]
 
                             # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-                            select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+                            select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
                             cursor.execute(select_query, ('DGM/PO',))
                             result1 = cursor.fetchone()
                             id = result1[0]
@@ -10834,7 +11827,7 @@ def update_offline_str_ros():
                                 mysql2.connection.commit()
 
                                 # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-                                select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+                                select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
                                 cursor.execute(select_query, ('DGM/PO',))
                                 result1 = cursor.fetchone()
                                 id = result1[0]
@@ -10859,7 +11852,7 @@ def update_offline_str_ros():
                     conn.commit()
 
                     # Getting the User ID based on Role(Because here i have only one DGM so no need check the email id)
-                    select_query = "SELECT [id] FROM [dbo].[user] WHERE [Role] = ?"
+                    select_query = "SELECT [id] FROM [dbo].dbo.[user] WHERE [Role] = ?"
                     cursor.execute(select_query, ('DGM/PO',))
                     result1 = cursor.fetchone()
                     id = result1[0]
@@ -10910,7 +11903,7 @@ def update_offline_str_ros():
 #     # notify = notification(emailId)
 
 #     # Retrieve user data from the MS SQL database
-#     select_query = "SELECT * FROM [user] WHERE [EmailId] = ?"
+#     select_query = "SELECT * FROM dbo.[user] WHERE [EmailId] = ?"
 #     cursor.execute(select_query, (emailId,))
 #     user = cursor.fetchone()
 #     print(user)
@@ -10940,14 +11933,14 @@ def update_offline_str_ros():
 #             return render_template('archivedPage.html', data=info, allImages=communuser, role='DGM/PO', type='archived', dashBoardType=dashBoardType)
 #         elif cols == 'ROS':
 #             dashBoardType = 'ros'
-#             select_query1 = "SELECT [BranchCode] FROM [user] WHERE [EmailId] = ?"
+#             select_query1 = "SELECT [BranchCode] FROM dbo.[user] WHERE [EmailId] = ?"
 #             cursor.execute(select_query1, (emailId,))
 #             branch_code = cursor.fetchone()
 #             B_code = branch_code[0]
 #             # print(branch_code[0])
 
 #             # Getting the Email Id of Branchmaker based on Branch Code and Role
-#             select_query2 = "SELECT [EmailId] FROM [user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers'"
+#             select_query2 = "SELECT [EmailId] FROM dbo.[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers'"
 #             cursor.execute(select_query2, (B_code,))
 #             ros_email_id = cursor.fetchall()
 #             # print(ros_email_id)
@@ -10985,7 +11978,7 @@ def archived():
     # notify = notification(emailId)
 
     # Retrieve user data from the MS SQL database
-    select_query = "SELECT * FROM [dbo].[user] WHERE [EmailId] = ?"
+    select_query = "SELECT * FROM [dbo].dbo.[user] WHERE [EmailId] = ?"
     cursor.execute(select_query, (emailId,))
     user = cursor.fetchone()
     print(user)
@@ -11010,7 +12003,7 @@ def archived():
             dashBoardType = 'DGMdashboard'
             # Here we are try to the data arrengment for DGM 
             # Getting the user id based on Email Id(Email Id stored in Session)
-            # select_query1 = "SELECT id from [dbo].[user] where [EmailId] = ?"
+            # select_query1 = "SELECT id from [dbo].dbo.[user] where [EmailId] = ?"
             # cursor.execute(select_query1, (emailId,))
             # branch_code = cursor.fetchone()
             # B_id = branch_code[0]
@@ -11048,14 +12041,14 @@ def archived():
             # return render_template('archivedPage.html', data=info, allImages=communuser, role='DGM/PO', type='archived', dashBoardType=dashBoardType)
         elif cols == 'ROS':
             dashBoardType = 'ros'
-            select_query1 = "SELECT [BranchCode] FROM [user] WHERE [EmailId] = ?"
+            select_query1 = "SELECT [BranchCode] FROM dbo.[user] WHERE [EmailId] = ?"
             cursor.execute(select_query1, (emailId,))
             branch_code = cursor.fetchone()
             B_code = branch_code[0]
             # print(branch_code[0])
 
             # Getting the Email Id of Branchmaker based on Branch Code and Role
-            select_query2 = "SELECT [EmailId] FROM [user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers'"
+            select_query2 = "SELECT [EmailId] FROM dbo.[user] WHERE [BranchCode] = ? AND [Role] = 'BranchMakers'"
             cursor.execute(select_query2, (B_code,))
             ros_email_id = cursor.fetchall()
             # print(ros_email_id)
@@ -11126,7 +12119,7 @@ def acc_holder_history():
 
     try:
 
-        query = "SELECT * FROM [user] WHERE EmailId = ?"
+        query = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
         mysqlAccHis.execute(query, (mlro_email,))
         
         rows = mysqlAccHis.fetchall()
@@ -11592,7 +12585,7 @@ def verify_tenpercent_data():
 
     mysqlverifyTen = connverifyTen.cursor()
     try:
-        query = "SELECT id FROM [user] WHERE Role = 'CM/SM'"
+        query = "SELECT id FROM dbo.[user] WHERE Role = 'CM/SM'"
         mysqlverifyTen.execute(query)
         rows = mysqlverifyTen.fetchone()
         
@@ -11656,7 +12649,7 @@ def profile():
 
      cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-     userr = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+     userr = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
      user = cur.fetchone()
      return render_template('profileMLRO.html',mlrouser=user,role='MLRO',type='profile')
 
@@ -11667,7 +12660,7 @@ def profileIT():
      email = session['email_id']
      cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-     userr = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+     userr = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
      user = cur.fetchone()
      
      return render_template('profileIT.html',ituser=user,role='IT OFFICER',type='profileIT')
@@ -11680,7 +12673,7 @@ def profileDGM():
 
      cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-     userr = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+     userr = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
      user = cur.fetchone()
      return render_template('profileDGM.html',dgmuser=user,role='DGM/PO',type='profileDGM')
 
@@ -11691,7 +12684,7 @@ def profile_CM_SM():
 
      cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-     userr = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+     userr = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
      user = cur.fetchone()
      return render_template('profile_CM_SM.html',cmuser=user,role='CM/SM',type='profile_CM_SM')
 
@@ -11704,7 +12697,7 @@ def profileBranchMaker():
     # print(email)
     cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-    user = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+    user = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
     user = cur.fetchone()
     return render_template('profileBranchMaker.html',branchmakeruser=user,role='BranchMakers',type='profileBranchMaker')
 
@@ -11717,7 +12710,7 @@ def profileROS():
     # print(email)
     cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-    user = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+    user = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
     user = cur.fetchone()
     return render_template('profileROS.html',rosuser=user,role='ROS',type='profileROS')
 
@@ -11728,7 +12721,7 @@ def SDNprofile():
     # print(email)
     cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-    user = cur.execute("SELECT * FROM [user] WHERE EmailId = ?", (email,))
+    user = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
     user = cur.fetchone()
     return render_template('SDN_User.html',sdnuser=user,role='PINACA_ADMIN',type='SDNprofile')
 
