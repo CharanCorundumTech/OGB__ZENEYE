@@ -3104,179 +3104,143 @@ def submit_form():
         cursor = conn4.cursor()
         sql = "SELECT * FROM dbo.[user] WHERE EmailId = ?"
         cursor.execute(sql, (emailid,))
-        userDetails = cursor.fetchone()
+        existing_user = cursor.fetchone()
 
-        if userDetails:
-            existing_user = userDetails
+        if not existing_user:
+            # Handle case where the user does not exist
+            return jsonify({"error": "User not found"}), 404
 
         if role == 'CM/SM':
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'MLROs_assigned'")
-            MLROs_assigned_exists = cursor.fetchone()
-            if not MLROs_assigned_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD MLROs_assigned VARCHAR(255)")
-
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to_agm'")
-            assigned_to_agm_exists = cursor.fetchone()
-            if not assigned_to_agm_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to_agm VARCHAR(255)")
-
-            sql = """
-            UPDATE dbo.[user]
-            SET 
-                [Password] = ?, 
-                [Status] = ?, 
-                [MLROs_assigned] = '', 
-                [Assigned_to] = '',
-                [Assigned_to_agm] = ''
-            WHERE EmpId = ?
-            """
-            cursor.execute(sql, (hashed_password, status, existing_user.EmpId))
-
-            sql = """
-            SELECT *
-            FROM dbo.[user]
-            WHERE 
-                Role = 'MLRO' AND 
-                Assigned_to = '' AND 
-                Status IN ('Created', 'Approved')
-            """
-            cursor.execute(sql)
-            mlros_data = cursor.fetchall()
-            for mlro_doc in mlros_data:
-                cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='CM/SM' AND Status='Created'", (existing_user.EmpId,))
-                cm_user = cursor.fetchone()
-                if cm_user and len(cm_user.MLROs_assigned.split(',')) < 5:
-                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cm_user.EmailId, mlro_doc.EmpId))
-                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=MLROs_assigned + ',' + ? WHERE EmpId=?", (mlro_doc.EmailId, cm_user.EmpId))
-
-            # Fetch AGMs to be assigned
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND Status IN ('Created', 'Approved')")
-            agm_data = cursor.fetchall()
-            for agm_doc in agm_data:
-                cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='CM/SM' AND Assigned_to_agm='' AND Status='Created'", (existing_user.EmpId,))
-                cm_user = cursor.fetchone()
-                if cm_user and len(agm_doc.CMS_assigned.split(',')) <= 3:
-                    cursor.execute("UPDATE dbo.[user] SET Assigned_to_agm=? WHERE EmpId=?", (agm_doc.EmailId, cm_user.EmpId))
-                    cursor.execute("UPDATE dbo.[user] SET CMS_assigned=CMS_assigned + ',' + ? WHERE EmpId=?", (cm_user.EmailId, agm_doc.EmpId))
-                    break
-
-        elif role == 'MLRO':
-            # Check and add Assigned_to column if it doesn't exist
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to'")
-            assigned_to_exists = cursor.fetchone()
-            if not assigned_to_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to VARCHAR(255)")
-
-            # Check and add Assigned_to_ros column if it doesn't exist
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to_ros'")
-            assigned_to_ros_exists = cursor.fetchone()
-            if not assigned_to_ros_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to_ros VARCHAR(255)")
-
             # Update user information
             sql_update = """
             UPDATE dbo.[user]
             SET 
                 [Password] = ?, 
                 [Status] = ?, 
-                Assigned_to = '', 
-                Assigned_to_ros = ''
+                [MLROs_assigned] = '', 
+                [Assigned_to] = ''
+            WHERE EmpId = ?
+            """
+            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
+
+            # Fetch MLRO data
+            cursor.execute("""
+            SELECT *
+            FROM dbo.[user]
+            WHERE 
+                Role = 'MLRO' AND 
+                Assigned_to = '' AND 
+                Status IN ('Created', 'Approved')
+            """)
+            mlros_data = cursor.fetchall()
+
+            for mlro_doc in mlros_data:
+                if len(existing_user.MLROs_assigned.split(',')) < 5:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (existing_user.EmailId, mlro_doc.EmpId))
+                    new_mlros_assigned = existing_user.MLROs_assigned + ',' + mlro_doc.EmailId if existing_user.MLROs_assigned else mlro_doc.EmailId
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, existing_user.EmpId))
+
+        elif role == 'MLRO':
+            # Update user information
+            sql_update = """
+            UPDATE dbo.[user]
+            SET 
+                [Password] = ?, 
+                [Status] = ?, 
+                Assigned_to = ''
             WHERE EmpId = ?
             """
             cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
 
             # Fetch CM/SM data
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='CM/SM' AND Status IN ('Created', 'Approved')")
+            cursor.execute("""
+            SELECT *
+            FROM dbo.[user]
+            WHERE 
+                Role = 'CM/SM' AND 
+                Status IN ('Created', 'Approved')
+            """)
             cmsm_data = cursor.fetchall()
-            print('cm/sm=======',cmsm_data)
 
-            # Fetch all unassigned MLROs
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='MLRO' AND Assigned_to='' AND Status='Created'")
-            mlro_users = cursor.fetchall()
-
-            
-            # Assign MLROs to CM/SM in groups of 5
-            for mlro_index, mlro_user in enumerate(mlro_users):
-                for cmsm_index, cmsm_doc in enumerate(cmsm_data):
-                    # Check if the MLROs_assigned list for the current CM/SM contains less than 5 MLROs
-                    if cmsm_doc.MLROs_assigned:
-                        assigned_mlros = cmsm_doc.MLROs_assigned.split(',')
-                        if len(assigned_mlros) < 5:
-                            # Assign MLRO to CM/SM
-                            cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cmsm_doc.EmailId, mlro_user.EmpId))
-
-                            # Update MLROs_assigned for CM/SM
-                            new_mlros_assigned = cmsm_doc.MLROs_assigned + ',' + mlro_user.EmailId if cmsm_doc.MLROs_assigned else mlro_user.EmailId
-                            cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, cmsm_doc.EmpId))
-                            break
-                    else:
-                        # Assign MLRO to CM/SM
-                        cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cmsm_doc.EmailId, mlro_user.EmpId))
-
-                        # Update MLROs_assigned for CM/SM
-                        cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (mlro_user.EmailId, cmsm_doc.EmpId))
-                        break
-
+            for cmsm_doc in cmsm_data:
+                if cmsm_doc.MLROs_assigned and len(cmsm_doc.MLROs_assigned.split(',')) < 5:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cmsm_doc.EmailId, existing_user.EmpId))
+                    new_mlros_assigned = cmsm_doc.MLROs_assigned + ',' + existing_user.EmailId if cmsm_doc.MLROs_assigned else existing_user.EmailId
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, cmsm_doc.EmpId))
 
         elif role == 'AGM':
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'CMS_assigned'")
-            cms_assigned_exists = cursor.fetchone()
-            if not cms_assigned_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD CMS_assigned VARCHAR(255)")
+            # Update user information
+            sql_update = """
+            UPDATE dbo.[user]
+            SET 
+                [Password] = ?, 
+                [Status] = ?
+            WHERE EmpId = ?
+            """
+            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
 
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'ROS_assigned'")
-            ros_assigned_exists = cursor.fetchone()
-            if not ros_assigned_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD ROS_assigned VARCHAR(255)")
-
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'Assigned_to_dgm'")
-            assigned_to_dgm_exists = cursor.fetchone()
-            if not assigned_to_dgm_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD Assigned_to_dgm VARCHAR(255)")
-            # Fetch dgm data
-            cc=cursor.execute("SELECT * FROM dbo.[user] WHERE Role='DGM/PO' AND Status IN ('Created', 'Approved')")
-            dgm_info=cc.fetchall()
-            print('#######################dgm###################',dgm_info)
-            # cursor.execute("UPDATE charan SET [Password]=?, [Status]=?, CMS_assigned='', ROS_assigned='', Assigned_to_dgm='' WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
-            cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=?, CMS_assigned='', ROS_assigned='', Assigned_to_dgm='' WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
-
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='DGM/PO' AND Status IN ('Created', 'Approved')")
-            dgm_data = cursor.fetchall()
-            for dgm_doc in dgm_data:
-                print('#######################dgm###################',dgm_doc)
-                cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='AGM' AND Assigned_to_dgm='' AND Status='Created'", (existing_user.EmpId,))
-                agm_user = cursor.fetchone()
-                # if agm_user and len(dgm_doc.AGM_assigned.split(',')) < 3:
-                if agm_user:
-                    cursor.execute("UPDATE dbo.[user] SET Assigned_to_dgm=? WHERE EmpId=?", (dgm_doc.EmailId, agm_user.EmpId))
-                    # cursor.execute("UPDATE charan SET AGM_assigned=AGM_assigned + ',' + ? WHERE EmpId=?", (agm_user.EmailId, dgm_doc.EmpId))
-                    break
-
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='CM/SM' AND Assigned_to_agm='' AND Status='Created'")
+            # Fetch CM/SM data and assign AGM
+            cursor.execute("""
+            SELECT *
+            FROM dbo.[user]
+            WHERE 
+                Role = 'CM/SM' AND 
+                Status IN ('Created', 'Approved') AND 
+                Assigned_to = ''
+            """)
             cm_users = cursor.fetchall()
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND Status IN ('Created', 'Approved')")
-            agm_data = cursor.fetchall()
-            for cm_doc in cm_users:
-                for agm_doc in agm_data:
-                    if len(agm_doc.CMS_assigned.split(',')) < 3 and cm_doc.Assigned_to_agm == '':
-                        cursor.execute("UPDATE dbo.[user] SET Assigned_to_agm=? WHERE EmpId=?", (agm_doc.EmailId, cm_doc.EmpId))
-                        cursor.execute("UPDATE dbo.[user] SET CMS_assigned=CMS_assigned + ',' + ? WHERE EmpId=?", (cm_doc.EmailId, agm_doc.EmpId))
-                        break
+            for cm_user in cm_users:
+                if cm_user and len(existing_user.MLROs_assigned.split(',')) < 3:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (existing_user.EmailId, cm_user.EmpId))
+                    new_mlros_assigned = existing_user.MLROs_assigned + ',' + cm_user.EmailId if existing_user.MLROs_assigned else cm_user.EmailId
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, existing_user.EmpId))
+
+            # Assign AGM to DGM/PO
+            cursor.execute("""
+            SELECT *
+            FROM dbo.[user]
+            WHERE 
+                Role = 'DGM/PO' AND 
+                Status IN ('Created', 'Approved') AND 
+                Assigned_to = ''
+            """)
+            dgm_data = cursor.fetchall()
+            for dgm_user in dgm_data:
+                if len(dgm_user.MLROs_assigned.split(',')) < 3:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (dgm_user.EmailId, existing_user.EmpId))
+                    new_mlros_assigned = dgm_user.MLROs_assigned + ',' + existing_user.EmailId if dgm_user.MLROs_assigned else existing_user.EmailId
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, dgm_user.EmpId))
+                    break
 
         elif role == 'ROS':
-            cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=?, Assigned_to_agm='' WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
+            # Update user information
+            sql_update = """
+            UPDATE dbo.[user]
+            SET 
+                [Password] = ?, 
+                [Status] = ?
+            WHERE EmpId = ?
+            """
+            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
 
-            cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND Status IN ('Created', 'Approved')")
+            # Fetch AGM data and assign ROS
+            cursor.execute("""
+            SELECT *
+            FROM dbo.[user]
+            WHERE 
+                Role = 'AGM' AND 
+                Status IN ('Created', 'Approved') AND 
+                Assigned_to = ''
+            """)
             agm_data = cursor.fetchall()
-            cursor.execute("SELECT * FROM dbo.[user] WHERE EmpId=? AND Role='ROS' AND Assigned_to_agm='' AND Status='Created'", (existing_user.EmpId,))
-            cm_user = cursor.fetchone()
-            for agm_doc in agm_data:
-                if cm_user and len(agm_doc.ROS_assigned.split(',')) < 2 and cm_user.Assigned_to_agm == '':
-                    cursor.execute("UPDATE dbo.[user] SET Assigned_to_agm=? WHERE EmpId=?", (agm_doc.EmailId, cm_user.EmpId))
-                    cursor.execute("UPDATE dbo.[user] SET ROS_assigned=ROS_assigned + ',' + ? WHERE EmpId=?", (cm_user.EmailId, agm_doc.EmpId))
-                    break
+            for agm_user in agm_data:
+                if agm_user and len(agm_user.MLROs_assigned.split(',')) < 2:
+                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (agm_user.EmailId, existing_user.EmpId))
+                    new_mlros_assigned = agm_user.MLROs_assigned + ',' + existing_user.EmailId if agm_user.MLROs_assigned else existing_user.EmailId
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, agm_user.EmpId))
 
         elif role in ['BranchMakers', 'SDN/USER']:
+            # Update user information
             cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=? WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
 
         conn4.commit()
