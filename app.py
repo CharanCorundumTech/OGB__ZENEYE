@@ -3089,12 +3089,15 @@ def hash_password(password):
 @secure_route(required_role=['IT OFFICER'])
 def submit_form():
     if request.method == 'POST':
+        # session["email_id"] = str(email_column)
+        # session["user_role"] = user_role
+        # session["user_Branch_code"] = user_Branch_code
         emailid = request.form['emailid']
         role = request.form['role']
         password = request.form['password']
         re_entered_password = request.form['Re-Enter Password']
         status = "Created"
-        hashed_password = hash_password(password)
+        # hashed_password = hash_password(password)
 
         if password != re_entered_password:
             session['ps_error'] = 'Passwords do not match. Please try again.'
@@ -3110,145 +3113,332 @@ def submit_form():
             # Handle case where the user does not exist
             return jsonify({"error": "User not found"}), 404
 
-        if role == 'CM/SM':
-            # Update user information
-            sql_update = """
-            UPDATE dbo.[user]
-            SET 
-                [Password] = ?, 
-                [Status] = ?, 
-                [MLROs_assigned] = '', 
-                [Assigned_to] = ''
-            WHERE EmpId = ?
-            """
-            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
+        # Update user's password and status
+        # cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=? WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
+        cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=? WHERE EmpId=?", (password, status, existing_user.EmpId))
 
+        if role == 'CM/SM':
             # Fetch MLRO data
             cursor.execute("""
             SELECT *
             FROM dbo.[user]
-            WHERE 
-                Role = 'MLRO' AND 
-                Assigned_to = '' AND 
-                Status IN ('Created', 'Approved')
+            WHERE Role = 'MLRO' AND Assigned_to IS NULL AND Status IN ('Created', 'Approved')
             """)
             mlros_data = cursor.fetchall()
 
+            assigned_mlros = 0
             for mlro_doc in mlros_data:
-                if len(existing_user.MLROs_assigned.split(',')) < 5:
+                if assigned_mlros < 5:
                     cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (existing_user.EmailId, mlro_doc.EmpId))
-                    new_mlros_assigned = existing_user.MLROs_assigned + ',' + mlro_doc.EmailId if existing_user.MLROs_assigned else mlro_doc.EmailId
-                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, existing_user.EmpId))
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=MLROs_assigned + ',' + ? WHERE EmpId=?", (mlro_doc.EmailId, existing_user.EmpId))
+                    assigned_mlros += 1
 
         elif role == 'MLRO':
-            # Update user information
-            sql_update = """
-            UPDATE dbo.[user]
-            SET 
-                [Password] = ?, 
-                [Status] = ?, 
-                Assigned_to = ''
-            WHERE EmpId = ?
-            """
-            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
-
-            # Fetch CM/SM data
+            # logging.debug("Assigning MLRO to CM/SM")
             cursor.execute("""
             SELECT *
             FROM dbo.[user]
-            WHERE 
-                Role = 'CM/SM' AND 
-                Status IN ('Created', 'Approved')
+            WHERE Role = 'CM/SM' AND Status IN ('Created', 'Approved')
             """)
             cmsm_data = cursor.fetchall()
 
             for cmsm_doc in cmsm_data:
-                if cmsm_doc.MLROs_assigned and len(cmsm_doc.MLROs_assigned.split(',')) < 5:
+                assigned_mlros_list = cmsm_doc.MLROs_assigned.split(',') if cmsm_doc.MLROs_assigned else []
+                if len(assigned_mlros_list) < 5:
                     cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (cmsm_doc.EmailId, existing_user.EmpId))
-                    new_mlros_assigned = cmsm_doc.MLROs_assigned + ',' + existing_user.EmailId if cmsm_doc.MLROs_assigned else existing_user.EmailId
+                    new_mlros_assigned = ','.join(assigned_mlros_list + [existing_user.EmailId])
                     cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, cmsm_doc.EmpId))
+                    break
 
         elif role == 'AGM':
-            # Update user information
-            sql_update = """
-            UPDATE dbo.[user]
-            SET 
-                [Password] = ?, 
-                [Status] = ?
-            WHERE EmpId = ?
-            """
-            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
-
-            # Fetch CM/SM data and assign AGM
+            # Fetch CM/SM data
             cursor.execute("""
             SELECT *
             FROM dbo.[user]
-            WHERE 
-                Role = 'CM/SM' AND 
-                Status IN ('Created', 'Approved') AND 
-                Assigned_to = ''
+            WHERE Role = 'CM/SM' AND Status IN ('Created', 'Approved') AND Assigned_to IS NULL
             """)
             cm_users = cursor.fetchall()
+
+            assigned_cms = 0
             for cm_user in cm_users:
-                if cm_user and len(existing_user.MLROs_assigned.split(',')) < 3:
+                if assigned_cms < 3:
                     cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (existing_user.EmailId, cm_user.EmpId))
-                    new_mlros_assigned = existing_user.MLROs_assigned + ',' + cm_user.EmailId if existing_user.MLROs_assigned else cm_user.EmailId
-                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, existing_user.EmpId))
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=MLROs_assigned + ',' + ? WHERE EmpId=?", (cm_user.EmailId, existing_user.EmpId))
+                    assigned_cms += 1
 
             # Assign AGM to DGM/PO
             cursor.execute("""
             SELECT *
             FROM dbo.[user]
-            WHERE 
-                Role = 'DGM/PO' AND 
-                Status IN ('Created', 'Approved') AND 
-                Assigned_to = ''
+            WHERE Role = 'DGM/PO' AND Status IN ('Created', 'Approved') AND Assigned_to IS NULL
             """)
             dgm_data = cursor.fetchall()
             for dgm_user in dgm_data:
-                if len(dgm_user.MLROs_assigned.split(',')) < 3:
-                    cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (dgm_user.EmailId, existing_user.EmpId))
-                    new_mlros_assigned = dgm_user.MLROs_assigned + ',' + existing_user.EmailId if dgm_user.MLROs_assigned else existing_user.EmailId
-                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, dgm_user.EmpId))
-                    break
+                cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (dgm_user.EmailId, existing_user.EmpId))
+                cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=MLROs_assigned + ',' + ? WHERE EmpId=?", (existing_user.EmailId, dgm_user.EmpId))
+                break
 
         elif role == 'ROS':
-            # Update user information
-            sql_update = """
-            UPDATE dbo.[user]
-            SET 
-                [Password] = ?, 
-                [Status] = ?
-            WHERE EmpId = ?
-            """
-            cursor.execute(sql_update, (hashed_password, status, existing_user.EmpId))
-
-            # Fetch AGM data and assign ROS
+            # Fetch AGM data
             cursor.execute("""
             SELECT *
             FROM dbo.[user]
-            WHERE 
-                Role = 'AGM' AND 
-                Status IN ('Created', 'Approved') AND 
-                Assigned_to = ''
+            WHERE Role = 'AGM' AND Status IN ('Created', 'Approved') AND Assigned_to IS NULL
             """)
             agm_data = cursor.fetchall()
+
+            assigned_ros = 0
             for agm_user in agm_data:
-                if agm_user and len(agm_user.MLROs_assigned.split(',')) < 2:
+                if assigned_ros < 2:
                     cursor.execute("UPDATE dbo.[user] SET Assigned_to=? WHERE EmpId=?", (agm_user.EmailId, existing_user.EmpId))
-                    new_mlros_assigned = agm_user.MLROs_assigned + ',' + existing_user.EmailId if agm_user.MLROs_assigned else existing_user.EmailId
-                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=? WHERE EmpId=?", (new_mlros_assigned, agm_user.EmpId))
+                    cursor.execute("UPDATE dbo.[user] SET MLROs_assigned=MLROs_assigned + ',' + ? WHERE EmpId=?", (existing_user.EmailId, agm_user.EmpId))
+                    assigned_ros += 1
 
         elif role in ['BranchMakers', 'SDN/USER']:
-            # Update user information
+            # Only update password and status for these roles
             cursor.execute("UPDATE dbo.[user] SET [Password]=?, [Status]=? WHERE EmpId=?", (hashed_password, status, existing_user.EmpId))
 
         conn4.commit()
         conn4.close()
         session['user_created_again'] = "User Added Successfully with Password"
-        return redirect(url_for('AllUsers')) 
+        return redirect(url_for('AllUsers'))
+
+# def notification(mails):
+#      userinfo = users_collection.find_one({'emailid':mails})
+#     #  conn4 = get_db_connection()
+#     #  cursor = conn4.cursor()
+#     #  sql = "SELECT * FROM charan WHERE EmailId = ?"
+#     #  cursor.execute(sql, (mails))
+#     #  userDetails = cursor.fetchone()
+#     # =========== Taking the array's of the tickets which are storing the cases ========================== 
+#      print('===============user_mails==========',userinfo)
+#      if "allocated_tickets" in userinfo:
+#         pendingAlertsNotfy = len(userinfo['allocated_tickets'])
+#      else:
+#          pendingAlertsNotfy = 0
+     
+#      if "Sent_Back_Case_Alerts" in userinfo:
+#         unsuffeccientAlerst = len(userinfo['Sent_Back_Case_Alerts'])
+#      else:
+#          unsuffeccientAlerst = 0
+     
+#      if "rised_closed_tickets" in userinfo:
+#         rised_closed_tickets = len(userinfo['rised_closed_tickets'])
+#      else:
+#          rised_closed_tickets = 0
+     
+#      if "Sent_Back_Alerts" in userinfo:
+#         Sent_Back_Alerts = len(userinfo['Sent_Back_Alerts'])
+#      else:
+#          Sent_Back_Alerts = 0
+     
+#      if "Offline_assigned_tickets" in userinfo:
+#         offlineCases = len(userinfo['Offline_assigned_tickets'])
+#      else:
+#          offlineCases = 0
+
+# # ============================
+#      if userinfo['role'] == 'CM/SM':
+#         users_collection.update_one({'emailid':mails},{"$set":{'pendingAlertsNotfy':pendingAlertsNotfy,'unsufecientAlertsNotfy':unsuffeccientAlerst,"risedClosedCount":rised_closed_tickets}})
+#      elif userinfo['role'] == 'MLRO':
+#         users_collection.update_one({'emailid':mails},{"$set":{'pendingAlertsNotfy':pendingAlertsNotfy,'unsufecientAlertsNotfy':unsuffeccientAlerst,"sentBackClosedCount":Sent_Back_Alerts}})  
+#      else:
+#         users_collection.update_one({'emailid':mails},{"$set":{'pendingAlertsNotfy':pendingAlertsNotfy,'unsufecientAlertsNotfy':unsuffeccientAlerst,"offlineCasesCount":offlineCases}})
+    
+#     # ============================
+#      if "pendingAlertsNotfy" in userinfo:
+#         prvPendingAlertsNotfy = userinfo['pendingAlertsNotfy']
+#      else:
+#         prvPendingAlertsNotfy = 0  
+
+#      if "unsufecientAlertsNotfy" in userinfo:
+#         prvunsufecientAlertsNotfy = userinfo['unsufecientAlertsNotfy']
+#      else:
+#          prvunsufecientAlertsNotfy = 0
+     
+#      if "risedClosedCount" in userinfo:
+#         prvrisedClosedCount = userinfo['risedClosedCount']
+#      else:
+#          prvrisedClosedCount = 0
+     
+#      if "sentBackClosedCount" in userinfo:
+#         prvsentClosedCount = userinfo['sentBackClosedCount']
+#      else:
+#          prvsentClosedCount = 0
+     
+#      if "offlineCasesCount" in userinfo:
+#         prvofflineCount = userinfo['offlineCasesCount']
+#      else:
+#          prvofflineCount = 0
+
+# # ===================================================
+         
+#      mainInfo = users_collection.find_one({'emailid':mails})
+
+#      presentpen = mainInfo['pendingAlertsNotfy']
+#      if "prvPendingAlertsNotfy" in mainInfo:
+#         prevpen = mainInfo['prvPendingAlertsNotfy']
+#      else:
+#          prevpen = 0
+#          users_collection.update_one({'emailid':mails},{"$set":{'prvPendingAlertsNotfy':prevpen}})
+
+#      presentuns = mainInfo['unsufecientAlertsNotfy']
+#      if "prvunsufecientAlertsNotfy" in mainInfo:
+#         prvuns = mainInfo['prvunsufecientAlertsNotfy']
+#      else:
+#          prvuns = 0
+#          users_collection.update_one({'emailid':mails},{"$set":{'prvunsufecientAlertsNotfy':prvuns}})
+    
+#      if "risedClosedCount" in mainInfo:
+#         presentclosed = mainInfo['risedClosedCount']
+#         if "prvrisedClosedCount" in mainInfo:
+#             prvclosed = mainInfo['prvrisedClosedCount']
+#         else:
+#             prvclosed = 0
+#             users_collection.update_one({'emailid':mails},{"$set":{'prvrisedClosedCount':prvclosed}})
+     
+#      if "sentBackClosedCount" in mainInfo:
+#         presentsentclosed = mainInfo['sentBackClosedCount']
+#         if "prvsentClosedCount" in mainInfo:
+#             prvsentclosed = mainInfo['prvsentClosedCount']
+#         else:
+#             prvsentclosed = 0
+#             users_collection.update_one({'emailid':mails},{"$set":{'prvsentClosedCount':prvsentclosed}})
+     
+#      if "offlineCasesCount" in mainInfo:
+#         presentofflineclosed = mainInfo['offlineCasesCount']
+#         if "prvofflineCount" in mainInfo:
+#             prvofflineclosed = mainInfo['prvofflineCount']
+#         else:
+#             prvofflineclosed = 0
+#             users_collection.update_one({'emailid':mails},{"$set":{'prvofflineCount':prvofflineclosed}})
+
+#     #  ================================
+#      print("prevpen : ",prevpen)
+#      print("presentpen : ",presentpen)
+     
+#      if prevpen > presentpen:
+#          users_collection.update_one({'emailid':mails},{"$set":{'prvPendingAlertsNotfy':prvPendingAlertsNotfy}})
+#      if prvuns > presentuns:
+#          users_collection.update_one({'emailid':mails},{"$set":{'prvunsufecientAlertsNotfy':prvunsufecientAlertsNotfy}})
+     
+#      if userinfo['role'] == 'AGM' or userinfo['role'] == 'DGM/PO' or userinfo['role'] == 'ROS':
+#         if prvofflineclosed > presentofflineclosed:
+#             users_collection.update_one({'emailid':mails},{"$set":{'prvofflineCount':prvofflineCount}})
+#      if userinfo['role'] == 'CM/SM':
+#         if prvclosed > presentclosed:
+#             users_collection.update_one({'emailid':mails},{"$set":{'prvrisedClosedCount':prvrisedClosedCount}})
+#      if userinfo['role'] == 'MLRO':
+#         if prvsentclosed > presentsentclosed:
+#             users_collection.update_one({'emailid':mails},{"$set":{'prvsentClosedCount':prvsentClosedCount}})
+     
+     
+# # ===================================================
 
 
+#      main = users_collection.find_one({'emailid':mails})
+     
+#      if "pendingAlertsNotfy" in main and "prvPendingAlertsNotfy" in main:
+#         presentPendingAlertsNotfy  = main['pendingAlertsNotfy']
+#         prvPendingAlertsNotfy  = main['prvPendingAlertsNotfy']
+#      else:
+#         presentPendingAlertsNotfy  = 0
+#         prvPendingAlertsNotfy  = 0
+
+#      print("presentPendingAlertsNotfy : ",presentPendingAlertsNotfy)
+#      print("prvPendingAlertsNotfy : ",prvPendingAlertsNotfy)
+
+#      if "unsufecientAlertsNotfy" in main and "prvunsufecientAlertsNotfy" in main:
+#         presentunsufecientAlertsNotfy  = main['unsufecientAlertsNotfy']
+#         prvunsufecientAlertsNotfy  = main['prvunsufecientAlertsNotfy']
+#      else:
+#         presentunsufecientAlertsNotfy  = 0
+#         prvunsufecientAlertsNotfy  = 0
+     
+#      if "risedClosedCount" in main and "prvrisedClosedCount" in main:
+#         presentclosedNotfy  = main['risedClosedCount']
+#         prvclosedNotfy  = main['prvrisedClosedCount']
+#      else:
+#         presentclosedNotfy  = 0
+#         prvclosedNotfy  = 0
+     
+#      if "sentBackClosedCount" in main and "prvsentClosedCount" in main:
+#         presentsentclosedNotfy  = main['sentBackClosedCount']
+#         prvsentclosedNotfy  = main['prvsentClosedCount']
+#      else:
+#         presentsentclosedNotfy  = 0
+#         prvsentclosedNotfy  = 0
+     
+#      if "offlineCasesCount" in main and "prvofflineCount" in main:
+#         presentofflineNotfy  = main['offlineCasesCount']
+#         prvofflineNotfy  = main['prvofflineCount']
+#      else:
+#         presentofflineNotfy  = 0
+#         prvofflineNotfy  = 0
+
+
+# # ===================================================
+        
+#      if presentPendingAlertsNotfy and (presentPendingAlertsNotfy > prvPendingAlertsNotfy):
+#          pendingcount = presentPendingAlertsNotfy - prvPendingAlertsNotfy
+#      else:
+#          pendingcount = 0
+#      print("pendingcount : ",pendingcount)    
+    
+#      if presentunsufecientAlertsNotfy and (presentunsufecientAlertsNotfy > prvunsufecientAlertsNotfy):
+#          unsuffeccientcount = presentunsufecientAlertsNotfy - prvunsufecientAlertsNotfy
+#      else:
+#          unsuffeccientcount = 0
+     
+#      if presentclosedNotfy and (presentclosedNotfy > prvclosedNotfy):
+#          verifyClosedcount = presentclosedNotfy - prvclosedNotfy
+#      else:
+#          verifyClosedcount = 0
+    
+#      if presentsentclosedNotfy and (presentsentclosedNotfy > prvsentclosedNotfy):
+#          sentClosedcount = presentsentclosedNotfy - prvsentclosedNotfy
+#      else:
+#          sentClosedcount = 0
+     
+#      if presentofflineNotfy and (presentofflineNotfy > prvofflineNotfy):
+#          risedofflinecount = presentofflineNotfy - prvofflineNotfy
+#      else:
+#          risedofflinecount = 0
+
+         
+# # ===============================================================================
+
+# # ============================ DashBoard Per Day Logic ===========================================
+
+#      current_datetime = datetime.now()
+#      # Extract only the date and set the time to midnight
+#      current_date = str(current_datetime.date())
+#     #  current_date = '2024-01-23'
+#      print('current_date : ',current_date)
+
+#     #  if pendingcount != 0:
+
+#     #                 perDay = users_collection.find_one({"emailid":mails,"pendingAlerts_perDay":{"$exists":True}})
+
+#     #                 if perDay:
+#     #                     print("holaa.................")
+#     #                     dateExists = users_collection.find_one({"emailid": mails, f'pendingAlerts_perDay.{current_date}': {"$exists": True}})
+#     #                     if dateExists:
+#     #                         users_collection.update_one(
+#     #                                 {"emailid": mails, f'pendingAlerts_perDay.{current_date}': {"$exists": True}},
+#     #                                 {"$inc": {f'pendingAlerts_perDay.$.{current_date}': pendingcount}}
+#     #                             )
+#     #                     else:
+#     #                         users_collection.update_one({"emailid":mails},{"$push":{"pendingAlerts_perDay":{current_date:pendingcount}}})
+
+#     #                 else:
+#     #                     users_collection.update_one({"emailid":mails},{"$set":{"pendingAlerts_perDay":[{current_date:pendingcount}]}})
+
+   
+
+# # ================================================================================================
+
+#      return {"pendingcount":pendingcount,"unsuffeccientcount":unsuffeccientcount,"verifyClosedcount":verifyClosedcount,'sentBackClosed':sentClosedcount,"offlineCases":risedofflinecount}
 
 @app.route('/VerifyUser', methods=['GET', 'POST'])
 @secure_route(required_role=['AGM','DGM/PO'])
@@ -3260,7 +3450,8 @@ def VerifyUser():
     #     return redirect(url_for('sign_in'))
     user_role = session.get('user_role')
     emailid = session.get('email_id')
-    notify = notification(emailid)
+    # notify = notification(emailid)
+    notify ='HIIIII'
 
     
     if request.method == 'POST':
@@ -3274,15 +3465,15 @@ def VerifyUser():
             # SQL query to update the user's status and leave status
             conn6 = get_db_connection_TICKETID()
             cursor = conn6.cursor()
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'dbo.[user]' AND COLUMN_NAME = 'LeaveStatus'")
+            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '[user]' AND COLUMN_NAME = 'LeaveStatus'")
             leaveStatus_exists = cursor.fetchone()
 
             # If leaveStatus column doesn't exist, alter the table to add it
             if not leaveStatus_exists:
-                cursor.execute("ALTER TABLE dbo.[user] ADD LeaveStatus VARCHAR(255)")
+                cursor.execute("ALTER TABLE [user] ADD LeaveStatus VARCHAR(255)")
 
             sql_update = """
-            UPDATE dbo.[user]
+            UPDATE [user]
             SET [Status] = ?, LeaveStatus = ?
             WHERE EmpId = ?
             """
@@ -3294,7 +3485,7 @@ def VerifyUser():
 
             # SQL query to find the user by email ID
             sql_find = """
-            SELECT * FROM dbo.[user]
+            SELECT * FROM [user]
             WHERE EmailId = ?
             """
 
@@ -3333,7 +3524,7 @@ def VerifyUser():
             conn6 = get_db_connection_TICKETID()
             cursor = conn6.cursor()
             sql_update = """
-            UPDATE dbo.[user]
+            UPDATE [user]
             SET [Status] = ?
             WHERE EmpId = ?
             """
@@ -3347,7 +3538,7 @@ def VerifyUser():
             # user = users_collection.find_one({'_id': ObjectId(user_id),'Status': 'Rejected'})
             # SQL query to find the user by EmpId and Status
             sql_find_user = """
-            SELECT * FROM dbo.[user]
+            SELECT * FROM [user]
             WHERE EmpId = ? AND [Status] = 'Rejected'
             """
 
@@ -3371,7 +3562,7 @@ def VerifyUser():
             # )
             # SQL query to update cms_assigned and mlros_assigned fields
             sql_update_assigned = """
-            UPDATE dbo.[user]
+            UPDATE [user]
             SET 
                 cms_assigned = REPLACE(cms_assigned, ?, ''), 
                 mlros_assigned = REPLACE(mlros_assigned, ?, '')
@@ -3415,7 +3606,7 @@ def VerifyUser():
             # )
             # SQL query to update Assigned_to and Assigned_to_ros fields
             sql_update_assigned_to = """
-            UPDATE dbo.[user]
+            UPDATE [user]
             SET 
                 Assigned_to = CASE WHEN Assigned_to = ? THEN '' ELSE Assigned_to END,
                 Assigned_to_ros = CASE WHEN Assigned_to_ros = ? THEN '' ELSE Assigned_to_ros END
@@ -3438,7 +3629,7 @@ def VerifyUser():
             conn = get_db_connection_TICKETID()
             cursor = conn.cursor()
 
-            sql_query = "SELECT * FROM dbo.[user] WHERE Role = ? AND EmailId = ? AND Status = ?"
+            sql_query = "SELECT * FROM [user] WHERE Role = ? AND EmailId = ? AND Status = ?"
             cursor.execute(sql_query, (role, emailid, status))
             
             user = cursor.fetchone()
@@ -3451,7 +3642,7 @@ def VerifyUser():
             conn = get_db_connection_TICKETID()
             cursor = conn.cursor()
 
-            sql_query = "SELECT * FROM dbo.[user] WHERE EmailId = ? AND Status = ?"
+            sql_query = "SELECT * FROM [user] WHERE EmailId = ? AND Status = ?"
             cursor.execute(sql_query, (emailid, status))
             
             user = cursor.fetchone()
@@ -3468,7 +3659,7 @@ def VerifyUser():
             cursor = conn.cursor()
 
             cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
-            sql_query = "SELECT * FROM dbo.[user] WHERE Status = ? AND Role = ?"
+            sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ?"
             cursor.execute(sql_query, (status, role))
             
             users = cursor.fetchall()
@@ -3482,7 +3673,7 @@ def VerifyUser():
             cursor = conn.cursor()
 
             cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
-            sql_query = "SELECT * FROM dbo.[user] WHERE Status = ? AND Role = ?"
+            sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ?"
             cursor.execute(sql_query, (status, role))
             
             users = cursor.fetchall()
@@ -3495,7 +3686,7 @@ def VerifyUser():
             conn = get_db_connection_TICKETID()
             cursor = conn.cursor()
 
-            sql_query = "SELECT * FROM dbo.[user] WHERE Status = ? AND Role = ? AND Assigned_to_agm = ?"
+            sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ? AND Assigned_to_agm = ?"
             cursor.execute(sql_query, (status, role, emailid))
             
             users = cursor.fetchall()
@@ -3509,7 +3700,7 @@ def VerifyUser():
             cursor = conn.cursor()
 
             roles_str = ', '.join(f"'{role}'" for role in roles)
-            sql_query = f"SELECT * FROM dbo.[user] WHERE Status = ? AND Role IN ({roles_str})"
+            sql_query = f"SELECT * FROM [user] WHERE Status = ? AND Role IN ({roles_str})"
             cursor.execute(sql_query, (status,))
             
             users = cursor.fetchall()
@@ -3552,11 +3743,11 @@ def VerifyUser():
         # Fetch created AGM users
         conn5 = get_db_connection_TICKETID()
         cursor = conn5.cursor()
-        cursor.execute("SELECT * FROM dbo.[user] WHERE [Status]='Created' AND Role='AGM'")
+        cursor.execute("SELECT * FROM [user] WHERE [Status]='Created' AND Role='AGM'")
         created_agm_users = cursor.fetchall()
 
         # Fetch created SDN/USER users
-        cursor.execute("SELECT * FROM dbo.[user] WHERE [Status]='Created' AND Role='SDN/USER'")
+        cursor.execute("SELECT * FROM [user] WHERE [Status]='Created' AND Role='SDN/USER'")
         created_sdn_users = cursor.fetchall()
 
         # Combine the results
@@ -3564,7 +3755,7 @@ def VerifyUser():
 
         # agm_user = users_collection.find_one({'role':"AGM",'emailid':emailid,'status':"Approved"})
         # Fetch approved AGM user with the given emailid
-        cursor.execute("SELECT * FROM dbo.[user] WHERE Role='AGM' AND EmailId=? AND [Status]='Approved'", (emailid,))
+        cursor.execute("SELECT * FROM [user] WHERE Role='AGM' AND EmailId=? AND [Status]='Approved'", (emailid,))
         agm_user = cursor.fetchone()
 
         info = users_collection.find_one({'emailid':emailid,'status':'Approved'})
@@ -3584,6 +3775,8 @@ def VerifyUser():
         #     info['image'] = image_base64
 
         return render_template("VerifyUser.html", users=users,ROLE="DGM",dgmuser=info,type='VerifyUser',notify=notify)
+
+
 
 
 @app.route('/leavePenddingDistribution',methods=['POST','GET'])
