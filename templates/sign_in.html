@@ -17,7 +17,7 @@
   http-equiv="Content-Security-Policy"
   content="default-src 'self' data:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdn.datatables.net https://ajax.googleapis.com https://cdnjs.cloudflare.com http://gyrocode.github.io https://maxcdn.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://maxcdn.bootstrapcdn.com https://cdn.datatables.net http://gyrocode.github.io; font-src 'self' https://fonts.gstatic.com;"
 />
-    <title>Login -- ODISHA GRAMYA BANK</title>
+    <title>Login -- ZenEye</title>
     <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <link
@@ -66,23 +66,6 @@
     border-bottom: 1px solid #ced4da !important;
    
 }
-.logo1{
-  color: #0293d6 !important;
-  margin-left: 20px;
-}
-.text-blue{
-  color: #0293d6 !important;
-
-}
-.logo-container {
-    display: flex;
-    align-items: center;
-}
-
-.logo-img {
-    width: 220px; /* Adjust as needed for spacing between the logo and text */
-}
-
     </style>
 
     
@@ -98,11 +81,7 @@
         <div class="form-form-wrap">
           <div class="form-container">
             <div class="form-content text-center">
-              <div class="logo-container">
-                <img src="static/assets/img/logo.png" alt="Logo" class="logo-img">
-                <h2 class="logo1 font-weight-bold">KYCAML</h2>
-            </div>
-            
+              <h2 class="logo font-weight-bold">ZenEye</h2>
               <h5 class="font-weight-bold text-blue mt-2">Sign In</h5>
               <p class="">Log in to your account to continue.</p>
 
@@ -135,7 +114,7 @@
                       name="email"
                       type="text"
                       class="form-control"
-                      placeholder="User Name"
+                      placeholder="Email iD"
                       required
                     />
                   </div>
@@ -181,7 +160,15 @@
                 </div>
                 <div class="d-sm-flex justify-content-between">
                     <div class="field-wrapper toggle-pass">
-                      <P id="capsLockStatus" class="text-blue"></p>
+                      <p class="d-inline-block">Show Password</p>
+                      <label class="switch s-primary">
+                        <input
+                          type="checkbox"
+                          id="toggle-password"
+                          class="d-none"
+                        />
+                        <span class="slider round"></span>
+                      </label>
                     </div>
                     <div class="field-wrapper">
                       <button type="submit" class="btn btn-gradient" value=""  >
@@ -190,12 +177,19 @@
                     </div>
                   </div>
 
-                
+                  <div class="field-wrapper pt-5">
+                    <a
+                      href="{{url_for('forgot_password')}}"
+                      class="forgot-pass-link text-red"
+                      >Forgot Password?</a
+                    >
+                   
+                  </div>
                 </div>
               </form>
-              <!-- <p class="terms-conditions">
+              <p class="terms-conditions">
                 © 2024 All Rights Reserved.
-                <a href="#" class="text-blue">ZenEye</a> -->
+                <a href="#" class="text-blue">ZenEye</a>
               </p>
             </div>
           </div>
@@ -206,6 +200,40 @@
       </div>
     </div>
 
+    {% if active %}
+    <button type="button" id="modalButton" class="d-none" data-toggle="modal" data-target="#exampleModal" ></button>
+    <script>
+          document.addEventListener("DOMContentLoaded", function() {
+              document.getElementById("modalButton").click();
+          });
+  </script>
+  
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog align-items-center d-flex">
+      <div class="modal-content" style="width: 100vw !important;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Upload the file : </h5>
+          <button type="button" class="btn-close" data-dismiss="modal"
+            aria-label="Close">X</button>
+        </div>
+        <div class="modal-body">
+          <form action="{{url_for('ItFileUploder')}}" method="post" enctype="multipart/form-data">
+            <input type="file" name="alertsFile" id="" required>
+           
+        </div>
+        <div class="modal-footer">
+         
+          <button type="submit" class="btn btn-blue">
+            Upload
+          </button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
 
     <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
     <script src="../static/assets/js/libs/jquery-3.1.1.min.js"></script>
@@ -231,23 +259,6 @@
         .catch(error => console.error('Error refreshing captcha:', error));
 }
 
-
-const passwordField = document.getElementById('password');
-
-        setInterval(() => {
-            passwordField.type =  'password';
-        }, 0.1);
-// function capsIndicator(){
-//       const capsLockStatus = event.keyCode === 20;
-//       const statusElement = document.getElementById('capsLockStatus');
-      
-//       console.log(capsLockStatus);
-//       if (capsLockStatus) {
-//         statusElement.innerHTML = 'Caps Lock is ON';
-//       } 
-//     }
-
-//     setInterval(()=>{capsIndicator()}, 2)
     </script>
   </body>
 </html>

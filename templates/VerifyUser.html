@@ -168,15 +168,15 @@
                                     <tbody>
                                         {% for user in users %}
                                         <tr>
-                                            <td>{{ user.name }}</td>
-                                            <td>{{ user.emailid }}</td>
-                                            <td>{{ user.role }}</td>
-                                            <td>{{ user.mobileno }}</td>
+                                            <td>{{ user.EmpId }}</td>
+                                            <td>{{ user.EmailId }}</td>
+                                            <td>{{ user.Role }}</td>
+                                            <td>{{ user.MobileNo }}</td>
                                             <td>
                                                 <form method="post">
-                                                    <input type="hidden" name="user_id" value="{{ user._id }}">
-                                                    <input type="hidden" name="role" value="{{ user.role }}">
-                                                    <input type="hidden" name="emailid" value="{{ user.emailid }}">
+                                                    <input type="hidden" name="emp_id" value="{{ user.EmpId }}">
+                                                    <input type="hidden" name="role" value="{{ user.Role }}">
+                                                    <input type="hidden" name="emailid" value="{{ user.EmailId }}">
                                                     <button type="submit" class="btn btn-sm btn-blue" name="action" value="approve">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                                     </button>

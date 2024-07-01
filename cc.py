@@ -194,60 +194,192 @@ AD_BASE_DN = 'OU=AML,DC=ogb,DC=com'
 
 
 
-def SSO(AD_USERNAME,AD_PASSWORD):
-    try:
-        server = Server(AD_SERVER)
-        conn = Connection(server, user=AD_USERNAME, password=AD_PASSWORD,auto_bind=True) 
-        print("conn status : ",conn)
-
-        status = conn.result['result']
-        if status == 0:
-
-
-            conn.search(AD_BASE_DN,'(objectClass=*)',attributes=['member','CN'])
-
-            users=[]
-
-
-            for doc in conn.entries:
-                role = str(doc['cn'])
-                userDetailsAD = list(doc['member'])
 
 
 
-                if userDetailsAD:
-                    for Aduser in userDetailsAD:
 
-                        conn.search(Aduser,'(objectClass=*)',attributes=['description','company','countryCode','displayName','distinguishedName','mail','mobile','physicalDeliveryOfficeName','primaryGroupID','sAMAccountName','sAMAccountType','telephoneNumber','title','userAccountControl','userPrincipalName'])
-                        
-                        
-                        for user_entry in conn.entries:
-                            user_data = {'role': role}
-                            entry_attributes = user_entry.entry_attributes_as_dict
-                            for attribute, values in entry_attributes.items():
-                                if len(values) > 0:
-                                    user_data[attribute] = values[0]
-                                else:
-                                    user_data[attribute] = None
-                            
-                            users.append(user_data)
-            
+def detltaADupdate(USERNAME,PASSWORD):
+    serverIPAD = '10.40.16.189'
+    userSQLAD = 'OGBBANK'
+    pwdSQLAD = 'root12345'
 
-            conn.unbind()
+    #this is user and scenarios DB
+    connAD = pyodbc.connect(f"Driver={{SQL Server}};SERVER={serverIPAD}
 
-            
-            userPrincipalName = []
-            for doc in users:
-                userPrincipalName.append(doc['userPrincipalName'])
+# Reset Password route
+@app.route("/reset_password", methods=["GET", "POST"])
+def reset_password():
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        token = request.form.get('token')
+        new_password1 = request.form.get('new_password1')
+        new_password2 = request.form.get('new_password2')
 
-            
-            if any(AD_USERNAME.lower() == username.lower() for username in userPrincipalName):
-                return AD_USERNAME
+        # user_data = users_collection.find_one({"emailid": user_id})
+        conn6 = get_db_connection_TICKETID()
+        cursor = conn6.cursor()
+        # user_data = users_collection.find_one({"emailid": user_id})
+        user_data = cursor.execute("""
+                        SELECT *
+                        FROM [user]
+                        WHERE EmailId = ?;
+                    """, (user_id,)).fetchone()
+
+        if user_data:
+            reset_token = user_data.get("reset_password_token")
+            reset_token_expiry = user_data.get("reset_token_expiry", datetime.min)
+
+            if bcrypt.checkpw(token.encode('utf-8'), reset_token) and datetime.utcnow() <= reset_token_expiry:
+                if new_password1 == new_password2:
+                    hashed_password = hash_password(new_password1)
+                    
+                    # Update password and remove reset token from user data
+                    # users_collection.update_one({"emailid": user_id}, {
+                    #     "$set": {"password": hashed_password},
+                    #     "$unset": {"reset_password_token": "", "reset_token_expiry": ""}
+                    # })
+                    conn6 = get_db_connection_TICKETID()
+                    cursor = conn6.cursor()
+                    cursor.execute("""UPDATE dbo.[user]
+                    SET Password = ?
+                    WHERE EmailId = ?:
+                    """,(hashed_password,user_id))
+                    
+                    session['password_changed_succesfully'] = "Password changed successfully"
+                    return redirect(url_for('sign_in'))  # Redirect to login page after resetting
+                else:
+                    return render_template('reset_password.html', user_id=user_id, token=token, msg="Passwords should match")
+    else:
+        user_id = request.args.get('user_id')
+        token = request.args.get('token')
+        # user_data = users_collection.find_one({"emailid": user_id})
+        conn6 = get_db_connection_TICKETID()
+        cursor = conn6.cursor()
+        user_data = cursor.execute("""
+                        SELECT *
+                        FROM [user]
+                        WHERE EmailId = ?;
+                    """, (user_id,)).fetchone()
+
+        if user_data:
+            reset_token = user_data.reset_password_token
+            reset_token_expiry = user_data.reset_token_expiry, datetime.min
+            token_bytes = token.encode('utf-8')
+
+
+            # if reset_token and bcrypt.checkpw(token.encode('utf-8'), reset_token) and datetime.utcnow() <= reset_token_expiry:
+            if reset_token and bcrypt.checkpw(token_bytes, reset_token) and datetime.utcnow() <= reset_token_expiry:
+            # if reset_token and bcrypt.checkpw(token.encode('utf-8'), reset_token) and datetime.utcnow() <= reset_token_expiry:
+                return render_template('reset_password.html', user_id=user_id, token=token)
+            else:
+                session["token_expired"] = "Reset Password link is either expired or not valid, try again"
+                return redirect(url_for("forgot_password"))
+
+#Forgot password route
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+     msg =None
+     if "no_user_found_fp" in session:
+        msg = session.pop("no_user_found_fp",None)
+     if "token_expired" in session:
+        msg = session.pop("token_expired",None)
+     return render_template('forgot_password.html',msg=msg)
+
+#postforgotpassword password route
+@app.route("/postforgotpassword", methods=["POST", "GET"])
+def postforgotpassword():
+    if request.method == "POST":
+        current_datetime = datetime.now()
+        midnight_datetime = str(current_datetime.date())
+        email = request.form.get('email')
+        # user = users_collection.find_one({'emailid': email})
+        conn6 = get_db_connection_TICKETID()
+        cursor = conn6.cursor()
+        user = cursor.execute("""
+                        SELECT *
+                        FROM [user]
+                        WHERE EmailId = ?;
+                    """, (email,)).fetchone()
+        if ('reset_password_count' in user) and (midnight_datetime in user.reset_password_count):
+            reset_password_count = user.reset_password_count.get(midnight_datetime)
         else:
-            return "locked"
-    except:
-        return "invaliedCred"
+            # users_collection.update_one({'emailid':email},{"$set":{"reset_password_count":{midnight_datetime:0}}})
+            conn6 = get_db_connection_TICKETID()
+            cursor = conn6.cursor()
+            cursor.execute("""UPDATE dbo.[user]
+            SET reset_password_count = ?
+            WHERE EmailId = ?;
+            """,(midnight_datetime,email))
+            reset_password_count = 1
+        if user and (reset_password_count < 3):
+            base_url = "http://127.0.0.1:5000/reset_password"
+            reset_token = secrets.token_hex(10)
+            reset_expiry = datetime.utcnow() + timedelta(minutes=30)
+            hashed_token = hash_password(reset_token)
+            # users_collection.update_one({'emailid': email}, {
+            #     "$set": {"reset_password_token": hashed_token, "reset_token_expiry": reset_expiry},
+            #     "$inc": {"reset_password_count."+f'{midnight_datetime}': 1}
+            # }, upsert=True)
+            conn6 = get_db_connection_TICKETID()
+            cursor = conn6.cursor()
+            sql_query = """
+            UPDATE [user]
+            SET reset_password_token = ?,
+                reset_token_expiry = ?,
+                reset_password_count = CASE
+                                        WHEN ? = CONVERT(DATE, GETDATE()) THEN reset_password_count + 1
+                                        ELSE reset_password_count
+                                    END
+            WHERE emailid = ?
+            """
+
+            # Execute the query with parameters
+            try:
+                cursor.execute(sql_query, (hashed_token, reset_expiry, midnight_datetime, email))
+                cursor.commit()  # Commit the transaction if needed
+                print("Update successful!")
+            except pyodbc.Error as e:
+                print(f"Error executing SQL query: {e}")
+
+            reset_link = f"{base_url}?user_id={email}&token={reset_token}"
+            send_password_reset_email(email, reset_link, 'general')
+            return render_template("email_sent_for_fp.html")
+        elif user:
+            session["no_user_found_fp"]="User limit Exeited"
+            return redirect(url_for("forgot_password"))
+        else:
+            session["no_user_found_fp"] = "No user found, please enter a valid email"
+            return redirect(url_for("forgot_password"))
+
+
+
+# For to send the email
+def send_password_reset_email(to_email, reset_link,scenario):
+    subject = "Password Reset Request From ZenEye "
+    if scenario == 'userRevived':
+       message = f"{to_email} was enabled ,if you want, you can reset your password \n Click the following link to reset your password: {reset_link}"
+    else:
+        message = f"User Mail Id: {to_email}\n\n"
     
+    message += f"Click the following link to reset your password\n\n{reset_link}\n\n"
+    message += "Note: This link will expires in 30 minutes."
+
+    
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(message, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, to_email, msg.as_string())
+        server.quit()
+        print("Email sent successfully")
+    except Exception as e:
+        print("Error sending email:", str(e))
 
 
 
@@ -2428,869 +2560,6 @@ def refresh_captcha():
 #             session["incorrect_captcha"] = "Incorrect Captcha, please enter correct captcha"
 #             return redirect(url_for("sign_in"))
 #     return redirect(url_for("sign_in"))
-def run_tm_functions(user_role):
-    
-    global returning_data_enabled
-    current_datetime = datetime.now()
-    current_date = current_datetime.date()
-    midnight_datetime = datetime.combine(current_date, datetime.min.time())
-    if (user_role=='IT Officer' or user_role=="DGM/PO") and users_collection.find_one({"role":user_role,"alerts_generated":midnight_datetime}):
-        print("Alerts already generated")
-    elif user_role=='IT Officer' or user_role=="DGM/PO":
-        returning_data_enabled = True
-        functions_to_run = [
-            # {'function': TM_1_1, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_1_2, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_1_3, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_1_4, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_2_1, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_2_2, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_2_3, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_2_4, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
-            # {'function': TM_2_5, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_2_6, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # # {'function': TM_3_1, 'collection': TM_collection, 'output_names': ['output_data1']},  # ===== taking more time to run =====
-            # {'function': TM_3_2, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_3_3, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_3_4, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_3_5, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_3_6, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_4_1, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_4_2, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_6_1, 'collection': TM_collection, 'output_names': ['output_data1','output_data2']},
-            # {'function': TM_6_2, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_8_1, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_8_2, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # # {'function': TM_8_3, 'collection': TM_collection, 'output_names': ['output_data1']},#  ===== taking more time to run =====
-            # {'function': TM_9_1, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TM_9_2, 'collection': TM_collection, 'output_names': ['output_data1']},
-            # {'function': TY_1_1, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_1_2, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_1_3, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_1_4, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_1_5, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # # {'function': TY_2_2, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_3_1, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # # {'function': TY_3_2, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_3_3, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_3_5, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_6_1, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_6_3, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # # {'function': TY_10_2, 'collection': TY_collection, 'output_names': ['output_data1']},  #  ===== taking more time to run =====
-            # # {'function': TY_10_4, 'collection': TY_collection, 'output_names': ['output_data1', 'output_data2']}, # ===== taking more time to run =====
-            # {'function': TY_11_1, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # # {'function': TY_7_2, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function': TY_8_2, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # # {'function': TY_5_1, 'collection': TY_collection, 'output_names': ['output_data1']},
-            # {'function':TY_5_3,'collection':TY_collection,'output_names':['output_data1']},
-            # {'function':TY_5_6,'collection':TY_collection,'output_names':['output_data1']},
-            # {'function':TY_5_7,'collection':TY_collection,'output_names':['output_data1']},
-            # {'function': RM_1_1, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_1_3, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_1_4, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_2_1, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_2_2, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_2_3, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_3_1, 'collection': RM_collection, 'output_names': ['output_data1']},
-            # {'function': RM_3_2, 'collection': RM_collection, 'output_names': ['output_data1']}
-        ]
-        for function_info in functions_to_run:
-            function = function_info['function']
-            collection = function_info['collection']
-            output_names = function_info['output_names']
-            # Execute 
-            # the function
-            outputs = function()
-            # Create a dictionary to hold all the output data
-            # data_dict['alerts_created']=datetime.now()
-            if outputs is not None:
-                existing_document = collection.find_one({"code": function.__name__})
-                for output_name, output_data in zip(output_names, outputs):
-                    if isinstance(output_data, np.float64):
-                        # Handle NumPy float64 differently
-                        records = [{'data': output_data.item()}]
-                    elif isinstance(output_data, pd.Index):
-                        # Convert the Index object to a list or extract relevant information
-
-                        records = [{'data': index_value} for index_value in output_data.tolist()]
-                    elif isinstance(output_data, str):
-                        # Handle string data appropriately (e.g., convert it to a dictionary if needed)
-
-                        records = [{'data': output_data}]
-                    else:
-                        # Assume it's a DataFrame or similar, convert it to records
-                        print("polkjhbqwesdfgh..................................")
-
-                        records = output_data.to_dict(orient='records')
-                        # Add extra fields to records
-                    # add_fields_to_records(records)
-                    add_fields_to_records(records, function.__name__)
-                    if existing_document:
-                        alerts_updated_date = existing_document.get("alerts_updated")
-                        alerts_created = existing_document.get("alerts_created")
-                        if alerts_updated_date!=None and alerts_updated_date.date() == current_datetime.date():
-                            print("Skipping Update")
-                        elif alerts_updated_date!=None and alerts_created!=None and alerts_updated_date.date() != current_datetime.date():
-                            print(function.__name__)
-                            print("Updating")
-                            collection.update_one({'code': function.__name__}, {'$set': {
-                                "alerts_updated":midnight_datetime}}, upsert=True)
-                            for record in records:
-                                collection.update_one({'code':function.__name__},{"$push": {f"{output_name}": record}})
-                            print("Updated")
-                        elif alerts_created==None and alerts_updated_date==None:
-                            print("Inserting alert data into the code document")
-                            collection.update_one({'code': function.__name__}, {'$set':{'alerts_created':midnight_datetime,'alerts_updated':midnight_datetime}}, upsert=True)
-                            for record in records:
-                                collection.update_one({'code':function.__name__},{"$push": {f"{output_name}": record}})
-                            print(f"Data stored in '{collection.name}' for function: {function.__name__}")
-        # =================== Ten Laks Collection Quire ===================
-        startDate = '2021-06-25'
-        formatedDate = datetime.strptime(startDate,"%Y-%m-%d")
-        thresholdAmount = 1000000
-        pipeline = [
-                {
-                    '$unwind':'$TXNDATA'
-                },
-                {
-                    '$match':{
-                        'TXNDATA.Transaction Type':'Cash',
-                        'TXNDATA.Transaction Date':formatedDate,
-                        'TXNDATA.Transaction Amount':{'$gte':thresholdAmount},
-                    }
-                },
-                {
-                    '$group':{
-                        '_id':'nonee',
-                        'uploaded Date' : {'$first':midnight_datetime} ,
-                        "output_data1":{'$push':'$TXNDATA'}
-                    }
-                }
-            ]
-            # ,
-            #     {
-            #         '$out':'TenLaks'
-            #     }
-        tenlaksCollection = list(txn_collection.aggregate(pipeline))
-        TENLAKS.insert_one({
-            'uploaded Date': tenlaksCollection[0]['uploaded Date'],
-            'output_data1': tenlaksCollection[0]['output_data1']
-        })
-        # ================ Ten Laks Quire End ==========================
-                    
-        users = ['IT Officer','DGM/PO']
-        for user in users:
-            users_collection.update_one({"role":user},{"$set":{
-                "alerts_generated":midnight_datetime
-            }})
-        returning_data_enabled = False
-        # for function_info in functions_to_run:
-        #     function = function_info['function']
-        #     collection = function_info['collection']
-        #     output_names = function_info['output_names']
-        #     # Execute the function
-        #     outputs = function()
-        #     for output_name, output_data in zip(output_names, outputs):
-        #         if isinstance(output_data, np.float64):
-        #     # Handle NumPy float64 differently
-        #             records = [{'data': output_data.item()}]
-        #         elif isinstance(output_data, pd.Index):
-        #     # Convert the Index object to a list or extract relevant information
-        #             records = [{'data': index_value} for index_value in output_data.tolist()]
-        #         elif isinstance(output_data, str):
-        #             # Handle string data appropriately (e.g., convert it to a dictionary if needed)
-        #             records = [{'data': output_data}]
-        #         else:
-        #             # Assume it's a DataFrame or similar, convert it to records
-        #             records = output_data.to_dict(orient='records')
-        #         # Add extra fields to records
-        #         add_fields_to_records(records)
-        #         # Insert records into the collection
-        #         collection.insert_one({'code': function.__name__, output_name: records})
-        #         print(f"Data stored in '{collection.name}' for function: {function.__name__} and output: {output_name}")
-        # last_execution_time = datetime.now()
-
-def notification(mails):
-     
-    #  userinfo = users_collection.find_one({'emailid':mails})
-     conn4 = get_db_connection()
-     cursor = conn4.cursor()
-     sql = "SELECT * FROM charan WHERE EmailId = ?"
-     cursor.execute(sql, (mails))
-     userinfo = cursor.fetchone()
-    # =========== Taking the array's of the tickets which are storing the cases ========================== 
-     print('===============user_mails==========',userinfo)
-     if "allocated_tickets" in userinfo:
-        pendingAlertsNotfy = len(userinfo['allocated_tickets'])
-     else:
-         pendingAlertsNotfy = 0
-     
-     if "Sent_Back_Case_Alerts" in userinfo:
-        unsuffeccientAlerst = len(userinfo['Sent_Back_Case_Alerts'])
-     else:
-         unsuffeccientAlerst = 0
-     
-     if "rised_closed_tickets" in userinfo:
-        rised_closed_tickets = len(userinfo['rised_closed_tickets'])
-     else:
-         rised_closed_tickets = 0
-     
-     if "Sent_Back_Alerts" in userinfo:
-        Sent_Back_Alerts = len(userinfo['Sent_Back_Alerts'])
-     else:
-         Sent_Back_Alerts = 0
-     
-     if "Offline_assigned_tickets" in userinfo:
-        offlineCases = len(userinfo['Offline_assigned_tickets'])
-     else:
-         offlineCases = 0
-
-# ============================
-     if userinfo['role'] == 'CM/SM':
-        users_collection.update_one({'emailid':mails},{"$set":{'pendingAlertsNotfy':pendingAlertsNotfy,'unsufecientAlertsNotfy':unsuffeccientAlerst,"risedClosedCount":rised_closed_tickets}})
-     elif userinfo['role'] == 'MLRO':
-        users_collection.update_one({'emailid':mails},{"$set":{'pendingAlertsNotfy':pendingAlertsNotfy,'unsufecientAlertsNotfy':unsuffeccientAlerst,"sentBackClosedCount":Sent_Back_Alerts}})  
-     else:
-        users_collection.update_one({'emailid':mails},{"$set":{'pendingAlertsNotfy':pendingAlertsNotfy,'unsufecientAlertsNotfy':unsuffeccientAlerst,"offlineCasesCount":offlineCases}})
-    
-    # ============================
-     if "pendingAlertsNotfy" in userinfo:
-        prvPendingAlertsNotfy = userinfo['pendingAlertsNotfy']
-     else:
-        prvPendingAlertsNotfy = 0  
-
-     if "unsufecientAlertsNotfy" in userinfo:
-        prvunsufecientAlertsNotfy = userinfo['unsufecientAlertsNotfy']
-     else:
-         prvunsufecientAlertsNotfy = 0
-     
-     if "risedClosedCount" in userinfo:
-        prvrisedClosedCount = userinfo['risedClosedCount']
-     else:
-         prvrisedClosedCount = 0
-     
-     if "sentBackClosedCount" in userinfo:
-        prvsentClosedCount = userinfo['sentBackClosedCount']
-     else:
-         prvsentClosedCount = 0
-     
-     if "offlineCasesCount" in userinfo:
-        prvofflineCount = userinfo['offlineCasesCount']
-     else:
-         prvofflineCount = 0
-
-# ===================================================
-         
-     mainInfo = users_collection.find_one({'emailid':mails})
-
-     presentpen = mainInfo['pendingAlertsNotfy']
-     if "prvPendingAlertsNotfy" in mainInfo:
-        prevpen = mainInfo['prvPendingAlertsNotfy']
-     else:
-         prevpen = 0
-         users_collection.update_one({'emailid':mails},{"$set":{'prvPendingAlertsNotfy':prevpen}})
-
-     presentuns = mainInfo['unsufecientAlertsNotfy']
-     if "prvunsufecientAlertsNotfy" in mainInfo:
-        prvuns = mainInfo['prvunsufecientAlertsNotfy']
-     else:
-         prvuns = 0
-         users_collection.update_one({'emailid':mails},{"$set":{'prvunsufecientAlertsNotfy':prvuns}})
-    
-     if "risedClosedCount" in mainInfo:
-        presentclosed = mainInfo['risedClosedCount']
-        if "prvrisedClosedCount" in mainInfo:
-            prvclosed = mainInfo['prvrisedClosedCount']
-        else:
-            prvclosed = 0
-            users_collection.update_one({'emailid':mails},{"$set":{'prvrisedClosedCount':prvclosed}})
-     
-     if "sentBackClosedCount" in mainInfo:
-        presentsentclosed = mainInfo['sentBackClosedCount']
-        if "prvsentClosedCount" in mainInfo:
-            prvsentclosed = mainInfo['prvsentClosedCount']
-        else:
-            prvsentclosed = 0
-            users_collection.update_one({'emailid':mails},{"$set":{'prvsentClosedCount':prvsentclosed}})
-     
-     if "offlineCasesCount" in mainInfo:
-        presentofflineclosed = mainInfo['offlineCasesCount']
-        if "prvofflineCount" in mainInfo:
-            prvofflineclosed = mainInfo['prvofflineCount']
-        else:
-            prvofflineclosed = 0
-            users_collection.update_one({'emailid':mails},{"$set":{'prvofflineCount':prvofflineclosed}})
-
-    #  ================================
-     print("prevpen : ",prevpen)
-     print("presentpen : ",presentpen)
-     
-     if prevpen > presentpen:
-         users_collection.update_one({'emailid':mails},{"$set":{'prvPendingAlertsNotfy':prvPendingAlertsNotfy}})
-     if prvuns > presentuns:
-         users_collection.update_one({'emailid':mails},{"$set":{'prvunsufecientAlertsNotfy':prvunsufecientAlertsNotfy}})
-     
-     if userinfo['role'] == 'AGM' or userinfo['role'] == 'DGM/PO' or userinfo['role'] == 'ROS':
-        if prvofflineclosed > presentofflineclosed:
-            users_collection.update_one({'emailid':mails},{"$set":{'prvofflineCount':prvofflineCount}})
-     if userinfo['role'] == 'CM/SM':
-        if prvclosed > presentclosed:
-            users_collection.update_one({'emailid':mails},{"$set":{'prvrisedClosedCount':prvrisedClosedCount}})
-     if userinfo['role'] == 'MLRO':
-        if prvsentclosed > presentsentclosed:
-            users_collection.update_one({'emailid':mails},{"$set":{'prvsentClosedCount':prvsentClosedCount}})
-     
-     
-# ===================================================
-
-
-     main = users_collection.find_one({'emailid':mails})
-     
-     if "pendingAlertsNotfy" in main and "prvPendingAlertsNotfy" in main:
-        presentPendingAlertsNotfy  = main['pendingAlertsNotfy']
-        prvPendingAlertsNotfy  = main['prvPendingAlertsNotfy']
-     else:
-        presentPendingAlertsNotfy  = 0
-        prvPendingAlertsNotfy  = 0
-
-     print("presentPendingAlertsNotfy : ",presentPendingAlertsNotfy)
-     print("prvPendingAlertsNotfy : ",prvPendingAlertsNotfy)
-
-     if "unsufecientAlertsNotfy" in main and "prvunsufecientAlertsNotfy" in main:
-        presentunsufecientAlertsNotfy  = main['unsufecientAlertsNotfy']
-        prvunsufecientAlertsNotfy  = main['prvunsufecientAlertsNotfy']
-     else:
-        presentunsufecientAlertsNotfy  = 0
-        prvunsufecientAlertsNotfy  = 0
-     
-     if "risedClosedCount" in main and "prvrisedClosedCount" in main:
-        presentclosedNotfy  = main['risedClosedCount']
-        prvclosedNotfy  = main['prvrisedClosedCount']
-     else:
-        presentclosedNotfy  = 0
-        prvclosedNotfy  = 0
-     
-     if "sentBackClosedCount" in main and "prvsentClosedCount" in main:
-        presentsentclosedNotfy  = main['sentBackClosedCount']
-        prvsentclosedNotfy  = main['prvsentClosedCount']
-     else:
-        presentsentclosedNotfy  = 0
-        prvsentclosedNotfy  = 0
-     
-     if "offlineCasesCount" in main and "prvofflineCount" in main:
-        presentofflineNotfy  = main['offlineCasesCount']
-        prvofflineNotfy  = main['prvofflineCount']
-     else:
-        presentofflineNotfy  = 0
-        prvofflineNotfy  = 0
-
-
-# ===================================================
-        
-     if presentPendingAlertsNotfy and (presentPendingAlertsNotfy > prvPendingAlertsNotfy):
-         pendingcount = presentPendingAlertsNotfy - prvPendingAlertsNotfy
-     else:
-         pendingcount = 0
-     print("pendingcount : ",pendingcount)    
-    
-     if presentunsufecientAlertsNotfy and (presentunsufecientAlertsNotfy > prvunsufecientAlertsNotfy):
-         unsuffeccientcount = presentunsufecientAlertsNotfy - prvunsufecientAlertsNotfy
-     else:
-         unsuffeccientcount = 0
-     
-     if presentclosedNotfy and (presentclosedNotfy > prvclosedNotfy):
-         verifyClosedcount = presentclosedNotfy - prvclosedNotfy
-     else:
-         verifyClosedcount = 0
-    
-     if presentsentclosedNotfy and (presentsentclosedNotfy > prvsentclosedNotfy):
-         sentClosedcount = presentsentclosedNotfy - prvsentclosedNotfy
-     else:
-         sentClosedcount = 0
-     
-     if presentofflineNotfy and (presentofflineNotfy > prvofflineNotfy):
-         risedofflinecount = presentofflineNotfy - prvofflineNotfy
-     else:
-         risedofflinecount = 0
-
-         
-# ===============================================================================
-
-# ============================ DashBoard Per Day Logic ===========================================
-
-     current_datetime = datetime.now()
-     # Extract only the date and set the time to midnight
-     current_date = str(current_datetime.date())
-    #  current_date = '2024-01-23'
-     print('current_date : ',current_date)
-
-    #  if pendingcount != 0:
-
-    #                 perDay = users_collection.find_one({"emailid":mails,"pendingAlerts_perDay":{"$exists":True}})
-
-    #                 if perDay:
-    #                     print("holaa.................")
-    #                     dateExists = users_collection.find_one({"emailid": mails, f'pendingAlerts_perDay.{current_date}': {"$exists": True}})
-    #                     if dateExists:
-    #                         users_collection.update_one(
-    #                                 {"emailid": mails, f'pendingAlerts_perDay.{current_date}': {"$exists": True}},
-    #                                 {"$inc": {f'pendingAlerts_perDay.$.{current_date}': pendingcount}}
-    #                             )
-    #                     else:
-    #                         users_collection.update_one({"emailid":mails},{"$push":{"pendingAlerts_perDay":{current_date:pendingcount}}})
-
-    #                 else:
-    #                     users_collection.update_one({"emailid":mails},{"$set":{"pendingAlerts_perDay":[{current_date:pendingcount}]}})
-
-   
-
-# ================================================================================================
-
-     return {"pendingcount":pendingcount,"unsuffeccientcount":unsuffeccientcount,"verifyClosedcount":verifyClosedcount,'sentBackClosed':sentClosedcount,"offlineCases":risedofflinecount}
-
-
-# @app.route('/ItFileUploder', methods=['GET', 'POST'])
-# @secure_route(required_role=['IT OFFICER'])
-# def ItFileUploder():
-#     role = session['user_role']
-    
-#     uploadedFile = request.files['alertsFile']
-    
-#     if role == 'IT OFFICER':
-#         df = pd.read_excel(uploadedFile.read())
-#         listDf = df.to_dict(orient='records')
-
-#         current_datetime = datetime.now()
-#         current_date = current_datetime.date()
-#         midnight_datetime = datetime.combine(current_date, datetime.min.time())
-
-#         for doc in listDf:
-#             for key, values in doc.items():
-#                 if pd.isna(values):
-#                     doc[key] = 'Nill'
-#                 if isinstance(values, float):
-#                     doc[key] = None
-#                 if isinstance(doc.get('Account Number'), int):
-#                     doc['Account Number'] = str(doc['Account Number'])
-#                 if isinstance(doc.get('Transaction Amount'), int):
-#                     doc['Transaction Amount'] = int(doc['Transaction Amount'])
-
-#             accNum = doc.get('Account Number')
-#             if accNum:
-#                 accNum = str(accNum)
-#                 allAccountDetails = txn_collection.find_one({'Account Number': accNum})
-
-#                 if allAccountDetails:
-#                     txn_collection.update_one(
-#                         {'Account Number': accNum},
-#                         {'$push': {'XLData': doc}}
-#                     )
-#                 else:
-#                     txn_collection.insert_one(
-#                         {'Account Number': accNum, 'XLData': [doc]}
-#                     )
-
-#         print("Data stored successfully....")
-        
-#         # Update the file status in the SQL database
-#         try:
-#             conn01 = get_db_connection_TICKETID()
-#             cursor = conn01.cursor()
-#             cursor.execute("UPDATE [user] SET [File] = ? WHERE Role = ?", ('True', role))
-#             conn01.commit()  # Ensure the transaction is committed
-#             print('File changed to one')
-#             print('File changed to one===ROLE', role)
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#         finally:
-#             cursor.close()
-#             conn01.close()
-
-#         # Redirect to the IT dashboard after successful upload and processing
-#         return redirect(url_for("ITdashboard"))
-#     else:
-#         return "Unauthorized access", 403
-
-        
-def convert_timestamp_to_str(data):
-    if isinstance(data, dict):
-        return {k: convert_timestamp_to_str(v) for k, v in data.items()}
-    elif isinstance(data, list):
-        return [convert_timestamp_to_str(v) for v in data]
-    elif isinstance(data, pd.Timestamp):
-        return data.strftime('%Y-%m-%d %H:%M:%S')
-    return data
-
-@app.route('/ItFileUploder', methods=['GET', 'POST'])
-@secure_route(required_role=['IT OFFICER'])
-def ItFileUploder():
-    role = session['user_role']
-    
-    uploadedFile = request.files['alertsFile']
-    
-    if role == 'IT OFFICER':
-        df = pd.read_excel(uploadedFile.read())
-        listDf = df.to_dict(orient='records')
-
-        current_datetime = datetime.now()
-        current_date = current_datetime.date()
-        midnight_datetime = datetime.combine(current_date, datetime.min.time())
-
-        conn = get_db_connection_TICKETID()
-        cursor = conn.cursor()
-
-        for doc in listDf:
-            for key, values in doc.items():
-                if pd.isna(values):
-                    doc[key] = 'Nill'
-                if isinstance(values, float):
-                    doc[key] = None
-                if isinstance(doc.get('Account Number'), int):
-                    doc['Account Number'] = str(doc['Account Number'])
-                if isinstance(doc.get('Transaction Amount'), int):
-                    doc['Transaction Amount'] = int(doc['Transaction Amount'])
-
-            doc = convert_timestamp_to_str(doc)  # Convert Timestamp objects to strings
-
-            accNum = doc.get('Account Number')
-            if accNum:
-                accNum = str(accNum)
-                # Check if the account number already exists
-                cursor.execute("SELECT COUNT(*) FROM file_data WHERE AccountNumber = ?", accNum)
-                result = cursor.fetchone()
-                
-                if result[0] > 0:
-                    # Update existing record
-                    cursor.execute(
-                        "UPDATE file_data SET XLData = JSON_MODIFY(XLData, 'append $', ?) WHERE AccountNumber = ?",
-                        [json.dumps(doc), accNum]
-                    )
-                else:
-                    # Insert new record
-                    cursor.execute(
-                        "INSERT INTO file_data (AccountNumber, XLData) VALUES (?, ?)",
-                        [accNum, json.dumps(doc)]
-                    )
-
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        print("Data stored successfully....")
-        
-        # Update the file status in the SQL database
-        try:
-            conn01 = get_db_connection_TICKETID()
-            cursor = conn01.cursor()
-            cursor.execute("UPDATE [user] SET [File] = ? WHERE Role = ?", ('True', role))
-            conn01.commit()  # Ensure the transaction is committed
-            print('File changed to one')
-            print('File changed to one===ROLE', role)
-        except Exception as e:
-            print(f"An error occurred: {e}")
-        finally:
-            cursor.close()
-            conn01.close()
-
-        # Redirect to the IT dashboard after successful upload and processing
-        return redirect(url_for("ITdashboard"))
-    else:
-        return "Unauthorized access", 403
-
-
-# @app.route('/AGMdashboard', methods=['GET', 'POST'])
-# @secure_route(required_role='AGM')
-# def AGMdashboard():
-#     if 'email_id' not in session:
-#         return redirect(url_for('post_login'))
-#     agm_email = session['email_id']
-#     notify = 'hiiiiii'
-
-#     conn = get_db_connection_TICKETID()
-#     cursor = conn.cursor()
-
-#     # Fetch AGM user details
-#     sql_query = "SELECT * FROM [user] WHERE EmailId = ?"
-#     cursor.execute(sql_query, (agm_email,))
-#     agmuser = cursor.fetchone()
-#     if agmuser and 'Image' in agmuser:
-#         agmuser['Image'] = base64.b64encode(agmuser['Image']).decode('utf-8')
-
-#     # Fetch dashboard count from user and scenarios tables
-#     sql_query = """
-#     SELECT u.*, s.allocaTedicket, s.case_tickets, s.Sent_Back_Case_Alerts, s.cms_assigned
-#     FROM [user] u
-#     LEFT JOIN [scenarios] s ON u.EmailId = s.EmailId
-#     WHERE u.EmailId = ? AND u.Status = 'Approved'
-#     """
-#     cursor.execute(sql_query, (agm_email,))
-#     dashboardCount = cursor.fetchone()
-
-#     count = len(dashboardCount.allocated_tickets.split(',')) if dashboardCount.allocated_tickets else 0
-#     countSubmited = len(dashboardCount.case_tickets.split(',')) if dashboardCount.case_tickets else 0
-#     countSentBackCaseAlerts = len(dashboardCount.Sent_Back_Case_Alerts.split(',')) if dashboardCount.Sent_Back_Case_Alerts else 0
-#     cmscount = dashboardCount.cms_assigned.split(',') if dashboardCount.cms_assigned else []
-
-#     # Per Day Count
-#     allocated_ticket_perday = dashboardCount.allocated_perday.split(',') if "allocated_perday" in dashboardCount else []
-#     casetickets_perday = dashboardCount.case_tickets_perday.split(',') if "case_tickets_perday" in dashboardCount else []
-
-#     # Fetch CM/SM Data and their assigned MLROs
-#     if cmscount:
-#         sql_query = f"""
-#         SELECT * FROM [user]
-#         WHERE EmailId IN ({','.join(['?' for _ in cmscount])})
-#         AND Status = 'Approved'
-#         """
-#         cursor.execute(sql_query, cmscount)
-#         cm_records = cursor.fetchall()
-
-#         cm_data = []
-#         for cm_record in cm_records:
-#             email_id = cm_record.EmailId
-#             mlros_assigned = cm_record.mlros_assigned.split(',') if cm_record.mlros_assigned else []
-
-#             mlro_email_ids = []
-#             mlro_empids = []
-#             count_mlro_tickets = []
-#             mlro_commented_tickets = []
-#             mlro_case_tickets = []
-
-#             for mlro_emailid in mlros_assigned:
-#                 cursor.execute("SELECT * FROM [user] WHERE EmailId = ?", (mlro_emailid,))
-#                 user_data = cursor.fetchone()
-#                 if user_data:
-#                     mlro_email_ids.append(user_data.EmailId)
-#                     mlro_empids.append(user_data.EmpId)
-#                     count_mlro_tickets.append(len(user_data.allocated_tickets.split(',')) if user_data.allocated_tickets else 0)
-#                     mlro_commented_tickets.append(len(user_data.commented_tickets.split(',')) if user_data.commented_tickets else 0)
-#                     mlro_case_tickets.append(len(user_data.case_tickets.split(',')) if user_data.case_tickets else 0)
-#                 else:
-#                     mlro_email_ids.append(mlro_emailid)
-#                     mlro_empids.append(None)
-#                     count_mlro_tickets.append(0)
-#                     mlro_commented_tickets.append(0)
-#                     mlro_case_tickets.append(0)
-
-#             cm_data.append({
-#                 "cm_email_id": email_id,
-#                 "cm_empids": cm_record.EmpId,
-#                 "count_cm_tickets": len(cm_record.allocated_tickets.split(',')) if cm_record.allocated_tickets else 0,
-#                 "cm_commented_tickets": len(cm_record.commented_tickets.split(',')) if cm_record.commented_tickets else 0,
-#                 "cm_case_tickets": len(cm_record.case_tickets.split(',')) if cm_record.case_tickets else 0,
-#                 "mlro_data": list(zip(mlro_email_ids, count_mlro_tickets, mlro_case_tickets, mlro_commented_tickets, mlro_empids))
-#             })
-#     else:
-#         cm_data = []
-
-#     cursor.close()
-#     conn.close()
-
-#     return render_template('AGMdashboard.html',
-#                            count=count,
-#                            countSubmited=countSubmited,
-#                            cm_data=cm_data,
-#                            agmuser=agmuser,
-#                            type='AGMdashboard',
-#                            role='AGM',
-#                            countSentBackCaseAlerts=countSentBackCaseAlerts,
-#                            allocatedperday=allocated_ticket_perday,
-#                            caseticketsperday=casetickets_perday,
-#                            notify=notify)
-
-
-
-
-@app.route('/AGMdashboard', methods=['GET', 'POST'])
-@secure_route(required_role='AGM')
-def AGMdashboard():
-        if 'email_id' not in session:
-                print('=============emialid  no tin session==========')
-                return redirect(url_for('post_login'))
-        
-        dgm_email = session['email_id']
-
-        # conngmDash = pyodbc.connect(f"Driver={{SQL Server}};SERVER={serverIP2};Database=ticketid;UID={userSQL2};PWD={pwdSQL2}")
-        conngmDash = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES")
-
-        mysqlgmDash = conngmDash.cursor()
-
-        
-        try:
-
-            try:
-
-                query = "SELECT id FROM dbo.[user] WHERE EmailId = ?"
-                mysqlgmDash.execute(query, (dgm_email,))
-                user = mysqlgmDash.fetchone()
-
-                user_id = user[0]
-                
-                count = 0
-                Approved = 0
-                Rejected = 0 
-            
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE allocatedTicket = ?", (user_id,))
-                
-                tempcount = mysqlgmDash.fetchone()[0]
-                if tempcount != 0:
-                        count = tempcount
-                else:
-
-                    count= 0
-                    
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE approved = ?", (user_id,))
-                
-                tempapproved = mysqlgmDash.fetchone()[0]
-                if tempapproved != 0:
-                        Approved = tempapproved
-                else:
-
-                    Approved= 0
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE rejected = ?", (user_id,))
-                
-                temprejected = mysqlgmDash.fetchone()[0]
-                if temprejected != 0:
-                        Rejected = temprejected
-                else:
-
-                    Rejected= 0
-
-
-            except:
-                count = 0
-                Approved = 0
-                Rejected = 0
-            
-        
-
-            query1 = "SELECT * FROM dbo.[user] WHERE Role = 'MLRO'"
-            mysqlgmDash.execute(query1)
-            rows = mysqlgmDash.fetchall()
-
-            columns = [col[0] for col in mysqlgmDash.description]
-
-            mlro = [{columns[i]: row[i] for i in range(len(columns))} for row in rows]
-
-            mlro = mlro[0]
-
-            count_allocated = 0
-            count_submitted = 0
-            count_reallocated_cm = 0
-            count_commented_cm = 0 
-
-            mlroid=mlro.get('id')
-            mlroEid=mlro.get('EmpId')
-            mlro_mail=mlro.get('EmailId') 
-
-            try:
-
-                # Count tickets allocated to the CM/SM user
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE allocatedTicket = ?  ", (mlroid,))
-                temp_allocated = mysqlgmDash.fetchone()[0]
-                if temp_allocated != 0:
-                    count_allocated = temp_allocated
-                else:
-                    count_allocated = 0
-
-                # Count tickets where the CM/SM user is assigned as cmSMCasesTicket
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE mlroCasesTicket = ?", (mlroid,))
-                temp_cm_sm_cases = mysqlgmDash.fetchone()[0]
-                if temp_cm_sm_cases != 0:
-                    count_submitted = temp_cm_sm_cases
-                else:
-                    count_submitted = 0
-
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE mlroClosedTicket = ?", (mlroid,))
-                temp_cm_sm_closed = mysqlgmDash.fetchone()[0]
-                if temp_cm_sm_closed != 0:
-                    count_commented_cm = temp_cm_sm_closed
-                else:
-                    count_commented_cm = 0
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE unsatisfiedTicket = ?", (mlroid,))
-                temp_cm_sm_reallocate = mysqlgmDash.fetchone()[0]
-                if temp_cm_sm_reallocate != 0:
-                    count_reallocated_cm = temp_cm_sm_reallocate
-                else:
-                    count_reallocated_cm = 0
-            except:
-                count_allocated = 0
-                count_submitted = 0
-                count_reallocated_cm = 0
-                count_commented_cm = 0
-
-    
-            query1 = "SELECT * FROM dbo.[user] WHERE Role = 'CM/SM'"
-
-            mysqlgmDash.execute(query1)
-            rows = mysqlgmDash.fetchall()
-
-            columns = [col[0] for col in mysqlgmDash.description]
-
-            mlro = [{columns[i]: row[i] for i in range(len(columns))} for row in rows]
-
-            mlro = mlro[0]
-            count_allocated1= 0
-            count_submitted1= 0
-            count_reallocated1 = 0
-            count_commented1 = 0 
-
-            cmid=mlro.get('id')
-            cmEid=mlro.get('EmpId')
-            cm_mail=mlro.get('EmailId') 
-
-            try:
-
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE allocatedTicket = ? AND deletedTicket IS NULL ", (cmid,))
-
-                temp_allocated = mysqlgmDash.fetchone()[0]
-
-                if temp_allocated != 0:
-                    count_allocated1 = temp_allocated
-                else:
-                    count_allocated1 = 0
-
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE cmSMCasesTicket = ?", (cmid,))
-
-                temp_cm_sm_cases = mysqlgmDash.fetchone()[0]
-
-                if temp_cm_sm_cases != 0:
-                    count_submitted1 = temp_cm_sm_cases
-                else:
-                    count_submitted1 = 0
-
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE cmSmClosedTicket = ?", (cmid,))
-
-                temp_cm_sm_closed = mysqlgmDash.fetchone()[0]
-
-                if temp_cm_sm_closed != 0:
-                    count_commented1 = temp_cm_sm_closed
-                else:
-                    count_commented1 = 0
-
-                mysqlgmDash.execute("SELECT COUNT(*) FROM scenarios WHERE unsatisfiedTicket = ?", (cmid,))
-
-                temp_cm_sm_reallocate = mysqlgmDash.fetchone()[0]
-
-                if temp_cm_sm_reallocate != 0:
-                    count_reallocated1 = temp_cm_sm_reallocate
-                else:
-                    count_reallocated1 = 0
-            except:
-                count_allocated1 = 0
-                count_submitted1 = 0
-                count_reallocated1 = 0
-                count_commented1 = 0
-            
-            conngmDash.close()
-
-            return render_template('DGMdashboard.html',count=count,approved_count=Approved,rejected_count=Rejected,DGMRejectedperDay=[],mail=mlro_mail,id=mlroEid,cm_mailid=cm_mail,cm_id=cmEid, count_mlro=count_allocated, countSubmited=count_submitted, countcommentedtickets=count_commented_cm, countSentBackCaseAlerts=count_reallocated_cm,sentbackcount=count_reallocated1, allocateresultlist=[], caseresultlist=[],cm_count=count_allocated1,created_count=count_submitted1,closed_cm_count=count_commented1,allocatedperday=[],DGMApprovedperDay=[],type='DGMdashboard',role='DGM/PO')
-        except Exception as e:
-
-            mysqlgmDash.rollback()
-            conngmDash.close()
-            
-            return f'Something Went Wrong: {e} , Please Re-Login Again', 500
 
 @app.route("/post_login", methods=["POST", "GET"])
 def post_login():
@@ -3347,19 +2616,15 @@ def post_login():
                 
                 
                         if status == "Approved":
-                            # session["email_id"] = str(email_column)
-                            session["email_id"] = email_column
+                            session["email_id"] str(email_column)mn
                             session["user_role"] = user_role
                             session["user_Branch_code"] = user_Branch_code
-                            session.permanent = True
-                            current_datetime = datetime.now()
-                            current_date = current_datetime.date()
-                            midnight_datetime = datetime.combine(current_date, datetime.min.time())
-                            if user_role == "IT OFFICER":
+                            session.permanent = Tr))
+                            if user_role == "ITfficerER":
                                     sql_find_it_officer = """
                                     SELECT * FROM [user] WHERE Role = ? AND Alerts_generated = ? AND [File] = 'True'
                                     """
-                                    mysqlPostLogin.execute(sql_find_it_officer, ("IT OFFICER", midnight_datetime))
+                                    cursorin.execute(sql_find_it_officer, ("ITfficerER", midnight_datetime))
                                     userLogin = cursor.fetchone()
                                     midnight_datetime = datetime.combine(current_date, datetime.min.time())
                                     
@@ -3371,19 +2636,18 @@ def post_login():
                                         sql_update_file = """
                                         UPDATE charan SET [File] = 'True' WHERE Role = ?
                                         """
-                                        mysqlPostLogin.execute(sql_update_file, (user_role,))
+                                      cursorin.execute(sql_update_file, (user_role,))
                                         mysqlPostLogin.commit()
                                         new_captcha_dict = SIMPLE_CAPTCHA.create()
-                                        return render_template('sign_in.html', active=True, captcha=new_captcha_dict)                               
-                                
-                            elif user_role == "AGM":
-                                # session["email_id"]=str(user["emailid"])
-                                try:
-                                    return redirect(url_for("AGMdashboard"))
-                                except Exception as e:
-                                    return f'Something Went Wrong: {e} Try to Re-Login Again', 500
-                                return redirect(url_for("AGMdashboard"))
-                                   
+                                        return render_template('sign_in.html', active=True, captcha=new_captcha_dict)
+
+                          # if user_role == "IT OFFICER":
+                          #         try:
+                                        
+                          #             return redirect(url_for("ITdashboard"))
+                          #         except Exception as e:
+                          #             return f'Something Went Wrong: {e} Try to Re-Login Again', 500                               
+                                    
                             elif user_role == "MLRO":
                                 try:
                                     return redirect(url_for("MLROdashboard"))
@@ -3392,6 +2656,11 @@ def post_login():
                             elif user_role == "CM/SM":
                                 try:
                                     return redirect(url_for("CM_SM_dashboard"))
+                                except Exception as e:
+                                    return f'Something Went Wrong: {e} Try to Re-Login Again', 500
+                            elif user_role == "AGM":
+                                try:
+                                    return redirect(url_for("AGMdashboard"))
                                 except Exception as e:
                                     return f'Something Went Wrong: {e} Try to Re-Login Again', 500
                             elif user_role == "DGM/PO":
@@ -3613,194 +2882,260 @@ def userWorkingStatus():
 
 
 # ------------------- HO ADMIN LANDING PAGE OR DASHBOARD -------------------------------------------
+def run_tm_functions(user_role):
+    
+    global returning_data_enabled
+    current_datetime = datetime.now()
+    current_date = current_datetime.date()
+    midnight_datetime = datetime.combine(current_date, datetime.min.time())
+    if (user_role=='IT Officer' or user_role=="DGM/PO") and users_collection.find_one({"role":user_role,"alerts_generated":midnight_datetime}):
+        print("Alerts already generated")
+    elif user_role=='IT Officer' or user_role=="DGM/PO":
+        returning_data_enabled = True
+        functions_to_run = [
+            # {'function': TM_1_1, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_1_2, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_1_3, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_1_4, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_2_1, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_2_2, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_2_3, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_2_4, 'collection': TM_collection, 'output_names': ['output_data1', 'output_data2']},
+            # {'function': TM_2_5, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_2_6, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # # {'function': TM_3_1, 'collection': TM_collection, 'output_names': ['output_data1']},  # ===== taking more time to run =====
+            # {'function': TM_3_2, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_3_3, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_3_4, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_3_5, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_3_6, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_4_1, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_4_2, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_6_1, 'collection': TM_collection, 'output_names': ['output_data1','output_data2']},
+            # {'function': TM_6_2, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_8_1, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_8_2, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # # {'function': TM_8_3, 'collection': TM_collection, 'output_names': ['output_data1']},#  ===== taking more time to run =====
+            # {'function': TM_9_1, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TM_9_2, 'collection': TM_collection, 'output_names': ['output_data1']},
+            # {'function': TY_1_1, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_1_2, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_1_3, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_1_4, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_1_5, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # # {'function': TY_2_2, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_3_1, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # # {'function': TY_3_2, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_3_3, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_3_5, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_6_1, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_6_3, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # # {'function': TY_10_2, 'collection': TY_collection, 'output_names': ['output_data1']},  #  ===== taking more time to run =====
+            # # {'function': TY_10_4, 'collection': TY_collection, 'output_names': ['output_data1', 'output_data2']}, # ===== taking more time to run =====
+            # {'function': TY_11_1, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # # {'function': TY_7_2, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function': TY_8_2, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # # {'function': TY_5_1, 'collection': TY_collection, 'output_names': ['output_data1']},
+            # {'function':TY_5_3,'collection':TY_collection,'output_names':['output_data1']},
+            # {'function':TY_5_6,'collection':TY_collection,'output_names':['output_data1']},
+            # {'function':TY_5_7,'collection':TY_collection,'output_names':['output_data1']},
+            # {'function': RM_1_1, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_1_3, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_1_4, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_2_1, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_2_2, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_2_3, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_3_1, 'collection': RM_collection, 'output_names': ['output_data1']},
+            # {'function': RM_3_2, 'collection': RM_collection, 'output_names': ['output_data1']}
+        ]
+        for function_info in functions_to_run:
+            function = function_info['function']
+            collection = function_info['collection']
+            output_names = function_info['output_names']
+            # Execute 
+            # the function
+            outputs = function()
+            # Create a dictionary to hold all the output data
+            # data_dict['alerts_created']=datetime.now()
+            if outputs is not None:
+                existing_document = collection.find_one({"code": function.__name__})
+                for output_name, output_data in zip(output_names, outputs):
+                    if isinstance(output_data, np.float64):
+                        # Handle NumPy float64 differently
+                        records = [{'data': output_data.item()}]
+                    elif isinstance(output_data, pd.Index):
+                        # Convert the Index object to a list or extract relevant information
 
-# Reset Password route
-@app.route("/reset_password", methods=["GET", "POST"])
-def reset_password():
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        token = request.form.get('token')
-        new_password1 = request.form.get('new_password1')
-        new_password2 = request.form.get('new_password2')
+                        records = [{'data': index_value} for index_value in output_data.tolist()]
+                    elif isinstance(output_data, str):
+                        # Handle string data appropriately (e.g., convert it to a dictionary if needed)
 
-        # user_data = users_collection.find_one({"emailid": user_id})
-        conn6 = get_db_connection_TICKETID()
-        cursor = conn6.cursor()
-        # user_data = users_collection.find_one({"emailid": user_id})
-        user_data = cursor.execute("""
-                        SELECT *
-                        FROM [user]
-                        WHERE EmailId = ?;
-                    """, (user_id,)).fetchone()
+                        records = [{'data': output_data}]
+                    else:
+                        # Assume it's a DataFrame or similar, convert it to records
+                        print("polkjhbqwesdfgh..................................")
 
-        if user_data:
-            reset_token = user_data.get("reset_password_token")
-            reset_token_expiry = user_data.get("reset_token_expiry", datetime.min)
-
-            if bcrypt.checkpw(token.encode('utf-8'), reset_token) and datetime.utcnow() <= reset_token_expiry:
-                if new_password1 == new_password2:
-                    hashed_password = hash_password(new_password1)
+                        records = output_data.to_dict(orient='records')
+                        # Add extra fields to records
+                    # add_fields_to_records(records)
+                    add_fields_to_records(records, function.__name__)
+                    if existing_document:
+                        alerts_updated_date = existing_document.get("alerts_updated")
+                        alerts_created = existing_document.get("alerts_created")
+                        if alerts_updated_date!=None and alerts_updated_date.date() == current_datetime.date():
+                            print("Skipping Update")
+                        elif alerts_updated_date!=None and alerts_created!=None and alerts_updated_date.date() != current_datetime.date():
+                            print(function.__name__)
+                            print("Updating")
+                            collection.update_one({'code': function.__name__}, {'$set': {
+                                "alerts_updated":midnight_datetime}}, upsert=True)
+                            for record in records:
+                                collection.update_one({'code':function.__name__},{"$push": {f"{output_name}": record}})
+                            print("Updated")
+                        elif alerts_created==None and alerts_updated_date==None:
+                            print("Inserting alert data into the code document")
+                            collection.update_one({'code': function.__name__}, {'$set':{'alerts_created':midnight_datetime,'alerts_updated':midnight_datetime}}, upsert=True)
+                            for record in records:
+                                collection.update_one({'code':function.__name__},{"$push": {f"{output_name}": record}})
+                            print(f"Data stored in '{collection.name}' for function: {function.__name__}")
+        # =================== Ten Laks Collection Quire ===================
+        startDate = '2021-06-25'
+        formatedDate = datetime.strptime(startDate,"%Y-%m-%d")
+        thresholdAmount = 1000000
+        pipeline = [
+                {
+                    '$unwind':'$TXNDATA'
+                },
+                {
+                    '$match':{
+                        'TXNDATA.Transaction Type':'Cash',
+                        'TXNDATA.Transaction Date':formatedDate,
+                        'TXNDATA.Transaction Amount':{'$gte':thresholdAmount},
+                    }
+                },
+                {
+                    '$group':{
+                        '_id':'nonee',
+                        'uploaded Date' : {'$first':midnight_datetime} ,
+                        "output_data1":{'$push':'$TXNDATA'}
+                    }
+                }
+            ]
+            # ,
+            #     {
+            #         '$out':'TenLaks'
+            #     }
+        tenlaksCollection = list(txn_collection.aggregate(pipeline))
+        TENLAKS.insert_one({
+            'uploaded Date': tenlaksCollection[0]['uploaded Date'],
+            'output_data1': tenlaksCollection[0]['output_data1']
+        })
+        # ================ Ten Laks Quire End ==========================
                     
-                    # Update password and remove reset token from user data
-                    # users_collection.update_one({"emailid": user_id}, {
-                    #     "$set": {"password": hashed_password},
-                    #     "$unset": {"reset_password_token": "", "reset_token_expiry": ""}
-                    # })
-                    conn6 = get_db_connection_TICKETID()
-                    cursor = conn6.cursor()
-                    cursor.execute("""UPDATE dbo.[user]
-                    SET Password = ?
-                    WHERE EmailId = ?:
-                    """,(hashed_password,user_id))
-                    
-                    session['password_changed_succesfully'] = "Password changed successfully"
-                    return redirect(url_for('sign_in'))  # Redirect to login page after resetting
-                else:
-                    return render_template('reset_password.html', user_id=user_id, token=token, msg="Passwords should match")
-    else:
-        user_id = request.args.get('user_id')
-        token = request.args.get('token')
-        # user_data = users_collection.find_one({"emailid": user_id})
-        conn6 = get_db_connection_TICKETID()
-        cursor = conn6.cursor()
-        user_data = cursor.execute("""
-                        SELECT *
-                        FROM [user]
-                        WHERE EmailId = ?;
-                    """, (user_id,)).fetchone()
-
-        if user_data:
-            reset_token = user_data.reset_password_token
-            reset_token_expiry = user_data.reset_token_expiry
-            token_bytes = token.encode('utf-8')
-
-
-            # Convert reset_token_expiry to datetime if it's a string
-            if isinstance(reset_token_expiry, str):
-                try:
-                    reset_token_expiry = datetime.fromisoformat(reset_token_expiry)
-                except ValueError:
-                    print("Invalid reset token expiry format.")
-                    reset_token_expiry = None
-
-            # Check if reset_token is not None and if reset_token_expiry is a valid datetime object
-            if reset_token and reset_token_expiry and isinstance(reset_token_expiry, datetime):
-                if bcrypt.checkpw(token_bytes, reset_token.encode('utf-8')) and datetime.utcnow() <= reset_token_expiry:
+        users = ['IT Officer','DGM/PO']
+        for user in users:
+            users_collection.update_one({"role":user},{"$set":{
+                "alerts_generated":midnight_datetime
+            }})
+        returning_data_enabled = False
+        # for function_info in functions_to_run:
+        #     function = function_info['function']
+        #     collection = function_info['collection']
+        #     output_names = function_info['output_names']
+        #     # Execute the function
+        #     outputs = function()
+        #     for output_name, output_data in zip(output_names, outputs):
+        #         if isinstance(output_data, np.float64):
+        #     # Handle NumPy float64 differently
+        #             records = [{'data': output_data.item()}]
+        #         elif isinstance(output_data, pd.Index):
+        #     # Convert the Index object to a list or extract relevant information
+        #             records = [{'data': index_value} for index_value in output_data.tolist()]
+        #         elif isinstance(output_data, str):
+        #             # Handle string data appropriately (e.g., convert it to a dictionary if needed)
+        #             records = [{'data': output_data}]
+        #         else:
+        #             # Assume it's a DataFrame or similar, convert it to records
+        #             records = output_data.to_dict(orient='records')
+        #         # Add extra fields to records
+        #         add_fields_to_records(records)
+        #         # Insert records into the collection
+        #         collection.insert_one({'code': function.__name__, output_name: records})
+        #         print(f"Data stored in '{collection.name}' for function: {function.__name__} and output: {output_name}")
+        # last_execution_time = datetime.now()
 
 
-            # # if reset_token and bcrypt.checkpw(token.encode('utf-8'), reset_token) and datetime.utcnow() <= reset_token_expiry:
-            # if reset_token and bcrypt.checkpw(token_bytes, reset_token.encode('utf-8')) and datetime.utcnow() <= reset_token_expiry:
-            # if reset_token and bcrypt.checkpw(token.encode('utf-8'), reset_token) and datetime.utcnow() <= reset_token_expiry:
-                    return render_template('reset_password.html', user_id=user_id, token=token)
-            else:
-                session["token_expired"] = "Reset Password link is either expired or not valid, try again"
-                return redirect(url_for("forgot_password"))
 
-#Forgot password route
-@app.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-     msg =None
-     if "no_user_found_fp" in session:
-        msg = session.pop("no_user_found_fp",None)
-     if "token_expired" in session:
-        msg = session.pop("token_expired",None)
-     return render_template('forgot_password.html',msg=msg)
 
-#postforgotpassword password route
-@app.route("/postforgotpassword", methods=["POST", "GET"])
-def postforgotpassword():
-    if request.method == "POST":
+
+@app.route('/ItFileUploder',methods=['GET','POST'])
+@secure_route(required_role=['ITfficerER'])
+def ItFileUploder():
+    role = session['user_role']
+    
+    uploadedFile = request.files['alertsFile']
+
+
+    if role == 'IT Officer' :
+        df = pd.read_excel(uploadedFile.read())
+
+        listDf = df.to_dict(orient='records')
+
+
         current_datetime = datetime.now()
-        midnight_datetime = str(current_datetime.date())
-        email = request.form.get('email')
-        # user = users_collection.find_one({'emailid': email})
-        conn6 = get_db_connection_TICKETID()
-        cursor = conn6.cursor()
-        user = cursor.execute("""
-                        SELECT *
-                        FROM [user]
-                        WHERE EmailId = ?;
-                    """, (email,)).fetchone()
-        if ('reset_password_count' in user) and (midnight_datetime in user.reset_password_count):
-            reset_password_count = user.reset_password_count.get(midnight_datetime)
-        else:
-            # users_collection.update_one({'emailid':email},{"$set":{"reset_password_count":{midnight_datetime:0}}})
-            conn6 = get_db_connection_TICKETID()
-            cursor = conn6.cursor()
-            cursor.execute("""UPDATE dbo.[user]
-            SET reset_password_count = ?
-            WHERE EmailId = ?;
-            """,(midnight_datetime,email))
-            reset_password_count = 1
-        if user and (reset_password_count < 3):
-            base_url = "http://127.0.0.1:5000/reset_password"
-            reset_token = secrets.token_hex(10)
-            reset_expiry = datetime.utcnow() + timedelta(minutes=30)
-            hashed_token = hash_password(reset_token)
-            # users_collection.update_one({'emailid': email}, {
-            #     "$set": {"reset_password_token": hashed_token, "reset_token_expiry": reset_expiry},
-            #     "$inc": {"reset_password_count."+f'{midnight_datetime}': 1}
-            # }, upsert=True)
-            conn6 = get_db_connection_TICKETID()
-            cursor = conn6.cursor()
-            sql_query = """
-            UPDATE [user]
-            SET reset_password_token = ?,
-                reset_token_expiry = ?,
-                reset_password_count = CASE
-                                        WHEN ? = CONVERT(DATE, GETDATE()) THEN reset_password_count + 1
-                                        ELSE reset_password_count
-                                    END
-            WHERE emailid = ?
-            """
+        current_date = current_datetime.date()
+        midnight_datetime = datetime.combine(current_date, datetime.min.time())
+        
 
-            # Execute the query with parameters
-            try:
-                cursor.execute(sql_query, (hashed_token, reset_expiry, midnight_datetime, email))
-                cursor.commit()  # Commit the transaction if needed
-                print("Update successful!")
-            except pyodbc.Error as e:
-                print(f"Error executing SQL query: {e}")
+        for doc in listDf:
+            for key,values in doc.items():
+                if pd.isna(values):
+                    doc[key] = 'Nill'
+                if isinstance(values, float):
+                    doc[key] = None
+                if isinstance(doc.get('Account Number'), int):
+                     doc['Account Number'] = str(doc['Account Number'])
+                if isinstance(doc.get('Transaction Amount'), int):
+                     doc['Transaction Amount'] = int(doc['Transaction Amount'])
 
-            reset_link = f"{base_url}?user_id={email}&token={reset_token}"
-            send_password_reset_email(email, reset_link, 'general')
-            return render_template("email_sent_for_fp.html")
-        elif user:
-            session["no_user_found_fp"]="User limit Exeited"
-            return redirect(url_for("forgot_password"))
-        else:
-            session["no_user_found_fp"] = "No user found, please enter a valid email"
-            return redirect(url_for("forgot_password"))
+            accNum = doc.get('Account Number')
+            if accNum:
+                accNum = str(accNum)
+
+                allAccountDetails = txn_collection.find_one({'Account Number': accNum})
+
+                if allAccountDetails:
+                    txn_collection.update_one(
+                        {'Account Number': accNum},
+                        {'$push': {'XLData': doc}}
+                    )
+                else:
+                    txn_collection.insert_one(
+                        {'Account Number': accNum,'XLData': [doc]}
+                    )   
+        print("Data stored successfully....")
+        # ================== only file is uploaded but the due to some reasons the Quires was not runed =============================
+        # users_collection.update_one({'role':role},{"$set":{"file":True}})
+        # Update the file status in the SQL database
+        try:
+            conn01 = get_db_connection_TICKETID()
+            cursor = conn01.cursor()
+            cursor.execute("UPDATE [user] SET [File] = ? WHERE Role = ?", ('True', role))
+            conn01.commit()  # Ensure the transaction is committed
+            print('File changed to one')
+            print('File changed to one===ROLE', role)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            cursor.close()
+            conn01.close()
+        # ===========================================================================================================================  
+        # run_tm_functions(role)
+        if role == 'IT Officer':
+            return redirect(url_for("ITdashboard"))
+        
 
 
-
-# For to send the email
-def send_password_reset_email(to_email, reset_link,scenario):
-    subject = "Password Reset Request From ZenEye "
-    if scenario == 'userRevived':
-       message = f"{to_email} was enabled ,if you want, you can reset your password \n Click the following link to reset your password: {reset_link}"
-    else:
-        message = f"User Mail Id: {to_email}\n\n"
-    
-    message += f"Click the following link to reset your password\n\n{reset_link}\n\n"
-    message += "Note: This link will expires in 30 minutes."
-
-    
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = to_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(message, 'plain'))
-
-    try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, to_email, msg.as_string())
-        server.quit()
-        print("Email sent successfully")
-    except Exception as e:
-        print("Error sending email:", str(e))
 
 @app.route('/ITdashboard', methods=['GET'])
 @secure_route(required_role='IT OFFICER')
@@ -3857,6 +3192,123 @@ def ITdashboard():
 
 # ----------------- HO ADMIN OR IT OFFICER FINET REPORTS PAGE END - POINT -----------------------------------
 
+
+@app.route('/AGMdashboard', methods=['GET', 'POST'])
+@secure_route(required_role='AGM')
+def AGMdashboard():
+    if 'email_id' not in session:
+        return redirect(url_for('post_login'))
+    agm_email = session['email_id']
+    # notify = notification(agm_email)
+    notify = 'hiiiiii'
+   
+    # agmuser = users_collection.find_one({"emailid": agm_email})
+    # Fetching a user with a specific email ID
+    conn = get_db_connection_TICKETID()
+    cursor = conn.cursor()
+
+    sql_query = "SELECT * FROM [user] WHERE EmailId = ?"
+    cursor.execute(sql_query, (agm_email,))
+    
+    agmuser = cursor.fetchone()
+    print('agm details=============',agmuser)
+
+    # Closing the connection
+    # cursor.close()
+    # conn.close()
+
+    if 'Image' in agmuser:
+        # Encode the image data as a base64 string
+        agmuser.Image= base64.b64encode(agmuser.Image).decode('utf-8')
+    print("login agm mail", agm_email)
+   
+    # dashboardCount = users_collection.find_one({'emailid': agm_email, "status": 'Approved'})
+    sql_query = "SELECT COUNT(*) AS dashboardCount FROM [user] WHERE EmailId = ? AND Status = 'Approved'"
+    cursor.execute(sql_query, (agm_email,))
+    dashboardCount = cursor.fetchone()
+
+    if "allocated_tickets" in dashboardCount :
+        count = len(dashboardCount.allocated_tickets)
+    else:
+        count = 0
+    if "case_tickets" in dashboardCount:
+        countSubmited = len(dashboardCount.case_tickets)
+    else:
+        countSubmited = 0
+    if 'Sent_Back_Case_Alerts' in dashboardCount:
+        countSentBackCaseAlerts = len(dashboardCount.Sent_Back_Case_Alerts)
+    else:
+        countSentBackCaseAlerts=0
+    if "cms_assigned" in dashboardCount:
+        cmscount = (dashboardCount.cms_assigned)
+        # print("rosss",roscount)
+    #========================= Per Day count ========================= 
+    allocated_perday = dashboardCount.allocated_perday
+    allocated_ticket_perday = []
+    for allocatedticketperday in allocated_perday:
+        allocated_ticket_perday.append(allocatedticketperday)
+    case_tickets_perday = dashboardCount.case_tickets_perday
+    casetickets_perday = []
+    for caseticketsperday in case_tickets_perday:
+        casetickets_perday.append(caseticketsperday)
+
+    # CM_COUNT = users_collection.find({"emailid": {"$in": cmscount},"status":'Approved'})
+    conn = get_db_connection_TICKETID()
+    cursor = conn.cursor()
+    CM_COUNT = """SELECT *
+        FROM [user]
+        WHERE EmailId IN ?
+        AND Status = 'Approved';"""
+    cursor.execute(CM_COUNT, (cmscount,))
+
+    # CM_COUNT = users_collection.find({"role": "CM/SM"})
+    print("CM_COUNTtt", CM_COUNT)
+    # Initialize empty lists to store data
+    cm_data = []
+    mlro_data = []
+    for cm_emailid in CM_COUNT:
+        email_id = cm_emailid.get("emailid", "")
+        mlros_assigned = cm_emailid.get("mlros_assigned", [])
+        # Initialize lists for MLRO data
+        mlro_email_ids = []
+        mlro_empids = []
+        count_mlro_tickets = []
+        mlro_commented_tickets = []
+        mlro_case_tickets = []
+        for mlro_emailid in mlros_assigned:
+            user_data = users_collection.find_one({"emailid": mlro_emailid})
+
+            if user_data and "allocated_tickets" in user_data:
+                mlro_email_ids.append(user_data['emailid'])
+                mlro_empids.append(user_data['empid'])
+                count_mlro_ticket = len(user_data['allocated_tickets'])
+                count_mlro_tickets.append(count_mlro_ticket)
+                if "commented_tickets" in user_data:
+                    mlro_commented_tickets.append(len(user_data['commented_tickets']))
+                else:
+                    mlro_commented_tickets.append(0)
+                if "case_tickets" in user_data:
+                    mlro_case_tickets.append(len(user_data['case_tickets']))
+                else:
+                    mlro_case_tickets.append(0)
+            else:
+                mlro_email_ids.append(mlro_emailid)
+                # mlro_empids.append(user_data['empid'])
+                count_mlro_tickets.append(0)
+                mlro_commented_tickets.append(0)
+                mlro_case_tickets.append(0)
+        # Append CM data along with MLRO data
+        cm_data.append({
+            "cm_email_id": email_id,
+            "cm_empids":cm_emailid.get("empid"),
+            "count_cm_tickets": len(cm_emailid.get("allocated_tickets", [])),
+            "cm_commented_tickets": len(cm_emailid.get("commented_tickets", [])),
+            "cm_case_tickets": len(cm_emailid.get("case_tickets", [])),
+            "mlro_data": list(zip(mlro_email_ids, count_mlro_tickets, mlro_case_tickets, mlro_commented_tickets,mlro_empids))
+        })
+    # Print or use the resulting data as needed
+    print("cm_data", cm_data)
+    return render_template('AGMdashboard.html',count=count,countSubmited=countSubmited,cm_data=cm_data,agmuser=agmuser,type='AGMdashboard',role='AGM',countSentBackCaseAlerts=countSentBackCaseAlerts,allocatedperday=allocated_ticket_perday,caseticketsperday=casetickets_perday,notify=notify)
 
 
 @app.route("/AddUser")
@@ -4534,8 +3986,6 @@ def VerifyUser():
         emp_id = request.form.get('emp_id')
         role = request.form.get('role')
         mail = request.form.get('emailid')
-        print(emp_id)
-        print(mail)
         action = request.form.get('action')
         if action == 'approve':
             # users_collection.update_one({'_id': ObjectId(user_id)}, {'$set': {'Status': 'Approved','leaveStatus':"Working"}})
@@ -4543,35 +3993,23 @@ def VerifyUser():
             # SQL query to update the user's status and leave status
             conn6 = get_db_connection_TICKETID()
             cursor = conn6.cursor()
+            # cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '[user]' AND COLUMN_NAME = 'LeaveStatus'")
+            # leaveStatus_exists = cursor.fetchone()
 
-            # Check if the LeaveStatus column exists
-            cursor.execute("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'user' AND COLUMN_NAME = 'LeaveStatus'")
-            leaveStatus_exists = cursor.fetchone()
+            # # If leaveStatus column doesn't exist, alter the table to add it
+            # if not leaveStatus_exists:
+            #     cursor.execute("ALTER TABLE [user] ADD LeaveStatus VARCHAR(255)")
 
-            # If LeaveStatus column doesn't exist, alter the table to add it
-            if not leaveStatus_exists:
-                cursor.execute("ALTER TABLE [user] ADD LeaveStatus VARCHAR(255)")
-                conn6.commit()
-
-            # SQL query to update the user's status and leave status
             sql_update = """
             UPDATE [user]
-            SET [Status] = ?, [LeaveStatus] = ?
+            SET [Status] = ?, LeaveStatus = ?
             WHERE EmpId = ?
             """
 
-            try:
-                # Execute the query with the parameters
-                cursor.execute(sql_update, ('Approved', 'Working', emp_id))
-                # Commit the transaction
-                conn6.commit()
-                print("==============appoved agm==========")
-            except pyodbc.Error as e:
-                print(f"Error updating user: {e}")
-                conn6.rollback()
-                cursor.close()
-                conn6.close()
-                return
+            # Execute the query with the parameters
+            cursor.execute(sql_update, ('Approved', 'Working', emp_id))
+            # Commit the transaction
+            conn6.commit()
 
             # SQL query to find the user by email ID
             sql_find = """
@@ -4579,59 +4017,63 @@ def VerifyUser():
             WHERE EmailId = ?
             """
 
-            try:
-                # Execute the query with the parameter
-                cursor.execute(sql_find, (mail,))
-                # Fetch the result
-                user = cursor.fetchone()
-            except pyodbc.Error as e:
-                print(f"Error finding user: {e}")
-                cursor.close()
-                conn6.close()
-                return
+            # Execute the query with the parameter
+            cursor.execute(sql_find, (mail,))
 
+            # Fetch the result
+            user = cursor.fetchone()
             # Print the user details if found
             if user:
                 print('User Details:*******************', user)
             else:
                 print('User not found.')
 
-            # Close the cursor and connection
-            # cursor.close()
-            # conn6.close()
-
-
             
             if user:
                     base_url = "http://127.0.0.1:5000/reset_password"
                     reset_token = secrets.token_hex(10)
                     # users_collection.update_one({'emailid':mail},{"$set":{"reset_password_token":hash_password(reset_token)}})
+                    
+                    # # Check if reset_password_token column exists in users table
+                    # cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '[user]' AND COLUMN_NAME = 'reset_password_token'")
+                    # column_exists = cursor.fetchone()
 
-                    # SQL update query
-                    sql_update_query = """
+                    # if not column_exists:
+                    #     # Add reset_password_token column if it doesn't exist
+                    #     cursor.execute("""
+                    #         ALTER TABLE [user]
+                    #         ADD reset_password_token VARCHAR(255); 
+                    #     """)
+                    
+                    cursor.execute("""
                     UPDATE [user]
                     SET reset_password_token = ?
-                    WHERE emailid = ?
-                    """
-
-                    # Execute the query
-                    cursor.execute(sql_update_query, (hash_password(reset_token), mail))
+                    WHERE EmailId = ?;
+                    """, (hash_password(reset_token), emailid))
                     conn6.commit()
+
                     reset_link = f"{base_url}?user_id={mail}&token={reset_token}"
                     send_password_reset_email(mail,reset_link,'general')
             
             
 
-            # if role == "AGM":
+            if role == "AGM":
+                    
                 
-            #     cmsm_data = users_collection.find({"role":"CM/SM","Assigned_to":"","Status":"Created"})
-            #     for cmsm_doc in cmsm_data:
-            #         agm_user = users_collection.find_one({"_id":ObjectId(user_id),"role":"AGM","Status":"Approved"})
-            #         agm_user_assigned_cmsm = agm_user["cms_assigned"]
-            #         if len(agm_user_assigned_cmsm)<3:
-            #             users_collection.update_one({"_id":cmsm_doc["_id"],"emailid":cmsm_doc["emailid"],"role":"CM/SM","Status":"Created"},{"$set":{"Assigned_to_agm":agm_user['emailid']}})
-            #             users_collection.update_one({"_id":ObjectId(user_id),"role":"AGM","emailid":agm_user['emailid'],"Status":"Approved"},{"$push": {"cms_assigned": cmsm_doc["emailid"]}})
-            
+                    
+                    # Fetch AGM user
+                    agm_user = cursor.execute("""
+                        SELECT *
+                        FROM [user]
+                        WHERE EmpId = ? AND Role = 'AGM' AND Status = 'Created';
+                    """, (emp_id,)).fetchone()
+                    
+                    if agm_user:
+                            cursor.execute("""
+                                UPDATE [user]
+                                SET Status = ?
+                                WHERE EmpId = ?;
+                            """, ('Approved', emp_id))
         elif action == 'reject':
             # users_collection.update_one({'_id': ObjectId(user_id)}, {'$set': {'Status': 'Rejected'}})
             conn6 = get_db_connection_TICKETID()
@@ -4767,12 +4209,11 @@ def VerifyUser():
             
             return user
 
-        # def fetch_cm_users(status, role, cm_users_list):
-        def fetch_cm_users(status, role):
+        def fetch_cm_users(status, role, cm_users_list):
             conn = get_db_connection_TICKETID()
             cursor = conn.cursor()
 
-            # cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
+            cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
             sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ?"
             cursor.execute(sql_query, (status, role))
             
@@ -4782,11 +4223,11 @@ def VerifyUser():
             
             return users
 
-        def fetch_mlro_users(status, role):
+        def fetch_mlro_users(status, role, cm_users_list):
             conn = get_db_connection_TICKETID()
             cursor = conn.cursor()
 
-            # cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
+            cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
             sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ?"
             cursor.execute(sql_query, (status, role))
             
@@ -4800,7 +4241,7 @@ def VerifyUser():
             conn = get_db_connection_TICKETID()
             cursor = conn.cursor()
 
-            sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ? AND Assigned_to = ?"
+            sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ? AND Assigned_to_agm = ?"
             cursor.execute(sql_query, (status, role, emailid))
             
             users = cursor.fetchall()
@@ -4832,12 +4273,11 @@ def VerifyUser():
 
         agm_user = fetch_user_by_role_email_status(role_agm, emailid, "Approved")
         info = fetch_user_info(emailid, "Approved")
-        print('============================AGM========================',agm_user)
 
         if agm_user:
-            # cm_users_list = agm_user.CMS_assigned.split(",") if agm_user.CMS_assigned else []
-            cm_users = fetch_cm_users(status_created, role_cm_sm)
-            mlro_users = fetch_mlro_users(status_created, role_mlro)
+            cm_users_list = agm_user.CMS_assigned.split(",") if agm_user.CMS_assigned else []
+            cm_users = fetch_cm_users(status_created, role_cm_sm, cm_users_list)
+            mlro_users = fetch_mlro_users(status_created, role_mlro, cm_users_list)
 
             users = list(cm_users) + list(mlro_users)
             mlro_emailids = [user.EmailId for user in mlro_users]
@@ -4849,7 +4289,6 @@ def VerifyUser():
             users.extend(remaining_users)
         else:
             users = []
-        print('=====================cmscm and mlro users===========',users)
         return render_template("VerifyUser.html", users=users,ROLE="AGM",agmuser=info,type='VerifyUser',notify=notify)
     elif user_role == "DGM/PO":
         # created_users = users_collection.find({'status': 'Created','role':'AGM'})
@@ -4867,288 +4306,214 @@ def VerifyUser():
 
         # Combine the results
         users = created_agm_users + created_sdn_users
+        print('=============AGM USERS==============',users)
 
         # agm_user = users_collection.find_one({'role':"AGM",'emailid':emailid,'status':"Approved"})
         # Fetch approved AGM user with the given emailid
         cursor.execute("SELECT * FROM [user] WHERE Role='AGM' AND EmailId=? AND [Status]='Approved'", (emailid,))
+        
         agm_user = cursor.fetchone()
 
         # info = users_collection.find_one({'emailid':emailid,'status':'Approved'})
-        info =cursor.execute("SELECT * FROM [user] WHERE EmailId=? AND [Status]='Approved'", (emailid,))
-        if 'Image' in info:
-            # Encode the image data as a base64 string
-            info.Image = base64.b64encode(info.Image).decode('utf-8')
+        # if 'image' in info:
+        #     # Encode the image data as a base64 string
+        #     info['image'] = base64.b64encode(info['image']).decode('utf-8')
+        
+        info = cursor.execute("SELECT * FROM dbo.[user] WHERE EmailId = ? AND Status ='Approved'",(emailid))
+        # if 'Image' in info:
+        #     info.Image = base64.b64encode(info.Image).decode('utf-8')
         # Fetch user info with the given emailid and approved status
         # cursor.execute("SELECT * FROM charan WHERE EmailId=? AND [Status]='Created'", (emailid,))
         # info = cursor.fetchone()
         print('cccccccc=========',info)
+        cm_users_list_str = ', '.join(f"'{email}'" for email in cm_users_list)
+        sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ?"
+        cursor.execute(sql_query, (status, role))
+        
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return users
 
-        # # Check if the 'image' column exists in the result
-        # if info and 'image' in info:
-        #     # Assuming 'image' is stored as a byte array in the 'image' column
+        def fetch_ros_users(status, role, emailid):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            sql_query = "SELECT * FROM [user] WHERE Status = ? AND Role = ? AND Assigned_to_agm = ?"
+            cursor.execute(sql_query, (status, role, emailid))
+            
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return users
+
+        def fetch_remaining_users(status, roles):
+            conn = get_db_connection_TICKETID()
+            cursor = conn.cursor()
+
+            roles_str = ', '.join(f"'{role}'" for role in roles)
+            sql_query = f"SELECT * FROM [user] WHERE Status = ? AND Role IN ({roles_str})"
+            cursor.execute(sql_query, (status,))
+            
+            users = cursor.fetchall()
+            cursor.close()
+            conn.close()
+            
+            return users
+
+        status_created = "Created"
+        role_agm = "AGM"
+        role_cm_sm = "CM/SM"
+        role_mlro = "MLRO"
+        role_ros = "ROS"
+        roles_remaining = ["BranchMakers"]
+
+        agm_user = fetch_user_by_role_email_status(role_agm, emailid, "Approved")
+        info = fetch_user_info(emailid, "Approved")
+
+        if agm_user:
+            cm_users_list = agm_user.CMS_assigned.split(",") if agm_user.CMS_assigned else []
+            cm_users = fetch_cm_users(status_created, role_cm_sm, cm_users_list)
+            mlro_users = fetch_mlro_users(status_created, role_mlro, cm_users_list)
+
+            users = list(cm_users) + list(mlro_users)
+            mlro_emailids = [user.EmailId for user in mlro_users]
+            
+            ros_users = fetch_ros_users(status_created, role_ros, emailid)
+            users.extend(ros_users)
+            
+            remaining_users = fetch_remaining_users(status_created, roles_remaining)
+            users.extend(remaining_users)
+        else:
+            users = []
+
+        return render_template("VerifyUser.html", users=users,ROLE="AGM",agmuser=info,type='VerifyUser',notify=notify)
+
+    elif user_role == "DGM/PO":
+        # created_users = users_collection.find({'status': 'Created','role':'AGM'})
+        # sdn_users=users_collection.find({'status':'Created','role':'SDN/USER'})
+        # users = list(created_users) + list(sdn_users)
+        # Fetch created AGM users
+        conn5 = get_db_connection_TICKETID()
+        cursor = conn5.cursor()
+        cursor.execute("SELECT * FROM [user] WHERE [Status]='Created' AND Role='AGM'")
+        created_agm_users = cursor.fetchall()
+
+        # Fetch created SDN/USER users
+        cursor.execute("SELECT * FROM [user] WHERE [Status]='Created' AND Role='SDN/USER'")
+        created_sdn_users = cursor.fetchall()
+
+        # Combine the results
+        users = created_agm_users + created_sdn_users
+        print('=============AGM USERS==============',users)
+
+        # agm_user = users_collection.find_one({'role':"AGM",'emailid':emailid,'status':"Approved"})
+        # Fetch approved AGM user with the given emailid
+        cursor.execute("SELECT * FROM [user] WHERE Role='AGM' AND EmailId=? AND [Status]='Approved'", (emailid,))
+        
+        agm_user = cursor.fetchone()
+
+        # info = users_collection.find_one({'emailid':emailid,'status':'Approved'})
+        # if 'image' in info:
         #     # Encode the image data as a base64 string
-        #     image_base64 = base64.b64encode(info['image']).decode('utf-8')
-        #     info['image'] = image_base64
+        #     info['image'] = base64.b64encode(info['image']).decode('utf-8')
+        
+        info = cursor.execute("SELECT * FROM dbo.[user] WHERE EmailId = ? AND Status ='Approved'",(emailid))
+        # if 'Image' in info:
+        #     info.Image = base64.b64encode(info.Image).decode('utf-8')
+        # Fetch user info with the given emailid and approved status
+        # cursor.execute("SELECT * FROM charan WHERE EmailId=? AND [Status]='Created'", (emailid,))
+        # info = cursor.fetchone()
+        print('cccccccc=========',info)
 
         return render_template("VerifyUser.html", users=users,ROLE="DGM",dgmuser=info,type='VerifyUser',notify=notify)
 
 
 
 
-# @app.route('/leavePenddingDistribution',methods=['POST','GET'])
-# @secure_route(required_role='IT OFFICER')
-# def leavePenddingDistribution():
-#     user = users_collection.find_one({'role': 'IT OFFICER'})
-
-#     ituser = {'image': ""}
-#     if user:
-#         ituser = users_collection.find_one({'emailid': user.get('emailid')})
-
-#         if ituser and 'image' in ituser:
-#             ituser['image'] = base64.b64encode(ituser['image']).decode('utf-8')
-
-
-#     on_leave_info = users_collection.find({
-#                         '$and': [
-#                             {'leaveStatus': 'On Leave', 'status': 'Approved','allocated_tickets': {'$ne': None},'allocated_tickets':{'$ne': []}},
-#                             {'$or': [{'role': 'MLRO'}, {'role': 'CM/SM'}]},
-#                         ]
-#                     },{"_id": 0 })
-#     data = {}
-#     countMLRO = 0
-#     countCM = 0
-#     mlroOnLeaveName = []
-#     cmOnLeaveName = []
-#     for user in on_leave_info:
-#         print(user)
-#         if user["role"] == "MLRO":
-#             mlroOnLeaveName.append(user["name"])
-#             countMLRO +=1
-#         if user["role"] == "CM/SM":
-#             cmOnLeaveName.append(user["name"])
-#             countCM +=1
-#         if "allocated_tickets" in user:
-#             token = user["allocated_tickets"]
-#             for da in token:
-#                 date_pattern = r'\d{4}-\d{2}-\d{2}'
-
-#                 # Use re.search to find the first occurrence of the pattern in the token
-#                 match = re.search(date_pattern, da)
-                
-#                 # Check if a match was found
-#                 if match:
-#                     extracted_date = match.group()
-#                     # Check if the extracted_date is already a key in the dictionary
-#                     if extracted_date in data:
-#                         if 'permisionFormCount' in user:
-#                             user_info = {"name": user["name"], "role": user["role"],"emailid": user["emailid"],"count":user['permisionFormCount']}
-#                         else:
-#                             user_info = {"name": user["name"], "role": user["role"],"emailid": user["emailid"],"count":0}
-                        
-#                         if user["name"] in data[extracted_date]:
-#                             data[extracted_date][user["name"]]["tickets"].append(da)
-#                         else:
-#                             data[extracted_date][user["name"]] = {"user_info": user_info, "tickets": [da]}
-#                     else:
-#                         data[extracted_date] = {user["name"]: {"user_info": {"name": user["name"],"emailid": user["emailid"],"role": user["role"],"count":0}, "tickets": [da]}}
-
-
-#     working_emps = users_collection.find({
-#                         '$and': [
-#                             {'leaveStatus': 'Working', 'status': 'Approved'},
-#                             {'$or': [{'role': 'MLRO'}, {'role': 'CM/SM'}]},
-#                         ]
-#                     },{"_id": 0 })
-    
-#     workingMLRO = []
-#     workingCM = []
-
-#     for emp in working_emps:
-#         if emp["role"] == "MLRO":
-#             workingMLRO.append(emp["emailid"])
-#             # countMLRO +=1
-#         if emp["role"] == "CM/SM":
-#             workingCM.append(emp["emailid"])
-#             # countCM +=1
-#     print(workingMLRO)
-#     print(workingCM)
-
-#     # print("this is data",data)
-#     return render_template("leavePage.html",data=data,countMLRO=countMLRO,countCM=countCM,mlroOnLeaveName=mlroOnLeaveName,cmOnLeaveName=cmOnLeaveName,workingMLRO=workingMLRO,workingCM=workingCM,ituser=ituser,type='leavePenddingDistribution',role='IT OFFICER')
- 
-@app.route('/leavePenddingDistribution', methods=['POST', 'GET'])
+@app.route('/leavePenddingDistribution',methods=['POST','GET'])
 @secure_route(required_role='IT OFFICER')
 def leavePenddingDistribution():
-    conn = get_db_connection_TICKETID()
-    cursor = conn.cursor()
+    user = users_collection.find_one({'role': 'IT OFFICER'})
 
-    # Query for users on leave (MLRO and CM/SM) and their allocated tickets from scenarios table
-    sql_on_leave_info = """
-        SELECT u.UserName, u.Role, u.id, u.EmailId, s.ticketid, s.alert_allocated_on
-        FROM scenarios s 
-        LEFT JOIN [user] u ON s.allocatedTicket = u.id
-        WHERE u.LeaveStatus = 'On Leave'
-          AND u.Status = 'Approved'
-          AND u.Role IN ('MLRO', 'CM/SM')
-    """
-    cursor.execute(sql_on_leave_info)
-    on_leave_users = cursor.fetchall()
+    ituser = {'image': ""}
+    if user:
+        ituser = users_collection.find_one({'emailid': user.get('emailid')})
 
+        if ituser and 'image' in ituser:
+            ituser['image'] = base64.b64encode(ituser['image']).decode('utf-8')
+
+
+    on_leave_info = users_collection.find({
+                        '$and': [
+                            {'leaveStatus': 'On Leave', 'status': 'Approved','allocated_tickets': {'$ne': None},'allocated_tickets':{'$ne': []}},
+                            {'$or': [{'role': 'MLRO'}, {'role': 'CM/SM'}]},
+                        ]
+                    },{"_id": 0 })
     data = {}
     countMLRO = 0
     countCM = 0
-    # Query for working employees (MLRO and CM/SM)
-    sql_working_emps = """
-        SELECT EmailId, Role
-        FROM [user]
-        WHERE LeaveStatus = 'On Leave'
-          AND Status = 'Approved'
-          AND Role IN ('MLRO', 'CM/SM')
-    """
-    cursor.execute(sql_working_emps)
-    notworking_emps = cursor.fetchall()
     mlroOnLeaveName = []
     cmOnLeaveName = []
-    for emp in notworking_emps:
-        if emp.Role == "MLRO":
-            mlroOnLeaveName.append(emp.EmailId)
-            countMLRO += 1
+    for user in on_leave_info:
+        print(user)
+        if user["role"] == "MLRO":
+            mlroOnLeaveName.append(user["name"])
+            countMLRO +=1
+        if user["role"] == "CM/SM":
+            cmOnLeaveName.append(user["name"])
+            countCM +=1
+        if "allocated_tickets" in user:
+            token = user["allocated_tickets"]
+            for da in token:
+                date_pattern = r'\d{4}-\d{2}-\d{2}'
 
-        elif emp.Role == "CM/SM":
-            cmOnLeaveName.append(emp.EmailId)
-            countCM += 1
+                # Use re.search to find the first occurrence of the pattern in the token
+                match = re.search(date_pattern, da)
+                
+                # Check if a match was found
+                if match:
+                    extracted_date = match.group()
+                    # Check if the extracted_date is already a key in the dictionary
+                    if extracted_date in data:
+                        if 'permisionFormCount' in user:
+                            user_info = {"name": user["name"], "role": user["role"],"emailid": user["emailid"],"count":user['permisionFormCount']}
+                        else:
+                            user_info = {"name": user["name"], "role": user["role"],"emailid": user["emailid"],"count":0}
+                        
+                        if user["name"] in data[extracted_date]:
+                            data[extracted_date][user["name"]]["tickets"].append(da)
+                        else:
+                            data[extracted_date][user["name"]] = {"user_info": user_info, "tickets": [da]}
+                    else:
+                        data[extracted_date] = {user["name"]: {"user_info": {"name": user["name"],"emailid": user["emailid"],"role": user["role"],"count":0}, "tickets": [da]}}
 
 
-    for user in on_leave_users:
-        # print('==============user====================', user)
-        # if user.Role == "MLRO":
-        #     mlroOnLeaveName.append(user.UserName)
-        #     countMLRO += 1
-        # elif user.Role == "CM/SM":
-        #     cmOnLeaveName.append(user.UserName)
-        #     countCM += 1
-
-        # Process allocated_tickets and alert_allocated_on
-        if user.ticketid and user.alert_allocated_on:
-            # Parse the alert_allocated_on date
-            allocated_date = datetime.strptime(user.alert_allocated_on, '%b %d %Y %I:%M%p').strftime('%Y-%m-%d')
-
-            user_info = {
-                "name": user.UserName,
-                "role": user.Role,
-                "emailid": user.EmailId,
-                "count": 0,  # Replace with actual permissionFormCount if available
-            }
-
-            if allocated_date in data:
-                if user.UserName in data[allocated_date]:
-                    data[allocated_date][user.UserName]["tickets"].append(user.ticketid)
-                else:
-                    data[allocated_date][user.UserName] = {"user_info": user_info, "tickets": [user.ticketid]}
-            else:
-                data[allocated_date] = {user.UserName: {"user_info": user_info, "tickets": [user.ticketid]}}
-
-    # Query for working employees (MLRO and CM/SM)
-    sql_working_emps = """
-        SELECT EmailId, Role
-        FROM [user]
-        WHERE LeaveStatus = 'Working'
-          AND Status = 'Approved'
-          AND Role IN ('MLRO', 'CM/SM')
-    """
-    cursor.execute(sql_working_emps)
-    working_emps = cursor.fetchall()
-    workingcountMLRO = 0
-    wokringcountCM = 0
+    working_emps = users_collection.find({
+                        '$and': [
+                            {'leaveStatus': 'Working', 'status': 'Approved'},
+                            {'$or': [{'role': 'MLRO'}, {'role': 'CM/SM'}]},
+                        ]
+                    },{"_id": 0 })
+    
     workingMLRO = []
     workingCM = []
 
     for emp in working_emps:
-        if emp.Role == "MLRO":
-            workingMLRO.append(emp.EmailId)
-            workingcountMLRO+=1
-        elif emp.Role == "CM/SM":
-            workingCM.append(emp.EmailId)
-            wokringcountCM+=1
+        if emp["role"] == "MLRO":
+            workingMLRO.append(emp["emailid"])
+            # countMLRO +=1
+        if emp["role"] == "CM/SM":
+            workingCM.append(emp["emailid"])
+            # countCM +=1
+    print(workingMLRO)
+    print(workingCM)
 
-
-    cursor.close()
-    conn.close()
-    print('==============Leave Allocation data===============',data)
-    return render_template("leavePage.html", data=data, countMLRO=countMLRO, countCM=countCM,
-                           mlroOnLeaveName=mlroOnLeaveName, cmOnLeaveName=cmOnLeaveName,
-                           workingMLRO=workingMLRO, workingCM=workingCM,
-                           type='leavePenddingDistribution', role='IT OFFICER')
-
-
-
-
-@app.route('/permisionForm',methods=['POST','GET'])
-@secure_route(required_role=['IT Officer'])
-def permisionForm():
-    fromMail = request.form.get('from')
-    alertsToSend = request.form.get('alertsToSend')
-    toMail = request.form.get('to')
-    dateAllocated = request.form.get('dateAllocated')
-    role = request.form.get('role')
-    uniqId = str(uuid.uuid4())
-
-
-    # print(fromMail," ",alertsToSend," ",toMail)
-    alertsToSendNumber = int(alertsToSend)
-    permisionFormDetails = {
-        "fromMail":fromMail,
-        "alertsToSend":alertsToSendNumber,
-        "toMail":toMail,
-        "dateAllocated":dateAllocated,
-        "role":role,
-        "id":uniqId
-    }
-
-    fromDataTickets = users_collection.find_one({'emailid':fromMail})
-
-    allFromDataTickets = []
-    
-
-    for dataTickets in fromDataTickets["allocated_tickets"]:
-
-        # Construct a regular expression pattern using the date
-        pattern = re.compile(r'\b{}\b'.format(re.escape(dateAllocated)))
-
-        # Use search to find the pattern in the token
-        match = re.search(pattern, dataTickets) 
-
-        if match:
-            allFromDataTickets.append(dataTickets)
-
-            
-    randomTickets = []
-    count = 1
-    while count <= alertsToSendNumber:
-        choiceTickets = random.choice(allFromDataTickets)
-        randomTickets.append(choiceTickets)
-        allFromDataTickets.remove(choiceTickets)
-        count +=1
-    
-    for token in randomTickets:
-         users_collection.update_one(
-                {"emailid":fromMail},
-                {"$pull": {"allocated_tickets": token},
-                '$push': {'leave_tickets': token}}
-                
-                )
-
-
-   
-    agmPermision = users_collection.find_one({'role':'AGM','permisionFormDetails':{'$exists':True}})
-
-    if agmPermision:
-       users_collection.update_one({'role':'AGM'},{"$push": {'permisionFormDetails': permisionFormDetails}})
-    else:
-       users_collection.update_one({'role':'AGM'},{"$set":{"permisionFormDetails":[permisionFormDetails]}})
-    return redirect(url_for('leavePenddingDistribution'))
-
-
+    # print("this is data",data)
+    return render_template("leavePage.html",data=data,countMLRO=countMLRO,countCM=countCM,mlroOnLeaveName=mlroOnLeaveName,cmOnLeaveName=cmOnLeaveName,workingMLRO=workingMLRO,workingCM=workingCM,ituser=ituser,type='leavePenddingDistribution',role='IT OFFICER')
+ 
 
 @app.route('/FINnetReports', methods=['GET'])
 @secure_route(required_role='IT OFFICER')
@@ -5237,55 +4602,53 @@ def FINnetReports():
 
   
    
-def allocate():
+# def allocate():
 
 
-    # connAllocate = pyodbc.connect(f"Driver={{SQL Server}};SERVER={serverIP2};Database=ticketid;UID={userSQL2};PWD={pwdSQL2}")
-    connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES")
+#     # connAllocate = pyodbc.connect(f"Driver={{SQL Server}};SERVER={serverIP2};Database=ticketid;UID={userSQL2};PWD={pwdSQL2}")
+#     connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid; MARS_Connection=YES")
 
-    mysqlAllocate = connAllocate.cursor()
-    try:
-            current_datetime = datetime.now()
-            current_date = current_datetime.date()
-            midnight_datetime = datetime.combine(current_date, datetime.min.time())
+#     mysqlAllocate = connAllocate.cursor()
+#     try:
+#             current_datetime = datetime.now()
+#             current_date = current_datetime.date()
+#             midnight_datetime = datetime.combine(current_date, datetime.min.time())
 
 
-            tickets = []
-            allMlros = []
+#             tickets = []
+#             allMlros = []
 
-            mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
-            column_exists = mysqlAllocate.fetchone()
+#             mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
+#             column_exists = mysqlAllocate.fetchone()
 
-            # If the column doesn't exist, add it
-            if not column_exists:
-                mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
+#             # If the column doesn't exist, add it
+#             if not column_exists:
+#                 mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
        
-            mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO'")
+#             mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO'")
 
-            mlroId = mysqlAllocate.fetchone()[0]
+#             mlroId = mysqlAllocate.fetchone()[0]
 
-            mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL",(mlroId,))
-            mysqlAllocate.commit()
+#             mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL",(mlroId,))
+#             mysqlAllocate.commit()
 
-            mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
-            mysqlAllocate.commit()
+#             mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
+#             mysqlAllocate.commit()
 
 
             
 
 
 
-            connAllocate.close()
+#             connAllocate.close()
      
-            # return redirect(url_for('ITdashboard'))
-    except Exception as e:
+#             # return redirect(url_for('ITdashboard'))
+#     except Exception as e:
 
-        mysqlAllocate.rollback()
-        connAllocate.close()
+#         mysqlAllocate.rollback()
+#         connAllocate.close()
 
-        return f'Something Went Wrong {e} , Please Re-Login Again '
-    
-#==========================================================================================
+#         return f'Something Went Wrong {e} , Please Re-Login Again '
    
 
 
@@ -5294,58 +4657,54 @@ def allocate():
 
 ######### New Updated Function for allocation##########################
 
-# def allocate():
-#     print('======================allocaton=============')
-#     connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid;MARS_Connection=YES")
-#     mysqlAllocate = connAllocate.cursor()
+def allocate():
+    connAllocate = pyodbc.connect("Driver={SQL Server};SERVER=Charan\\MSSQLSERVER04;Database=ticketid;MARS_Connection=YES")
+    mysqlAllocate = connAllocate.cursor()
 
-#     try:
-#         current_datetime = datetime.now()
-#         current_date = current_datetime.date()
-#         midnight_datetime = datetime.combine(current_date, datetime.min.time())
+    try:
+        current_datetime = datetime.now()
+        current_date = current_datetime.date()
+        midnight_datetime = datetime.combine(current_date, datetime.min.time())
 
-#         # Ensure the column 'alert_allocated_on' exists
-#         mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
-#         column_exists = mysqlAllocate.fetchone()
+        # Ensure the column 'alert_allocated_on' exists
+        mysqlAllocate.execute("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'scenarios' AND COLUMN_NAME = 'alert_allocated_on'")
+        column_exists = mysqlAllocate.fetchone()
 
-#         if not column_exists:
-#             mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
+        if not column_exists:
+            mysqlAllocate.execute("ALTER TABLE scenarios ADD alert_allocated_on DATETIME")
 
-#         # Get all MLROs
-#         mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO'")
-#         allMlros = [row[0] for row in mysqlAllocate.fetchall()]
+        # Get all MLROs
+        mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO'")
+        allMlros = [row[0] for row in mysqlAllocate.fetchall()]
 
-#         # Get MLROs on leave
-#         mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO' AND leave_status = 'On Leave'")
-#         mlrosOnLeave = [row[0] for row in mysqlAllocate.fetchall()]
-#         print('===================On Leave MLROS================',mlrosOnLeave)
+        # Get MLROs on leave
+        mysqlAllocate.execute("SELECT id FROM dbo.[user] WHERE Role = 'MLRO' AND leave_status = 'On Leave'")
+        mlrosOnLeave = [row[0] for row in mysqlAllocate.fetchall()]
 
+        # Get available MLROs
+        availableMlros = [mlro for mlro in allMlros if mlro not in mlrosOnLeave]
 
-#         # Get available MLROs
-#         availableMlros = [mlro for mlro in allMlros if mlro not in mlrosOnLeave]
-#         print('===================available MLROS================',availableMlros)
+        if not availableMlros:
+            raise Exception("No available MLROs to allocate tickets")
 
-#         if not availableMlros:
-#             raise Exception("No available MLROs to allocate tickets")
-
-#         # Update scenarios for available MLROs
-#         for mlroId in availableMlros:
-#             mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL AND allocatedTicket IS NULL", (mlroId,))
-#             mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
+        # Update scenarios for available MLROs
+        for mlroId in availableMlros:
+            mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE alert_allocated_on IS NULL AND allocatedTicket IS NULL", (mlroId,))
+            mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, mlroId))
         
-#         # Reallocate alerts for MLROs on leave
-#         for mlroId in mlrosOnLeave:
-#             for availableMlroId in availableMlros:
-#                 mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE allocatedTicket = ?", (availableMlroId, mlroId))
-#                 mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, availableMlroId))
+        # Reallocate alerts for MLROs on leave
+        for mlroId in mlrosOnLeave:
+            for availableMlroId in availableMlros:
+                mysqlAllocate.execute("UPDATE scenarios SET allocatedTicket = ? WHERE allocatedTicket = ?", (availableMlroId, mlroId))
+                mysqlAllocate.execute("UPDATE scenarios SET alert_allocated_on = ? WHERE allocatedTicket = ?", (midnight_datetime, availableMlroId))
         
-#         connAllocate.commit()
-#         connAllocate.close()
+        connAllocate.commit()
+        connAllocate.close()
 
-#     except Exception as e:
-#         mysqlAllocate.rollback()
-#         connAllocate.close()
-#         return f'Something Went Wrong: {e}. Please Re-Login Again.'
+    except Exception as e:
+        mysqlAllocate.rollback()
+        connAllocate.close()
+        return f'Something Went Wrong: {e}. Please Re-Login Again.'
 
 
 # ------------------ """ ONLINE STR DOWNLOAD PAGE """ IN FINET REPORT PAGE TAB  -------------------------------
@@ -14125,22 +13484,9 @@ def profileDGM():
 
      cur = mysql2.connection.cursor()
     #  user = users_collection.find_one({'emailid':email})
-     user = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
+     userr = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
      user = cur.fetchone()
      return render_template('profileDGM.html',dgmuser=user,role='DGM/PO',type='profileDGM')
-
-@app.route('/profileAGM', methods=['GET', 'POST'])
-@secure_route(required_role='AGM')
-def profileAGM():
-     email = session['email_id']
-     notify = notification(email)
-
-    #  user = users_collection.find_one({'emailid':email})
-     user = cur.execute("SELECT * FROM dbo.[user] WHERE EmailId = ?", (email,))
-
-     if 'Image' in user:
-        user.Image = base64.b64encode(user.Image).decode('utf-8')
-     return render_template('profileAGM.html',agmuser=user,role='AGM',type='profileAGM',notify=notify)
 
 @app.route('/profile_CM_SM', methods=['GET', 'POST'])
 @secure_route(required_role='CM/SM')
@@ -16364,12 +15710,6 @@ def DataInsertionProcess():
 
     verifyFilesExists()
 
-
-
-allocate()
-
-
-
 if __name__ == "__main__":
     closed_while_thread = threading.Thread(target=run_closed_alerts_loop)
     closed_while_thread.start()
@@ -16385,3 +15725,4 @@ if __name__ == "__main__":
 
 
     
+
